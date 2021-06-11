@@ -1,41 +1,34 @@
-import { Injectable, OnInit } from '@angular/core';
-import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { from, throwError } from 'rxjs';
 import { LibraryItem } from '../shared/models/library-item.model';
-import { take, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@ionic/storage';
-import { Image } from '../shared/models/image.model';
-import { Platform } from '@ionic/angular';
 import { ImageService } from './image.service';
 import { ItemLibrary } from '../shared/classes/item-library.class';
 import { ShoppingList } from '../shared/classes/shopping-list.class';
 import { ItemGroup } from '../shared/classes/item-group.class';
 import * as Constants from '../shared/constants';
 import {
-	AddLibraryItemProps,
+	LibraryItemProps,
 	AddListItemProps,
 	ItemGroupProps,
 } from '../shared/models/action-props.model';
-import { ShoppingListItem } from '../shared/models/shopping-list-item.model';
+
+import { PopulatedItem } from '../shared/models/populated-item.model';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class ShoppingListService {
-	constructor(
-		private storage: Storage,
-		private platform: Platform,
-		private imageService: ImageService
-	) {}
+	constructor(private storage: Storage, private imageService: ImageService) {}
 
-	addLibraryItem(data: AddLibraryItemProps, itemLibrary: ItemLibrary) {
+	addLibraryItem(data: LibraryItemProps, itemLibrary: ItemLibrary) {
 		try {
 			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
 			const { name, imgData, tags } = data;
 
 			const newID: string = uuidv4();
-			const newItem: LibraryItem = { itemID: newID, ...data };
-
+			const newItem: LibraryItem = { ...data, itemID: newID };
 			newLibrary.add(newID, newItem);
 			return from(this.storage.set(Constants.LIBRARY_KEY, newLibrary));
 		} catch (error) {
@@ -43,10 +36,11 @@ export class ShoppingListService {
 		}
 	}
 
-	updateLibraryItem(item: LibraryItem, itemLibrary: ItemLibrary) {
+	updateLibraryItem(item: LibraryItemProps, itemLibrary: ItemLibrary) {
 		try {
 			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
-			newLibrary.update(item.itemID, item);
+			const updatedItem: LibraryItem = { ...item };
+			newLibrary.update(item.itemID, updatedItem);
 			return from(this.storage.set(Constants.LIBRARY_KEY, newLibrary));
 		} catch (error) {
 			return throwError(error);
@@ -56,6 +50,12 @@ export class ShoppingListService {
 	removeLibraryItem(itemID: string, itemLibrary: ItemLibrary) {
 		try {
 			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
+			const deprecatedItem = newLibrary.get(itemID);
+			const associatedImg = deprecatedItem.imgData;
+
+			if (associatedImg) {
+				this.imageService.deleteImage(associatedImg.fileName);
+			}
 			newLibrary.remove(itemID);
 			return from(this.storage.set(Constants.LIBRARY_KEY, newLibrary));
 		} catch (error) {
@@ -65,17 +65,28 @@ export class ShoppingListService {
 
 	addListItem(data: AddListItemProps, shoppingLists: ShoppingList[]) {
 		try {
-			const { itemID, amount, listIdx } = data;
+			const { item, amount, listIdx } = data;
 			const newShoppingLists: ShoppingList[] = [...shoppingLists];
-			const newItem = { itemID: itemID, amount };
-
+			const itemID: string = item.itemID ? item.itemID : uuidv4();
+			const newItem = { ...item, amount, itemID };
 			let activeList: ShoppingList = newShoppingLists[listIdx];
+
 			if (!activeList) {
-				activeList = new ShoppingList(new Map());
-				const newIdx = newShoppingLists.length;
+				activeList = new ShoppingList(
+					new Map(),
+					Constants.DEFAULT_SHOPPING_LIST_NAME
+				);
+				const newIdx = shoppingLists.length;
 				newShoppingLists[newIdx] = activeList;
 			}
-			activeList.add(itemID, newItem);
+
+			const newActiveList: ShoppingList = new ShoppingList(
+				activeList.getAllItems(),
+				activeList.getName()
+			);
+			newActiveList.add(newItem);
+			newShoppingLists[listIdx] = newActiveList;
+
 			return from(
 				this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists)
 			);
@@ -85,14 +96,20 @@ export class ShoppingListService {
 	}
 
 	updateListItem(
-		item: ShoppingListItem,
+		item: PopulatedItem,
 		listIdx: number,
 		shoppingLists: ShoppingList[]
 	) {
 		try {
+			const activeList: ShoppingList = shoppingLists[listIdx];
 			const newShoppingLists: ShoppingList[] = [...shoppingLists];
-			let activeList: ShoppingList = newShoppingLists[listIdx];
-			activeList.update(item.itemID, item);
+			const newActiveList: ShoppingList = new ShoppingList(
+				activeList.getAllItems(),
+				activeList.getName()
+			);
+			newActiveList.update(item);
+
+			newShoppingLists[listIdx] = newActiveList;
 			return from(
 				this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists)
 			);
@@ -107,9 +124,15 @@ export class ShoppingListService {
 		shoppingLists: ShoppingList[]
 	) {
 		try {
+			const activeList: ShoppingList = shoppingLists[listIdx];
 			const newShoppingLists: ShoppingList[] = [...shoppingLists];
-			let activeList: ShoppingList = newShoppingLists[listIdx];
-			activeList.remove(itemID);
+			const newActiveList: ShoppingList = new ShoppingList(
+				activeList.getAllItems(),
+				activeList.getName()
+			);
+			newActiveList.remove(itemID);
+			newShoppingLists[listIdx] = newActiveList;
+
 			return from(
 				this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists)
 			);

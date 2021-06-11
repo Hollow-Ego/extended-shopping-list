@@ -25,7 +25,8 @@
 <ion-content *ngIf="!isLoading">
   <ion-slides pager="true">
     <ion-slide *ngFor="let list of shoppingLists; index as i">
-      <pxsl1-shopping-list-page class="full-width" [shoppingList]="shoppingLists[i]" [library]="itemLibrary">
+      <pxsl1-shopping-list-page class="full-width" [shoppingList]="shoppingLists[i]" [listIdx]="i"
+        [library]="itemLibrary">
       </pxsl1-shopping-list-page>
     </ion-slide>
   </ion-slides>

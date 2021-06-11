@@ -1,13 +1,14 @@
 {
-  "appId": "com.simplisitc.shopping.list.pahn",
-  "appName": "Simplistic Shopping List",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www",
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0
-    }
-  },
-  "cordova": {}
+	"appId": "com.extended.shopping.list.pahn",
+	"appName": "Extended Shopping List",
+	"bundledWebRuntime": false,
+	"npmClient": "npm",
+	"webDir": "www",
+	"plugins": {
+		"SplashScreen": {
+			"androidSplashResourceName": "screen",
+			"launchShowDuration": 0
+		}
+	},
+	"cordova": {}
 }

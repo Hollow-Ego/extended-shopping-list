@@ -46,7 +46,7 @@ const _shoppingListReducer = createReducer(
 	on(
 		SLActions.endAddListItem,
 		SLActions.endUpdateListItem,
-		SLActions.endRemoveFromItemGroup,
+		SLActions.endRemoveListItem,
 		(state, props) => {
 			return updateListItemState(state, props);
 		}

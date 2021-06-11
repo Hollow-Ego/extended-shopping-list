@@ -1,7 +1,10 @@
-import { ShoppingListItem } from '../models/shopping-list-item.model';
+import { PopulatedItem } from '../models/populated-item.model';
 
 export class ShoppingList {
-	constructor(private shoppingItems: Map<string, ShoppingListItem>) {}
+	constructor(
+		private shoppingItems: Map<string, PopulatedItem>,
+		private name: string
+	) {}
 
 	get(id: string) {
 		return this.shoppingItems.get(id);
@@ -11,15 +14,23 @@ export class ShoppingList {
 		return this.shoppingItems;
 	}
 
-	add(id: string, item: ShoppingListItem) {
-		this.shoppingItems.set(id, item);
+	add(item: PopulatedItem) {
+		this.shoppingItems.set(item.itemID, item);
 	}
 
 	remove(id: string) {
 		this.shoppingItems.delete(id);
 	}
 
-	update(id: string, item: ShoppingListItem) {
-		this.shoppingItems.set(id, item);
+	update(item: PopulatedItem) {
+		this.shoppingItems.set(item.itemID, item);
+	}
+
+	updateName(newName: string) {
+		this.name = newName;
+	}
+
+	getName() {
+		return this.name;
 	}
 }

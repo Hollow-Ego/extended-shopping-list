@@ -11,8 +11,8 @@
       </ion-text>
 
       <ion-thumbnail [slot]="'end'" *ngIf="item.imgData || item">
-        <ion-img *ngIf="item.imgData" [src]="item.imgData.webviewPath" default="assets/broken-img-placeholder.png"
-          (click)="onItemClick(item.name, item.imgData.webviewPath)">
+        <ion-img *ngIf="item.imgData.webviewPath" [src]="item.imgData.webviewPath"
+          default="assets/broken-img-placeholder.png" (click)="onItemClick(item.name, item.imgData.webviewPath)">
         </ion-img>
       </ion-thumbnail>
     </ion-item>
@@ -21,6 +21,9 @@
   <ion-item-options side="end">
     <ion-item-option color="secondary" (click)="onEditItem(item, slidingItem)">
       <ion-icon name="create" slot="icon-only"></ion-icon>
+    </ion-item-option>
+    <ion-item-option color="secondary" (click)="onDeleteItem(item,slidingItem)">
+      <ion-icon name="trash" slot="icon-only"></ion-icon>
     </ion-item-option>
   </ion-item-options>
 </ion-item-sliding>

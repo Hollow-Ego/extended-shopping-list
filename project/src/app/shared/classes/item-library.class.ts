@@ -42,6 +42,6 @@ export class ItemLibrary {
 				tags.push(...item.tags);
 			}
 		});
-		return tags;
+		return [...new Set(tags)];
 	}
 }

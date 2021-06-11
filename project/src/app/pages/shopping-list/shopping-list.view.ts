@@ -10,6 +10,7 @@ import * as fromApp from '../../store/app.reducer';
 import * as SLActions from '../../store/shopping-list.actions';
 import * as Modes from '../../shared/constants';
 import { AddEditModalComponent } from '../../components/modals/add-edit-modal/add-edit-modal.component';
+import { AddEditModalOutput } from '../../shared/models/add-edit-modal-data.model';
 
 @Component({
 	selector: 'pxsl1-shopping-list',
@@ -56,10 +57,24 @@ export class ShoppingListView implements OnInit, OnDestroy {
 			},
 		});
 		await modal.present();
-		const { canceled } = await (await modal.onWillDismiss()).data;
+
+		const {
+			canceled,
+			itemData,
+		}: { canceled: boolean; itemData: AddEditModalOutput } = (
+			await modal.onWillDismiss()
+		).data;
+
 		if (canceled) {
 			return;
 		}
+
+		this.store.dispatch(
+			SLActions.startAddListItem({
+				item: itemData,
+				listIdx: this.currentListIdx,
+			})
+		);
 	}
 
 	onModeChange($event) {

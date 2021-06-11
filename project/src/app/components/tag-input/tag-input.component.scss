@@ -1,10 +1,11 @@
 .tag-dropdown-content {
 	max-height: 30vh;
 	width: 100%;
-	overflow: auto;
+	overflow: visible;
 }
 
 .dropdown-items {
 	max-height: 30vh;
-	overflow: scroll;
+	overflow: auto;
+	padding-bottom: 1.3rem;
 }

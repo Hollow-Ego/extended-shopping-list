@@ -30,12 +30,11 @@ export class AppComponent {
 			this.statusBar.styleDefault();
 			this.splashScreen.hide();
 
-			const routerEl = document.querySelector('ion-router');
 			document.addEventListener('ionBackButton', (ev: BackButtonEvent) => {
 				ev.detail.register(-1, () => {
 					const path = window.location.pathname;
 
-					if (path === '/home') {
+					if (path === '/home/library' || path === '/home/lists') {
 						this.onStartDoubleClick();
 					}
 				});
@@ -49,9 +48,11 @@ export class AppComponent {
 			App.exitApp();
 		} else {
 			this.lastOnStart = now;
-			this.translate.getTranslation('closeToast').subscribe(closeToast => {
-				Toast.show({ text: closeToast, duration: 'short' });
-			});
+			this.translate
+				.getTranslation('messages.closeToast')
+				.subscribe(closeToast => {
+					Toast.show({ text: closeToast, duration: 'short' });
+				});
 		}
 	}
 }

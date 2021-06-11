@@ -1,12 +1,11 @@
 import { createAction, props, union } from '@ngrx/store';
 import {
 	GeneralActionProps,
-	AddLibraryItemProps,
+	LibraryItemProps,
 	GeneralReturnProps,
 	AddListItemProps,
 	RemoveItemShortProps,
 	ItemGroupProps,
-	UpdateLibraryItemProps,
 	UpdateListItemProps,
 	RemoveListItemProps,
 	LoadShoppingListProps,
@@ -25,7 +24,7 @@ export const endInitialLoad = createAction(
 
 export const startAddLibraryItem = createAction(
 	'[SSL] START_ADD_LIBRARY_ITEM',
-	props<AddLibraryItemProps>()
+	props<LibraryItemProps>()
 );
 
 export const endAddLibraryItem = createAction(
@@ -35,7 +34,7 @@ export const endAddLibraryItem = createAction(
 
 export const startUpdateLibraryItem = createAction(
 	'[SSL] START_UPDATE_LIBRARY_ITEM',
-	props<UpdateLibraryItemProps>()
+	props<LibraryItemProps>()
 );
 
 export const endUpdateLibraryItem = createAction(

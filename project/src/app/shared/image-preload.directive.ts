@@ -1,9 +1,9 @@
 import { Directive, HostBinding, Input } from '@angular/core';
 
 @Directive({
-	selector: 'ion-img[default]',
+	selector: 'img[default]',
 	host: {
-		'(ionError)': 'updateUrl()',
+		'(error)': 'updateUrl()',
 	},
 })
 export class ImagePreloadDirective {

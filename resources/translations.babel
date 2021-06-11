@@ -11,8 +11,8 @@
     -->
     <preset_collections/>
     <framework>ngx-translate</framework>
-    <filename>translation.babel</filename>
-    <source_root_dir/>
+    <filename>translations.babel</filename>
+    <source_root_dir>../project</source_root_dir>
     <folder_node>
         <name/>
         <children>
@@ -27,12 +27,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -44,12 +44,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -62,11 +62,11 @@
                         <translations>
                             <translation>
                                 <language>de-DE</language>
-                                <approved>true</approved>
+                                <approved>false</approved>
                             </translation>
                             <translation>
                                 <language>en-US</language>
-                                <approved>true</approved>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -78,12 +78,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -95,12 +95,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -112,12 +112,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -130,11 +130,11 @@
                         <translations>
                             <translation>
                                 <language>de-DE</language>
-                                <approved>true</approved>
+                                <approved>false</approved>
                             </translation>
                             <translation>
                                 <language>en-US</language>
-                                <approved>true</approved>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -146,12 +146,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -163,12 +163,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -180,12 +180,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -197,12 +197,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -216,11 +216,11 @@
                 <default_text/>
                 <translations>
                     <translation>
-                        <language>en-US</language>
+                        <language>de-DE</language>
                         <approved>false</approved>
                     </translation>
                     <translation>
-                        <language>de-DE</language>
+                        <language>en-US</language>
                         <approved>false</approved>
                     </translation>
                 </translations>
@@ -236,12 +236,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -253,12 +253,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -270,12 +270,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -287,12 +287,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -304,12 +304,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -321,12 +321,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -360,11 +360,28 @@
                         <default_text/>
                         <translations>
                             <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
                                 <language>en-US</language>
+                                <approved>false</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>deletingImageError</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
                                 <approved>true</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
+                                <language>en-US</language>
                                 <approved>true</approved>
                             </translation>
                         </translations>
@@ -382,11 +399,11 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
+                                <language>de-DE</language>
                                 <approved>true</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
+                                <language>en-US</language>
                                 <approved>true</approved>
                             </translation>
                         </translations>
@@ -399,12 +416,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -417,11 +434,11 @@
                         <translations>
                             <translation>
                                 <language>de-DE</language>
-                                <approved>false</approved>
+                                <approved>true</approved>
                             </translation>
                             <translation>
                                 <language>en-US</language>
-                                <approved>false</approved>
+                                <approved>true</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -433,11 +450,28 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
+                                <language>de-DE</language>
                                 <approved>true</approved>
                             </translation>
                             <translation>
+                                <language>en-US</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>photoPromptTitle</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
+                            <translation>
                                 <language>de-DE</language>
+                                <approved>true</approved>
+                            </translation>
+                            <translation>
+                                <language>en-US</language>
                                 <approved>true</approved>
                             </translation>
                         </translations>
@@ -451,11 +485,11 @@
                         <translations>
                             <translation>
                                 <language>de-DE</language>
-                                <approved>false</approved>
+                                <approved>true</approved>
                             </translation>
                             <translation>
                                 <language>en-US</language>
-                                <approved>false</approved>
+                                <approved>true</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -464,6 +498,23 @@
             <folder_node>
                 <name>uiStrings</name>
                 <children>
+                    <concept_node>
+                        <name>activeListText</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-US</language>
+                                <approved>false</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
                     <concept_node>
                         <name>addTagPlaceholder</name>
                         <definition_loaded>false</definition_loaded>
@@ -499,6 +550,40 @@
                         </translations>
                     </concept_node>
                     <concept_node>
+                        <name>fromGalleryText</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>true</approved>
+                            </translation>
+                            <translation>
+                                <language>en-US</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>includeTagsText</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-US</language>
+                                <approved>false</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
                         <name>library</name>
                         <definition_loaded>false</definition_loaded>
                         <description/>
@@ -506,12 +591,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -523,12 +608,12 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
                             <translation>
-                                <language>de-DE</language>
-                                <approved>true</approved>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -540,12 +625,46 @@
                         <default_text/>
                         <translations>
                             <translation>
-                                <language>en-US</language>
-                                <approved>true</approved>
+                                <language>de-DE</language>
+                                <approved>false</approved>
                             </translation>
+                            <translation>
+                                <language>en-US</language>
+                                <approved>false</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>takePictureText</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
                             <translation>
                                 <language>de-DE</language>
                                 <approved>true</approved>
+                            </translation>
+                            <translation>
+                                <language>en-US</language>
+                                <approved>true</approved>
+                            </translation>
+                        </translations>
+                    </concept_node>
+                    <concept_node>
+                        <name>unnamedList</name>
+                        <definition_loaded>false</definition_loaded>
+                        <description/>
+                        <comment/>
+                        <default_text/>
+                        <translations>
+                            <translation>
+                                <language>de-DE</language>
+                                <approved>false</approved>
+                            </translation>
+                            <translation>
+                                <language>en-US</language>
+                                <approved>false</approved>
                             </translation>
                         </translations>
                     </concept_node>
@@ -558,20 +677,20 @@
         <language>
             <code>de-DE</code>
             <source_id/>
-            <source_file>src/assets/i18n/de.json</source_file>
+            <source_file>../project/src/assets/i18n/de.json</source_file>
         </language>
         <language>
             <code>en-US</code>
             <source_id/>
-            <source_file>src/assets/i18n/en.json</source_file>
+            <source_file>../project/src/assets/i18n/en.json</source_file>
         </language>
     </languages>
     <translation_files>
         <translation_file>
-            <file>src/assets/i18n/en.json</file>
+            <file>../project/src/assets/i18n/de.json</file>
         </translation_file>
         <translation_file>
-            <file>src/assets/i18n/de.json</file>
+            <file>../project/src/assets/i18n/en.json</file>
         </translation_file>
     </translation_files>
     <editor_configuration>

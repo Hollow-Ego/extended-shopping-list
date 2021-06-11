@@ -52,6 +52,14 @@ export class TagInputComponent implements ControlValueAccessor {
 			return;
 		}
 		if (this.newTag.length <= 0) return;
+		const alreadyExists = this.tags.find(tag => {
+			return tag.toLowerCase() === this.newTag.toLowerCase();
+		});
+		if (alreadyExists) {
+			this.newTag = '';
+			this.isOpenDropdown = false;
+			return;
+		}
 		this.addTag(this.newTag);
 	}
 

@@ -12,14 +12,14 @@ import * as fromApp from '../store/app.reducer';
 import {
 	selectItemGroups,
 	selectItemLibrary as selectItemLibrary,
-	selectShoppingList,
 	selectShoppingLists,
 } from './shopping-list.selectors';
 import { ShoppingListService } from '../services/shopping-list.service';
 import { ItemGroup } from '../shared/classes/item-group.class';
 import { ShoppingList } from '../shared/classes/shopping-list.class';
-import { ShoppingListItem } from '../shared/models/shopping-list-item.model';
+
 import { LibraryItem } from '../shared/models/library-item.model';
+import { PopulatedItem } from '../shared/models/populated-item.model';
 
 @Injectable()
 export class ShoppingListEffects {
@@ -46,7 +46,10 @@ export class ShoppingListEffects {
 						let itemLibrary = new ItemLibrary(new Map<string, LibraryItem>());
 						let itemGroups = [];
 						let shoppingLists = [
-							new ShoppingList(new Map<string, ShoppingListItem>()),
+							new ShoppingList(
+								new Map<string, PopulatedItem>(),
+								Constants.DEFAULT_SHOPPING_LIST_NAME
+							),
 						];
 
 						if (loadedItemLibrary) {
@@ -66,7 +69,10 @@ export class ShoppingListEffects {
 						if (loadedShoppingList) {
 							shoppingLists = [];
 							loadedShoppingList.forEach(rawList => {
-								const list = new ShoppingList(rawList.shoppingItems);
+								const list = new ShoppingList(
+									rawList.shoppingItems,
+									rawList.name
+								);
 								shoppingLists.push(list);
 							});
 						}
@@ -105,7 +111,7 @@ export class ShoppingListEffects {
 			ofType(SLActions.startUpdateLibraryItem),
 			concatLatestFrom(() => this.store$.select(selectItemLibrary)),
 			mergeMap(([props, itemLibrary]) => {
-				return this.SLService.updateLibraryItem(props.item, itemLibrary).pipe(
+				return this.SLService.updateLibraryItem(props, itemLibrary).pipe(
 					map(itemLibrary => {
 						return SLActions.endUpdateLibraryItem({ itemLibrary });
 					}),
@@ -196,26 +202,6 @@ export class ShoppingListEffects {
 			})
 		)
 	);
-
-	// startLoadShoppingList$ = createEffect(() =>
-	// 	this.actions$.pipe(
-	// 		ofType(SLActions.startLoadShoppingList),
-	// 		concatLatestFrom((props) => this.store$.select(selectShoppingList(props.listIdx))),
-	// 		mergeMap(([props, shoppingLists]) => {
-
-	// 			return this.SLService.addListItem(props, shoppingLists).pipe(
-	// 				map(list => {
-	// 					return SLActions.endLoadShoppingList({
-	// 						list,
-	// 					});
-	// 				}),
-	// 				catchError(err => {
-	// 					return SLActions.raiseGeneralError;
-	// 				})
-	// 			);
-	// 		})
-	// 	)
-	// );
 
 	startAddToItemGroup$ = createEffect(() =>
 		this.actions$.pipe(

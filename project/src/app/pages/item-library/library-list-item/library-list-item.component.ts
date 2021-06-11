@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { LibraryItem } from '../../../shared/models/library-item.model';
 
 @Component({
@@ -8,13 +8,25 @@ import { LibraryItem } from '../../../shared/models/library-item.model';
 })
 export class LibraryListItemComponent implements OnInit {
 	@Input() item: LibraryItem;
+	@Output() editItem = new EventEmitter<LibraryItem>();
+	@Output() deleteItem = new EventEmitter<string>();
+	@Output() addItemToList = new EventEmitter<LibraryItem>();
 	constructor() {}
 
 	ngOnInit() {}
 
-	onAddToList() {}
+	onAddToList() {
+		this.addItemToList.emit(this.item);
+	}
 
 	hasImage() {
 		return this.item.imgData.webviewPath !== '';
+	}
+
+	onEditItem() {
+		this.editItem.emit(this.item);
+	}
+	onDeleteItem() {
+		this.deleteItem.emit(this.item.itemID);
 	}
 }

@@ -1,15 +1,13 @@
 <div class="picker">
-  <ion-img class="item-img" role="button" [src]="webviewPath" (click)="onPickImage()" (ionError)="onLoadError()"
+  <img class="item-img" role="button" [src]="getImgSource()" (click)="onPickImage()" (error)="onLoadError()"
     default="assets/broken-img-placeholder.png">
-  </ion-img>
 </div>
 <ion-item color="warning" *ngIf="failedLoading">
   <ion-label class="ion-text-wrap">{{ 'aboutItems.warnImageLoadError' | translate}}</ion-label>
 </ion-item>
 <div class="picker-controls">
-  <ion-button *ngIf="webviewPath !== imgPlaceholderPath" (click)="onClearImage()" expand="block" fill="clear"
+  <ion-button *ngIf="getImgSource() !== imgPlaceholderPath" (click)="onClearImage()" expand="block" fill="clear"
     shape="round">
     {{ 'aboutItems.clearImageText' | translate}}
   </ion-button>
 </div>
-<input type="file" *ngIf="useFilePicker" accept="image/jpeg" #filePicker (change)="onFilePicked($event)" />

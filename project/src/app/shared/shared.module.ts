@@ -29,6 +29,7 @@ import { TagInputComponent } from '../components/tag-input/tag-input.component';
 		ImagePreloadDirective,
 		CommonModule,
 		IonicModule,
+		FormsModule,
 		LanguagePickerComponent,
 	],
 })

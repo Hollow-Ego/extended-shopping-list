@@ -10,7 +10,7 @@
 		"tags": "Tags",
 		"takePictureText": "Bild aufnehmen / auswählen",
 		"unit": "Einheit",
-		"warnImageLoadError": "Das Bild konnte nicht geladen werden!"
+		"warnImageLoadError": "Bild konnte nicht geladen werden!"
 	},
 	"appname": "Simple Einkaufsliste",
 	"common": {
@@ -23,20 +23,27 @@
 		"searchText": "Suchen..."
 	},
 	"messages": {
-		"closeToast": "Tippen Sie erneut auf Zurück, um die App zu schließen!"
+		"closeToast": "Tippen Sie erneut auf Zurück, um die App zu schließen!",
+		"deletingImageError": "Bild konnte nicht entfernt werden!"
 	},
 	"titles": {
 		"addItemTitle": "Neuen Artikel hinzufügen",
 		"editItemTitle": "Artikel bearbeiten",
 		"editModeTitle": "Bearbeiten",
 		"listingTitle": "Einkaufsliste",
+		"photoPromptTitle": "Bild",
 		"shoppingModeTitle": "Einkaufen"
 	},
 	"uiStrings": {
+		"activeListText": "Aktuelle Liste",
 		"addTagPlaceholder": "Tag-Namen eingeben",
 		"addTagText": "Tags",
+		"fromGalleryText": "Aus Album",
+		"includeTagsText": "Tags in Suche einbeziehen",
 		"library": "Bibliothek",
 		"listsLong": "Einkaufslisten",
-		"listsShort": "Listen"
+		"listsShort": "Listen",
+		"takePictureText": "Bild aufnehmen",
+		"unnamedList": "Unbenannte Liste"
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Simplistic Shopping List</string>
-    <string name="title_activity_main">Simplistic Shopping List</string>
-    <string name="package_name">com.simplisitc.shopping.list.pahn</string>
-    <string name="custom_url_scheme">com.simplisitc.shopping.list.pahn</string>
+    <string name="app_name">Extended Shopping List</string>
+    <string name="title_activity_main">Extended Shopping List</string>
+    <string name="package_name">com.extended.shopping.list.pahn</string>
+    <string name="custom_url_scheme">com.extended.shopping.list.pahn</string>
 </resources>

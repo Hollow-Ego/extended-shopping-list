@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { Platform } from '@ionic/angular';
 import { Image } from '../../shared/models/image.model';
 import { ImageService } from '../../services/image.service';
 import { Photo } from '@capacitor/camera';
@@ -24,32 +23,20 @@ export class ImagePickerComponent implements OnInit, ControlValueAccessor {
 	public disabled = false;
 
 	public pickedImg: Image;
-	public useFilePicker = false;
 
 	public imgPlaceholderPath = 'assets/img-placeholder.png';
-	public filepath: string = '';
-	public webviewPath: string = this.imgPlaceholderPath;
-	public fileName: string = '';
+	private emptyImg = {
+		filepath: '',
+		webviewPath: '',
+		fileName: '',
+	};
 
 	@ViewChild('filePicker') filePickerRef: ElementRef<HTMLInputElement>;
 	public failedLoading: boolean;
 
-	constructor(private platform: Platform, private imageService: ImageService) {}
+	constructor(private imageService: ImageService) {}
 
-	ngOnInit() {
-		if (
-			(this.platform.is('mobile') && !this.platform.is('hybrid')) ||
-			this.platform.is('desktop')
-		) {
-			this.useFilePicker = true;
-		}
-		if (this.pickedImg) {
-			const { filepath, webviewPath, fileName } = this.pickedImg;
-			this.filepath = filepath;
-			this.webviewPath = webviewPath;
-			this.fileName = fileName;
-		}
-	}
+	ngOnInit() {}
 
 	async onPickImage() {
 		if (!Capacitor.isPluginAvailable('Camera')) {
@@ -59,53 +46,27 @@ export class ImagePickerComponent implements OnInit, ControlValueAccessor {
 		const capturedImage: Photo = await this.imageService
 			.takeImage()
 			.catch(error => {
-				if (error.message === 'User cancelled photos app') {
-					return null;
-				}
-
-				if (this.useFilePicker) {
-					this.filePickerRef.nativeElement.click();
-				}
-
 				return null;
 			});
 
 		if (capturedImage) {
 			this.pickedImg = await this.imageService.savePicture(capturedImage);
-			const { filepath, webviewPath, fileName } = this.pickedImg;
-			this.filepath = filepath;
-			this.webviewPath = webviewPath;
-			this.fileName = fileName;
 			this.onChange(this.pickedImg);
 		}
 	}
 
-	onFilePicked(event: Event) {
-		const image = (event.target as HTMLInputElement).files[0];
-		if (!image) {
-			return;
-		}
-		const fr = new FileReader();
-		const fileName = new Date().getTime() + '.jpeg';
-		fr.onload = () => {
-			const dataUrl = fr.result.toString();
-			this.pickedImg = {
-				filepath: '',
-				webviewPath: dataUrl,
-				fileName,
-			};
-		};
-
-		fr.readAsDataURL(image);
+	onClearImage() {
+		this.failedLoading = false;
+		this.imageService.markForDeletion(this.pickedImg.fileName);
+		this.pickedImg = this.emptyImg;
 		this.onChange(this.pickedImg);
 	}
 
-	onClearImage() {
-		this.filepath = '';
-		this.webviewPath = this.imgPlaceholderPath;
-		this.fileName = '';
-		this.failedLoading = false;
-		this.onChange(null);
+	getImgSource() {
+		if (!this.pickedImg.webviewPath || !this.pickedImg) {
+			return this.imgPlaceholderPath;
+		}
+		return this.pickedImg.webviewPath;
 	}
 
 	onLoadError() {

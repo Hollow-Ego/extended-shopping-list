@@ -10,7 +10,7 @@
 		"tags": "Tags",
 		"takePictureText": "Take/Select Picture",
 		"unit": "Unit",
-		"warnImageLoadError": "The image couldn't be loaded!"
+		"warnImageLoadError": "Image couldn't be loaded!"
 	},
 	"appname": "Simplistic Shopping List",
 	"common": {
@@ -23,20 +23,27 @@
 		"searchText": "Search..."
 	},
 	"messages": {
-		"closeToast": "Tap back again to close app!"
+		"closeToast": "Tap back again to close app!",
+		"deletingImageError": "Image couldn't be removed!"
 	},
 	"titles": {
 		"addItemTitle": "Add New Item",
 		"editItemTitle": "Edit Item",
 		"editModeTitle": "Edit",
 		"listingTitle": "Shopping List",
+		"photoPromptTitle": "Photo",
 		"shoppingModeTitle": "Shop"
 	},
 	"uiStrings": {
+		"activeListText": "Current List",
 		"addTagPlaceholder": "Enter a tag name...",
 		"addTagText": "Tags",
+		"fromGalleryText": "From Gallery",
+		"includeTagsText": "Include Tags in search",
 		"library": "Library",
 		"listsLong": "Shopping-Lists",
-		"listsShort": "Lists"
+		"listsShort": "Lists",
+		"takePictureText": "Take Picture",
+		"unnamedList": "Unnamed List"
 	}
 }

@@ -7,3 +7,5 @@ export const SHOPPING_LIST_KEY = '[SSL] SHOPPING_LIST_KEY';
 
 export const MODAL_ADD_MODE = '[SSL] MODAL_ADD_MODE';
 export const MODAL_EDIT_MODE = '[SSL] MODAL_EDIT_MODE';
+
+export const DEFAULT_SHOPPING_LIST_NAME = 'uiStrings.unnamedList';

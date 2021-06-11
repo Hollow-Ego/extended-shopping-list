@@ -41,4 +41,12 @@ export class TranslationService {
 	getTranslation(key: string) {
 		return this.translate.get(key).pipe(take(1));
 	}
+
+	getTranslations(keys: string[]) {
+		return this.translate.get(keys).pipe(take(1));
+	}
+
+	onLangChange() {
+		return this.translate.onLangChange;
+	}
 }

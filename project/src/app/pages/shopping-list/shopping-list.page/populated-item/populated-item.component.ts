@@ -1,13 +1,19 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+	Component,
+	ElementRef,
+	EventEmitter,
+	Input,
+	OnInit,
+	Output,
+	ViewChild,
+} from '@angular/core';
 import {
 	IonItemSliding,
 	ModalController,
 	PopoverController,
 } from '@ionic/angular';
-import { AddEditModalComponent } from '../../../../components/modals/add-edit-modal/add-edit-modal.component';
+
 import { ImageModalComponent } from '../../../../components/modals/image-modal/image-modal.component';
-import { ShoppingListService } from '../../../../services/shopping-list.service';
-import * as Modes from '../../../../shared/constants';
 import { PopulatedItem } from '../../../../shared/models/populated-item.model';
 
 @Component({
@@ -17,15 +23,13 @@ import { PopulatedItem } from '../../../../shared/models/populated-item.model';
 })
 export class PopulatedItemComponent implements OnInit {
 	@Input() item: PopulatedItem;
+	@Output() editItem = new EventEmitter<PopulatedItem>();
+	@Output() deleteItem = new EventEmitter<PopulatedItem>();
 	@ViewChild('shoppingItem') shoppingItemRef: ElementRef;
 	private lastOnStart = 0;
 	private DOUBLE_CLICK_THRESHOLD = 500;
 
-	constructor(
-		private popoverCtrl: PopoverController,
-		private modalCtrl: ModalController,
-		private shoppingListService: ShoppingListService
-	) {}
+	constructor(private popoverCtrl: PopoverController) {}
 
 	ngOnInit() {}
 
@@ -56,14 +60,12 @@ export class PopulatedItemComponent implements OnInit {
 
 	async onEditItem(item: PopulatedItem, slidingItem: IonItemSliding) {
 		slidingItem.close();
-		const modal = await this.modalCtrl.create({
-			component: AddEditModalComponent,
-			componentProps: {
-				item: this.item,
-				mode: Modes.MODAL_EDIT_MODE,
-			},
-		});
-		await modal.present();
+		this.editItem.emit(item);
+	}
+
+	onDeleteItem(item: PopulatedItem, slidingItem: IonItemSliding) {
+		slidingItem.close();
+		this.deleteItem.emit(item);
 	}
 
 	onError() {

@@ -1,10 +1,11 @@
 import { ItemGroup } from '../classes/item-group.class';
 import { ItemLibrary } from '../classes/item-library.class';
-import { LibraryItem } from './library-item.model';
 
 import { ShoppingList } from '../classes/shopping-list.class';
 import { Image } from './image.model';
-import { ShoppingListItem } from './shopping-list-item.model';
+
+import { singleCurrencyData } from './currency-data.model';
+import { PopulatedItem } from './populated-item.model';
 
 export interface GeneralActionProps {
 	mode: string;
@@ -21,29 +22,27 @@ export interface GeneralReturnProps {
 	errors?: string[];
 }
 
-export interface AddLibraryItemProps {
+export interface LibraryItemProps {
+	itemID: string;
 	name: string;
 	amount: number;
 	imgData: Image;
 	tags: string[];
 	unit: string;
 	price: number;
+	currency: singleCurrencyData;
 	addToListIdx?: number;
 }
 
-export interface UpdateLibraryItemProps {
-	item: LibraryItem;
-}
-
 export interface AddListItemProps {
-	itemID: string;
-	amount: number;
+	item: PopulatedItem;
+	amount?: number;
 	listIdx: number;
 	itemLibrary?: ItemLibrary;
 }
 
 export interface UpdateListItemProps {
-	item: ShoppingListItem;
+	item: PopulatedItem;
 	listIdx: number;
 }
 

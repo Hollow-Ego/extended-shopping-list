@@ -16,14 +16,19 @@
   </ion-row>
 </ion-grid>
 
-<ion-card class="tag-dropdown-content ion-no-margin" [hidden]="!isOpenDropdown" color="dark">
-  <ion-searchbar list [(ngModel)]="newTag" (keydown.enter)="onConfirm()" clearInput="true" debounce="500"
+<ion-card class="tag-dropdown-content ion-no-margin" [hidden]="!isOpenDropdown">
+  <hr>
+  <ion-searchbar [(ngModel)]="newTag" (keydown.enter)="onConfirm()" clearInput="true" inputmode="text"
     [placeholder]="'uiStrings.addTagPlaceholder'| translate">
   </ion-searchbar>
+
+
   <div class="dropdown-items">
     <ion-chip *ngFor="let tag of availableTags; index as i" color="primary" (click)="onChipSelect(tag)"
       [hidden]="!canBeSelected(tag)">
       <ion-label>{{tag}}</ion-label>
     </ion-chip>
   </div>
+
+
 </ion-card>
