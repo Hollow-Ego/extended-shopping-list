@@ -34,6 +34,7 @@ export class TranslationService {
 	}
 
 	changeLanguage(lang: string) {
+		if (this._currentLanguage === lang) return;
 		this._currentLanguage = lang;
 		this.translate.use(lang);
 	}

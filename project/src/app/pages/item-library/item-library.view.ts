@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as fromApp from '../../store/app.reducer';
 import * as SLActions from '../../store/shopping-list.actions';
-import * as Modes from '../../shared/constants';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
@@ -9,9 +8,9 @@ import { ItemGroup } from '../../shared/classes/item-group.class';
 import { ItemLibrary } from '../../shared/classes/item-library.class';
 import { ShoppingList } from '../../shared/classes/shopping-list.class';
 import { AddEditModalComponent } from '../../components/modals/add-edit-modal/add-edit-modal.component';
-import { LibraryItemProps } from '../../shared/models/action-props.model';
 import { LibraryItem } from '../../shared/models/library-item.model';
 import { AddEditModalOutput } from '../../shared/models/add-edit-modal-data.model';
+import { MODAL_EDIT_MODE } from '../../shared/constants';
 
 @Component({
 	selector: 'pxsl1-item-library',
@@ -20,11 +19,11 @@ import { AddEditModalOutput } from '../../shared/models/add-edit-modal-data.mode
 })
 export class ItemLibraryComponent implements OnInit, OnDestroy {
 	public itemLibrary: ItemLibrary;
-	public itemGroups: ItemGroup[];
-	public shoppingLists: ShoppingList[];
+	public itemGroups: Map<string, ItemGroup>;
+	public shoppingLists: Map<string, ShoppingList>;
 
-	public currentListIdx: number;
-	public isLoading: boolean;
+	public currentListId: string;
+
 	public searchTerm: string = '';
 	public includeTags: boolean = true;
 
@@ -36,14 +35,13 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 	) {}
 
 	ngOnInit() {
-		this.stateSub = this.store.select('shoppingList').subscribe(state => {
+		this.stateSub = this.store.select('mainState').subscribe(state => {
 			if (!state) {
 				return;
 			}
 			this.itemLibrary = state.itemLibrary;
 			this.shoppingLists = state.shoppingLists;
-			this.currentListIdx = state.currentListIdx;
-			this.isLoading = state.isLoading;
+			this.currentListId = state.currentListId;
 		});
 	}
 
@@ -89,7 +87,7 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 			componentProps: {
 				availableTags: this.itemLibrary.getAllTags(),
 				item,
-				mode: Modes.MODAL_EDIT_MODE,
+				mode: MODAL_EDIT_MODE,
 			},
 		});
 		await modal.present();
@@ -116,14 +114,14 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 			SLActions.startAddListItem({
 				item,
 				amount: item.amount,
-				listIdx: this.currentListIdx,
+				listId: this.currentListId,
 			})
 		);
 	}
 
 	getListName() {
-		if (!this.shoppingLists) return;
-		return this.shoppingLists[this.currentListIdx].getName();
+		if (!this.shoppingLists || !this.currentListId) return;
+		return this.shoppingLists.get(this.currentListId).getName();
 	}
 
 	ngOnDestroy() {

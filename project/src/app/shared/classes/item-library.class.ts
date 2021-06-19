@@ -35,6 +35,10 @@ export class ItemLibrary {
 		return this.items.values();
 	}
 
+	getAllItems() {
+		return this.items;
+	}
+
 	getAllTags() {
 		const tags = [];
 		this.items.forEach(item => {

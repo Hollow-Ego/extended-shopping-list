@@ -3,6 +3,7 @@
 		"amount": "Amount",
 		"clearImageText": "Clear Image",
 		"currency": "Currency",
+		"defaultAmount": "Default Amount",
 		"imgUrl": "Image",
 		"name": "Name",
 		"optionalText": "Optional",
@@ -22,28 +23,51 @@
 		"saveText": "Save",
 		"searchText": "Search..."
 	},
+	"menu": {
+		"addNewList": "Add Shopping List",
+		"settings": "Settings",
+		"title": "Menu"
+	},
 	"messages": {
 		"closeToast": "Tap back again to close app!",
 		"deletingImageError": "Image couldn't be removed!"
 	},
+	"shoppingList": {
+		"actions": {
+			"removeList": "Remove List",
+			"renameList": "Rename List"
+		},
+		"confirmRemovalQuestion": "Are you sure you want to delete this list?",
+		"nameInputPlaceholder": "Name",
+		"newListNameHeader": "Enter a name",
+		"noListCreateNewText": "Create a new Shopping List",
+		"removalHeader": "Remove"
+	},
 	"titles": {
 		"addItemTitle": "Add New Item",
 		"editItemTitle": "Edit Item",
-		"editModeTitle": "Edit",
+		"editModeTitle": "Write",
 		"listingTitle": "Shopping List",
 		"photoPromptTitle": "Photo",
+		"settingsTitle": "Settings",
 		"shoppingModeTitle": "Shop"
 	},
 	"uiStrings": {
 		"activeListText": "Current List",
 		"addTagPlaceholder": "Enter a tag name...",
 		"addTagText": "Tags",
+		"addToLibraryCheckboxText": "Add to Library",
 		"fromGalleryText": "From Gallery",
 		"includeTagsText": "Include Tags in search",
 		"library": "Library",
 		"listsLong": "Shopping-Lists",
 		"listsShort": "Lists",
+		"settings": {
+			"darkModeToggle": "Toggle Dark Mode",
+			"language": "Language"
+		},
 		"takePictureText": "Take Picture",
-		"unnamedList": "Unnamed List"
+		"unnamedList": "Unnamed List",
+		"updateLibraryCheckboxText": "Update in Library"
 	}
 }

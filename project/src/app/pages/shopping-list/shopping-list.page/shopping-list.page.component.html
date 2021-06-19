@@ -1,11 +1,25 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-title class="ion-align-items-center">{{shoppingList.getName() | translate}}
+    <ion-card-title class="ion-align-items-center">{{listName | translate}} <ion-icon name="ellipsis-vertical"
+        style="float: right;" (click)="onListActions($event)"></ion-icon>
     </ion-card-title>
+
+
+
+    <ion-segment (ionChange)="onModeChange()" value="{{currentMode}}">
+      <ion-segment-button value="{{EDIT_MODE}}">
+        <ion-label>{{ 'titles.editModeTitle' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="{{SHOPPING_MODE}}">
+        <ion-label>{{ 'titles.shoppingModeTitle' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
   </ion-card-header>
   <ion-card-content>
-    <ion-list *ngFor="let item of items">
-      <pxsl1-populated-item [item]="item" (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
+    <ion-list>
+      <pxsl1-populated-item *ngFor="let item of items; trackBy: trackByID" [item]="item" (editItem)="onEditItem($event)"
+        (deleteItem)="onDeleteItem($event)">
       </pxsl1-populated-item>
     </ion-list>
   </ion-card-content>

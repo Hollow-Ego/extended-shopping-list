@@ -1,47 +1,60 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ModalController, PopoverController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { AddEditModalComponent } from '../../../components/modals/add-edit-modal/add-edit-modal.component';
 import { ItemLibrary } from '../../../shared/classes/item-library.class';
-import { ShoppingList } from '../../../shared/classes/shopping-list.class';
 import { AddEditModalOutput } from '../../../shared/models/add-edit-modal-data.model';
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
 import * as fromApp from '../../../store/app.reducer';
 import * as SLActions from '../../../store/shopping-list.actions';
-import * as Modes from '../../../shared/constants';
+import {
+	LIST_ACTION_DELETE,
+	LIST_ACTION_RENAME,
+	MODAL_EDIT_MODE,
+	EDIT_MODE,
+	SHOPPING_MODE,
+} from '../../../shared/constants';
+import { selectShoppingList } from '../../../store/shopping-list.selectors';
+import { Subscription } from 'rxjs';
+import { ShoppingListActionPopoverComponent } from '../../../components/shopping-list-action-popover/shopping-list-action-popover.component';
+import { ShoppingListService } from '../../../services/shopping-list.service';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
 	templateUrl: './shopping-list.page.component.html',
 	styleUrls: ['./shopping-list.page.component.scss'],
 })
-export class ShoppingListPageComponent implements OnInit {
-	@Input() shoppingList: ShoppingList;
-	@Input() listIdx: number;
-	@Input() library: ItemLibrary;
-	public items: PopulatedItem[] = [];
+export class ShoppingListPageComponent implements OnInit, OnDestroy {
+	@Input() listId: string;
+	public library: ItemLibrary;
+	public items: PopulatedItem[];
+	public listName: string;
+	public currentMode: string;
+	public EDIT_MODE: string = EDIT_MODE;
+	public SHOPPING_MODE: string = SHOPPING_MODE;
+
+	private listSub: Subscription;
 
 	constructor(
 		private store: Store<fromApp.AppState>,
-		private modalCtrl: ModalController
+		private modalCtrl: ModalController,
+		public popoverController: PopoverController,
+		private SLService: ShoppingListService
 	) {}
 
 	ngOnInit() {
-		this.items = [];
-		const itemMap = this.shoppingList.getAllItems();
-		itemMap.forEach(listItem => {
-			this.items.push(listItem);
-		});
+		this.listSub = this.store
+			.select(selectShoppingList({ id: this.listId }))
+			.subscribe(({ list, library }) => {
+				if (!list) {
+					return;
+				}
+				this.listName = list.getName();
+				const stateItemArray = Array.from(list.getAllItems().values());
+				this.items = stateItemArray.sort(this.sortItemByName);
+				this.currentMode = list.getMode();
+				this.library = library;
+			});
 	}
-
-	// ngOnChanges() {
-	// 	this.items = [];
-	// 	const itemMap = this.shoppingList.getAllItems();
-	// 	itemMap.forEach(listItem => {
-	// 		this.items.push(listItem);
-	// 	});
-	// }
-
-	onEditName() {}
 
 	async onEditItem(item: PopulatedItem) {
 		const modal = await this.modalCtrl.create({
@@ -49,7 +62,8 @@ export class ShoppingListPageComponent implements OnInit {
 			componentProps: {
 				availableTags: this.library.getAllTags(),
 				item,
-				mode: Modes.MODAL_EDIT_MODE,
+				mode: MODAL_EDIT_MODE,
+				isNewLibraryItem: false,
 			},
 		});
 		await modal.present();
@@ -57,18 +71,31 @@ export class ShoppingListPageComponent implements OnInit {
 		const {
 			canceled,
 			itemData,
-		}: { canceled: boolean; itemData: AddEditModalOutput } = (
-			await modal.onWillDismiss()
-		).data;
+			updateLibrary,
+		}: {
+			canceled: boolean;
+			itemData: AddEditModalOutput;
+			updateLibrary: boolean;
+		} = (await modal.onWillDismiss()).data;
 
 		if (canceled) {
+			return;
+		}
+
+		if (updateLibrary) {
+			this.store.dispatch(
+				SLActions.startSyncListItemAndLibItem({
+					...itemData,
+					addToListId: this.listId,
+				})
+			);
 			return;
 		}
 
 		this.store.dispatch(
 			SLActions.startUpdateListItem({
 				item: itemData,
-				listIdx: this.listIdx,
+				listId: this.listId,
 			})
 		);
 	}
@@ -77,8 +104,68 @@ export class ShoppingListPageComponent implements OnInit {
 		this.store.dispatch(
 			SLActions.startRemoveListItem({
 				itemID: item.itemID,
-				listIdx: this.listIdx,
+				listId: this.listId,
 			})
 		);
+	}
+
+	onModeChange() {
+		this.store.dispatch(SLActions.startToggleListMode({ listId: this.listId }));
+	}
+
+	async onListActions(ev) {
+		const popover = await this.popoverController.create({
+			component: ShoppingListActionPopoverComponent,
+			event: ev,
+			translucent: true,
+		});
+
+		await popover.present();
+		const { data: action } = await popover.onDidDismiss();
+
+		switch (action) {
+			case LIST_ACTION_DELETE:
+				this.removeList();
+				return;
+			case LIST_ACTION_RENAME:
+				this.renameList();
+				return;
+			default:
+				return;
+		}
+	}
+
+	async renameList() {
+		const newName = await this.SLService.getNewListName(this.listName);
+		if (!newName) return;
+
+		this.store.dispatch(
+			SLActions.startUpdateShoppingList({ name: newName, listId: this.listId })
+		);
+	}
+
+	async removeList() {
+		const confirmed = await this.SLService.confirmRemoval();
+		if (!confirmed) return;
+		this.store.dispatch(
+			SLActions.startRemoveShoppingList({ listId: this.listId })
+		);
+	}
+
+	sortItemByName(a: PopulatedItem, b: PopulatedItem) {
+		var nameA = a.name.toUpperCase();
+		var nameB = b.name.toUpperCase();
+		if (nameA < nameB) {
+			return -1;
+		}
+		return 1;
+	}
+
+	trackByID(index: number, item) {
+		return item ? item.itemID : undefined;
+	}
+
+	ngOnDestroy() {
+		this.listSub.unsubscribe();
 	}
 }

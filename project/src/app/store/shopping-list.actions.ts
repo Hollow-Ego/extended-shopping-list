@@ -3,117 +3,189 @@ import {
 	GeneralActionProps,
 	LibraryItemProps,
 	GeneralReturnProps,
-	AddListItemProps,
+	ListItemProps,
 	RemoveItemShortProps,
 	ItemGroupProps,
-	UpdateListItemProps,
 	RemoveListItemProps,
 	LoadShoppingListProps,
 	ShoppingListReturnProps,
+	AddShoppingListProps,
+	UpdateShoppingListProps,
+	ListIdProps,
 } from '../shared/models/action-props.model';
+import { SettingsData } from '../shared/models/settings.model';
 
 export const startInitialLoad = createAction(
-	'[SSL] START_INITIAL_LOAD',
+	'[PSXL1] START_INITIAL_LOAD',
 	props<GeneralActionProps>()
 );
 
 export const endInitialLoad = createAction(
-	'[SSL] END_INITIAL_LOAD',
+	'[PSXL1] END_INITIAL_LOAD',
 	props<GeneralActionProps>()
 );
 
 export const startAddLibraryItem = createAction(
-	'[SSL] START_ADD_LIBRARY_ITEM',
+	'[PSXL1] START_ADD_LIBRARY_ITEM',
 	props<LibraryItemProps>()
 );
 
 export const endAddLibraryItem = createAction(
-	'[SSL] END_ADD_LIBRARY_ITEM',
+	'[PSXL1] END_ADD_LIBRARY_ITEM',
 	props<GeneralReturnProps>()
 );
 
 export const startUpdateLibraryItem = createAction(
-	'[SSL] START_UPDATE_LIBRARY_ITEM',
+	'[PSXL1] START_UPDATE_LIBRARY_ITEM',
 	props<LibraryItemProps>()
 );
 
 export const endUpdateLibraryItem = createAction(
-	'[SSL] END_UPDATE_LIBRARY_ITEM',
+	'[PSXL1] END_UPDATE_LIBRARY_ITEM',
 	props<GeneralReturnProps>()
 );
 
 export const startRemoveLibraryItem = createAction(
-	' [SSL] START_REMOVE_LIBRARY_ITEM',
+	' [PSXL1] START_REMOVE_LIBRARY_ITEM',
 	props<RemoveItemShortProps>()
 );
 
 export const endRemoveLibraryItem = createAction(
-	' [SSL] END_REMOVE_LIBRARY_ITEM',
+	' [PSXL1] END_REMOVE_LIBRARY_ITEM',
+	props<GeneralReturnProps>()
+);
+
+export const startSyncListItemAndLibItem = createAction(
+	'[PSXL1] START_SNY_LIST_ITEM_AND_LIB_ITEM',
+	props<LibraryItemProps>()
+);
+
+export const endSyncListItemAndLibItem = createAction(
+	'[PSXL1] END_SNY_LIST_ITEM_AND_LIB_ITEM',
 	props<GeneralReturnProps>()
 );
 
 export const startAddListItem = createAction(
-	'[SSL] START_ADD_LIST_ITEM',
-	props<AddListItemProps>()
+	'[PSXL1] START_ADD_LIST_ITEM',
+	props<ListItemProps>()
 );
 
 export const endAddListItem = createAction(
-	'[SSL] END_ADD_LIST_ITEM',
+	'[PSXL1] END_ADD_LIST_ITEM',
 	props<GeneralReturnProps>()
 );
 
 export const startUpdateListItem = createAction(
-	'[SSL] START_UPDATE_LIST_ITEM',
-	props<UpdateListItemProps>()
+	'[PSXL1] START_UPDATE_LIST_ITEM',
+	props<ListItemProps>()
 );
 
 export const endUpdateListItem = createAction(
-	'[SSL] END_UPDATE_LIST_ITEM',
+	'[PSXL1] END_UPDATE_LIST_ITEM',
 	props<GeneralReturnProps>()
 );
 
 export const startRemoveListItem = createAction(
-	' [SSL] START_REMOVE_LIST_ITEM',
+	' [PSXL1] START_REMOVE_LIST_ITEM',
 	props<RemoveListItemProps>()
 );
 
 export const endRemoveListItem = createAction(
-	' [SSL] END_REMOVE_LIST_ITEM',
+	' [PSXL1] END_REMOVE_LIST_ITEM',
 	props<GeneralReturnProps>()
 );
 
 export const startLoadShoppingList = createAction(
-	'[SSL] START_LOAD_SHOPPING_LIST',
+	'[PSXL1] START_LOAD_SHOPPING_LIST',
 	props<LoadShoppingListProps>()
 );
 
 export const endLoadShoppingList = createAction(
-	'[SSL] END_LOAD_SHOPPING_LIST',
+	'[PSXL1] END_LOAD_SHOPPING_LIST',
 	props<ShoppingListReturnProps>()
 );
 
 export const startAddToItemGroup = createAction(
-	'[SSL] START_ADD_TO_ITEM_GROUP',
+	'[PSXL1] START_ADD_TO_ITEM_GROUP',
 	props<ItemGroupProps>()
 );
 
 export const endAddToItemGroup = createAction(
-	'[SSL] END_ADD_TO_ITEM_GROUP',
+	'[PSXL1] END_ADD_TO_ITEM_GROUP',
 	props<GeneralReturnProps>()
 );
 
 export const startRemoveFromItemGroup = createAction(
-	' [SSL] START_REMOVE_FROM_ITEM_GROUP',
+	'[PSXL1] START_REMOVE_FROM_ITEM_GROUP',
 	props<ItemGroupProps>()
 );
 
 export const endRemoveFromItemGroup = createAction(
-	' [SSL] END_REMOVE_FROM_ITEM_GROUP',
+	'[PSXL1] END_REMOVE_FROM_ITEM_GROUP',
 	props<GeneralReturnProps>()
 );
 
+export const startUpdateSettings = createAction(
+	'[PSXL1] START_UPDATE_SETTINGS',
+	props<SettingsData>()
+);
+
+export const endUpdateSettings = createAction(
+	'[PSXL1] END_UPDATE_SETTINGS',
+	props<SettingsData>()
+);
+
+export const startAddShoppingList = createAction(
+	'[PSXL1] START_ADD_SHOPPING_LIST',
+	props<AddShoppingListProps>()
+);
+
+export const endAddShoppingList = createAction(
+	'[PSXL1] END_ADD_SHOPPING_LIST',
+	props<GeneralReturnProps>()
+);
+
+export const startUpdateShoppingList = createAction(
+	'[PSXL1] START_UPDATE_SHOPPING_LIST',
+	props<UpdateShoppingListProps>()
+);
+
+export const endUpdateShoppingList = createAction(
+	'[PSXL1] END_UPDATE_SHOPPING_LIST',
+	props<GeneralReturnProps>()
+);
+
+export const startRemoveShoppingList = createAction(
+	'[PSXL1] START_REMOVE_SHOPPING_LIST',
+	props<ListIdProps>()
+);
+
+export const endRemoveShoppingList = createAction(
+	'[PSXL1] END_REMOVE_SHOPPING_LIST',
+	props<GeneralReturnProps>()
+);
+
+export const startToggleListMode = createAction(
+	'[PSXL1] START_CHANGE_LIST_MODE',
+	props<UpdateShoppingListProps>()
+);
+export const endToggleListMode = createAction(
+	'[PSXL1] END_CHANGE_LIST_MODE',
+	props<GeneralReturnProps>()
+);
+
+export const startSetNewCurrentList = createAction(
+	'[PSXL1] START_SET_NEW_CURRENT_LIST',
+	props<ListIdProps>()
+);
+
+export const endSetNewCurrentList = createAction(
+	'[PSXL1] END_SET_NEW_CURRENT_LIST',
+	props<ListIdProps>()
+);
+
 export const raiseGeneralError = createAction(
-	'[SSL] RAISE_GENERAL_ERROR',
+	'[PSXL1] RAISE_GENERAL_ERROR',
 	props<GeneralReturnProps>()
 );
 
@@ -128,6 +200,9 @@ const actions = union({
 	startRemoveLibraryItem,
 	endRemoveLibraryItem,
 
+	startSyncListItemAndLibItem,
+	endSyncListItemAndLibItem,
+
 	startAddListItem,
 	endAddListItem,
 	startUpdateListItem,
@@ -141,6 +216,18 @@ const actions = union({
 	endAddToItemGroup,
 	startRemoveFromItemGroup,
 	endRemoveFromItemGroup,
+
+	startUpdateSettings,
+	endUpdateSettings,
+
+	startAddShoppingList,
+	endAddShoppingList,
+
+	startChangeListMode: startToggleListMode,
+	endChangeListMode: endToggleListMode,
+
+	startSetNewCurrentList,
+	endSetNewCurrentList,
 
 	raiseGeneralError,
 });

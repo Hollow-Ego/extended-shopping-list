@@ -6,6 +6,9 @@ import { BackButtonEvent } from '@ionic/core';
 import { TranslationService } from './shared/i18n/translation.service';
 import { App } from '@capacitor/app';
 import { Toast } from '@capacitor/toast';
+import { Store } from '@ngrx/store';
+import * as fromApp from './store/app.reducer';
+import * as SLActions from './store/shopping-list.actions';
 
 @Component({
 	selector: 'app-root',
@@ -20,7 +23,8 @@ export class AppComponent {
 		private platform: Platform,
 		private splashScreen: SplashScreen,
 		private statusBar: StatusBar,
-		private translate: TranslationService
+		private translate: TranslationService,
+		private store: Store<fromApp.AppState>
 	) {
 		this.initializeApp();
 	}
@@ -29,12 +33,15 @@ export class AppComponent {
 		this.platform.ready().then(() => {
 			this.statusBar.styleDefault();
 			this.splashScreen.hide();
-
+			this.store.dispatch(SLActions.startInitialLoad({}));
 			document.addEventListener('ionBackButton', (ev: BackButtonEvent) => {
 				ev.detail.register(-1, () => {
 					const path = window.location.pathname;
 
-					if (path === '/home/library' || path === '/home/lists') {
+					if (
+						path === '/menu/tabs/tabs/lists' ||
+						path === '/menu/tabs/tabs/library'
+					) {
 						this.onStartDoubleClick();
 					}
 				});

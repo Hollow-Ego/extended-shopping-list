@@ -1,20 +1,20 @@
-import { createReducer, createSelector, on } from '@ngrx/store';
-import { ItemLibrary } from '../shared/classes/item-library.class';
+import { createReducer, on } from '@ngrx/store';
 import { State } from '../shared/models/state.model';
-import * as Modes from '../shared/constants';
 import * as SLActions from './shopping-list.actions';
 import {
 	GeneralActionProps,
 	GeneralReturnProps,
+	ListIdProps,
 } from '../shared/models/action-props.model';
+import { SettingsData as SettingsData } from '../shared/models/settings.model';
 
 const initialState: State = {
 	isLoading: false,
-	mode: Modes.EDIT_MODE,
-	currentListIdx: 0,
+	currentListId: null,
 	itemLibrary: null,
 	itemGroups: null,
 	shoppingLists: null,
+	settings: null,
 	errors: null,
 };
 
@@ -23,9 +23,17 @@ const _shoppingListReducer = createReducer(
 	on(
 		SLActions.startInitialLoad,
 		SLActions.startAddLibraryItem,
+		SLActions.startRemoveLibraryItem,
+		SLActions.startRemoveListItem,
 		SLActions.startAddListItem,
 		SLActions.startAddToItemGroup,
 		SLActions.startUpdateLibraryItem,
+		SLActions.startSyncListItemAndLibItem,
+		SLActions.startUpdateSettings,
+		SLActions.startAddShoppingList,
+		SLActions.startUpdateShoppingList,
+		SLActions.startRemoveShoppingList,
+		SLActions.startToggleListMode,
 		state => ({
 			...state,
 			isLoading: true,
@@ -43,10 +51,15 @@ const _shoppingListReducer = createReducer(
 			return updateLibraryItemState(state, props);
 		}
 	),
+	on(SLActions.endSyncListItemAndLibItem, (state, props) => {
+		return updateListsAndLib(state, props);
+	}),
 	on(
 		SLActions.endAddListItem,
 		SLActions.endUpdateListItem,
 		SLActions.endRemoveListItem,
+		SLActions.endUpdateShoppingList,
+		SLActions.endToggleListMode,
 		(state, props) => {
 			return updateListItemState(state, props);
 		}
@@ -54,23 +67,41 @@ const _shoppingListReducer = createReducer(
 	on(
 		SLActions.endAddToItemGroup,
 		SLActions.endRemoveFromItemGroup,
+
 		(state, props) => {
 			return updateItemGroupState(state, props);
 		}
 	),
+	on(SLActions.endUpdateSettings, (state, props) => {
+		const { type, ...newSettings } = props;
+		return updateSettings(state, newSettings);
+	}),
+	on(SLActions.endAddShoppingList, (state, props) => {
+		return endAddShoppingList(state, props);
+	}),
+
+	on(SLActions.endSetNewCurrentList, (state, props) => {
+		return setNewCurrentList(state, props);
+	}),
+	on(SLActions.endRemoveShoppingList, (state, props) => {
+		return endRemoveShoppingList(state, props);
+	}),
 	on(SLActions.raiseGeneralError, (state, props) => {
 		return raiseGeneralError(state, props);
 	})
 );
 
 function endInitialLoad(state: State, props: GeneralActionProps) {
-	const { itemLibrary, itemGroups, shoppingLists } = props;
+	const { itemLibrary, itemGroups, shoppingLists, settings, currentListId } =
+		props;
 
 	return {
 		...state,
 		itemLibrary,
 		itemGroups,
 		shoppingLists,
+		currentListId,
+		settings,
 		isLoading: false,
 		errors: null,
 	};
@@ -98,6 +129,58 @@ function updateItemGroupState(state: State, props: GeneralReturnProps) {
 	return {
 		...state,
 		itemGroups: props.itemGroups,
+		isLoading: false,
+		errors: null,
+	};
+}
+
+function updateListsAndLib(state: State, props: GeneralReturnProps) {
+	console.log(state.shoppingLists);
+
+	return {
+		...state,
+		shoppingLists: props.shoppingLists,
+		isLoading: false,
+		errors: null,
+	};
+}
+
+function updateSettings(state: State, newSettings: SettingsData) {
+	return {
+		...state,
+		settings: newSettings,
+		isLoading: false,
+		errors: null,
+	};
+}
+
+function endAddShoppingList(state: State, props: GeneralReturnProps) {
+	const { shoppingLists, newListId } = props;
+
+	return {
+		...state,
+		shoppingLists,
+		currentListId: newListId,
+		isLoading: false,
+		errors: null,
+	};
+}
+
+function endRemoveShoppingList(state: State, props: GeneralReturnProps) {
+	const { shoppingLists, newListId } = props;
+
+	return {
+		...state,
+		shoppingLists,
+		currentListId: newListId,
+		isLoading: false,
+		errors: null,
+	};
+}
+function setNewCurrentList(state: State, props: ListIdProps) {
+	return {
+		...state,
+		currentListId: props.listId,
 		isLoading: false,
 		errors: null,
 	};

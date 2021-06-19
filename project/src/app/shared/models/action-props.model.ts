@@ -6,19 +6,23 @@ import { Image } from './image.model';
 
 import { singleCurrencyData } from './currency-data.model';
 import { PopulatedItem } from './populated-item.model';
+import { SettingsData as SettingsData } from './settings.model';
 
 export interface GeneralActionProps {
-	mode: string;
+	mode?: string;
 	itemLibrary?: ItemLibrary;
-	itemGroups?: ItemGroup[];
-	shoppingLists?: ShoppingList[];
+	itemGroups?: Map<string, ItemGroup>;
+	shoppingLists?: Map<string, ShoppingList>;
+	settings?: SettingsData;
+	currentListId?: string;
 }
 
 export interface GeneralReturnProps {
 	mode?: Symbol;
 	itemLibrary?: ItemLibrary;
-	itemGroups?: ItemGroup[];
-	shoppingLists?: ShoppingList[];
+	itemGroups?: Map<string, ItemGroup>;
+	shoppingLists?: Map<string, ShoppingList>;
+	newListId?: string;
 	errors?: string[];
 }
 
@@ -31,24 +35,24 @@ export interface LibraryItemProps {
 	unit: string;
 	price: number;
 	currency: singleCurrencyData;
-	addToListIdx?: number;
+	addToListId?: string;
 }
 
-export interface AddListItemProps {
+export interface ListItemProps {
 	item: PopulatedItem;
 	amount?: number;
-	listIdx: number;
+	listId: string;
 	itemLibrary?: ItemLibrary;
 }
 
 export interface UpdateListItemProps {
 	item: PopulatedItem;
-	listIdx: number;
+	listId: string;
 }
 
 export interface RemoveListItemProps {
 	itemID: string;
-	listIdx: number;
+	listId: string;
 }
 
 export interface LoadShoppingListProps {
@@ -62,13 +66,21 @@ export interface ShoppingListReturnProps {
 
 export interface ItemGroupProps {
 	itemID: string;
-	groupIdx: number;
+	groupId: string;
 }
 
-export interface AddItemShortProps {
-	itemID: string;
+export interface AddShoppingListProps {
+	name: string;
+}
+export interface UpdateShoppingListProps {
+	name?: string;
+	listId: string;
 }
 
 export interface RemoveItemShortProps {
 	itemID: string;
+}
+
+export interface ListIdProps {
+	listId: string;
 }

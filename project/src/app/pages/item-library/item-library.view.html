@@ -1,5 +1,11 @@
 <ion-header>
+
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-buttons>
+        <ion-menu-button menu="menu-content"></ion-menu-button>
+      </ion-buttons>
+    </ion-buttons>
     <ion-title>{{'uiStrings.activeListText' | translate}}: {{getListName() | translate}}
     </ion-title>
 

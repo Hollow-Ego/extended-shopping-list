@@ -31,7 +31,6 @@ export class ImageService {
 				'titles.photoPromptTitle',
 			])
 			.toPromise();
-		console.log(result);
 
 		const labelPhoto = result['uiStrings.fromGalleryText'];
 		const labelPicture = result['uiStrings.takePictureText'];
@@ -112,6 +111,7 @@ export class ImageService {
 	}
 
 	async deleteImage(path: string) {
+		if (!path || path.trim().length <= 0) return;
 		Filesystem.deleteFile({
 			path,
 			directory: Directory.Data,

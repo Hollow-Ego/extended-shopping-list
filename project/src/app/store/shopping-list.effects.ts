@@ -12,6 +12,7 @@ import * as fromApp from '../store/app.reducer';
 import {
 	selectItemGroups,
 	selectItemLibrary as selectItemLibrary,
+	selectListsAndLib,
 	selectShoppingLists,
 } from './shopping-list.selectors';
 import { ShoppingListService } from '../services/shopping-list.service';
@@ -20,6 +21,9 @@ import { ShoppingList } from '../shared/classes/shopping-list.class';
 
 import { LibraryItem } from '../shared/models/library-item.model';
 import { PopulatedItem } from '../shared/models/populated-item.model';
+import { SettingsData } from '../shared/models/settings.model';
+import { TranslationService } from '../shared/i18n/translation.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ShoppingListEffects {
@@ -27,7 +31,8 @@ export class ShoppingListEffects {
 		private actions$: Actions<SLActions.ActionsUnion>,
 		private storage: Storage,
 		private store$: Store<fromApp.AppState>,
-		private SLService: ShoppingListService
+		private SLService: ShoppingListService,
+		private translate: TranslationService
 	) {}
 
 	startInitialLoad$ = createEffect(() =>
@@ -41,49 +46,68 @@ export class ShoppingListEffects {
 					loadedShoppingList: from(
 						this.storage.get(Constants.SHOPPING_LIST_KEY)
 					),
+					loadedSettings: from(this.storage.get(Constants.SETTINGS_KEY)),
 				}).pipe(
-					map(({ loadedItemLibrary, loadedItemGroup, loadedShoppingList }) => {
-						let itemLibrary = new ItemLibrary(new Map<string, LibraryItem>());
-						let itemGroups = [];
-						let shoppingLists = [
-							new ShoppingList(
-								new Map<string, PopulatedItem>(),
-								Constants.DEFAULT_SHOPPING_LIST_NAME
-							),
-						];
+					map(
+						({
+							loadedItemLibrary,
+							loadedItemGroup,
+							loadedShoppingList,
+							loadedSettings,
+						}) => {
+							const itemLibrary = new ItemLibrary(
+								new Map<string, LibraryItem>()
+							);
+							const itemGroups = new Map<string, ItemGroup>();
+							const shoppingLists = new Map<string, ShoppingList>();
 
-						if (loadedItemLibrary) {
-							itemLibrary.setItems(loadedItemLibrary.items);
-						}
+							if (loadedItemLibrary) {
+								itemLibrary.setItems(loadedItemLibrary.items);
+							}
 
-						if (loadedItemGroup) {
-							loadedItemGroup.forEach(rawGroup => {
-								const group = new ItemGroup(
-									rawGroup.name,
-									rawGroup.groupMembers
-								);
-								itemGroups.push(group);
+							if (loadedItemGroup) {
+								loadedItemGroup.forEach(rawGroup => {
+									const group = new ItemGroup(
+										rawGroup.name,
+										rawGroup.groupMembers,
+										rawGroup.id
+									);
+									itemGroups.set(group.getId(), group);
+								});
+							}
+
+							if (loadedShoppingList) {
+								loadedShoppingList.forEach(rawList => {
+									const list = new ShoppingList(
+										rawList.shoppingItems,
+										rawList.name,
+										rawList.id,
+										rawList.mode
+									);
+									shoppingLists.set(list.getListID(), list);
+								});
+							}
+
+							//  To-Do check for stored information
+							let latestListId = shoppingLists.keys().next().value;
+
+							const settings: SettingsData = loadedSettings
+								? loadedSettings
+								: Constants.DEFAULT_SETTINGS;
+
+							document.body.setAttribute('color-theme', settings.theme);
+							this.translate.changeLanguage(settings.language);
+
+							return SLActions.endInitialLoad({
+								mode: Constants.EDIT_MODE,
+								itemLibrary,
+								itemGroups,
+								shoppingLists,
+								settings,
+								currentListId: latestListId,
 							});
 						}
-
-						if (loadedShoppingList) {
-							shoppingLists = [];
-							loadedShoppingList.forEach(rawList => {
-								const list = new ShoppingList(
-									rawList.shoppingItems,
-									rawList.name
-								);
-								shoppingLists.push(list);
-							});
-						}
-
-						return SLActions.endInitialLoad({
-							mode: Constants.EDIT_MODE,
-							itemLibrary,
-							itemGroups,
-							shoppingLists,
-						});
-					})
+					)
 				);
 			})
 		)
@@ -94,7 +118,7 @@ export class ShoppingListEffects {
 			ofType(SLActions.startAddLibraryItem),
 			concatLatestFrom(() => this.store$.select(selectItemLibrary)),
 			mergeMap(([props, itemLibrary]) => {
-				return this.SLService.addLibraryItem(props, itemLibrary).pipe(
+				return from(this.SLService.addLibraryItem(props, itemLibrary)).pipe(
 					map(itemLibrary => {
 						return SLActions.endAddLibraryItem({ itemLibrary });
 					}),
@@ -111,7 +135,7 @@ export class ShoppingListEffects {
 			ofType(SLActions.startUpdateLibraryItem),
 			concatLatestFrom(() => this.store$.select(selectItemLibrary)),
 			mergeMap(([props, itemLibrary]) => {
-				return this.SLService.updateLibraryItem(props, itemLibrary).pipe(
+				return from(this.SLService.updateLibraryItem(props, itemLibrary)).pipe(
 					map(itemLibrary => {
 						return SLActions.endUpdateLibraryItem({ itemLibrary });
 					}),
@@ -128,9 +152,33 @@ export class ShoppingListEffects {
 			ofType(SLActions.startRemoveLibraryItem),
 			concatLatestFrom(() => this.store$.select(selectItemLibrary)),
 			mergeMap(([props, itemLibrary]) => {
-				return this.SLService.removeLibraryItem(props.itemID, itemLibrary).pipe(
+				return from(
+					this.SLService.removeLibraryItem(props.itemID, itemLibrary)
+				).pipe(
 					map(itemLibrary => {
 						return SLActions.endRemoveLibraryItem({ itemLibrary });
+					}),
+					catchError((err: Error) => {
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startSyncListItemAndLibItem$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startSyncListItemAndLibItem),
+			concatLatestFrom(() => this.store$.select(selectListsAndLib)),
+			mergeMap(([props, { shoppingLists, itemLibrary }]) => {
+				return from(
+					this.SLService.syncListAndLibrary(props, shoppingLists, itemLibrary)
+				).pipe(
+					map(({ itemLibrary, shoppingLists }) => {
+						return SLActions.endSyncListItemAndLibItem({
+							itemLibrary,
+							shoppingLists,
+						});
 					}),
 					catchError((err: Error) => {
 						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
@@ -145,7 +193,7 @@ export class ShoppingListEffects {
 			ofType(SLActions.startAddListItem),
 			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
 			mergeMap(([props, shoppingLists]) => {
-				return this.SLService.addListItem(props, shoppingLists).pipe(
+				return from(this.SLService.addListItem(props, shoppingLists)).pipe(
 					map(newShoppingLists => {
 						return SLActions.endAddListItem({
 							shoppingLists: newShoppingLists,
@@ -166,10 +214,8 @@ export class ShoppingListEffects {
 			ofType(SLActions.startUpdateListItem),
 			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
 			mergeMap(([props, shoppingLists]) => {
-				return this.SLService.updateListItem(
-					props.item,
-					props.listIdx,
-					shoppingLists
+				return from(
+					this.SLService.updateListItem(props.item, props.listId, shoppingLists)
 				).pipe(
 					map(shoppingLists => {
 						return SLActions.endUpdateListItem({ shoppingLists });
@@ -187,10 +233,12 @@ export class ShoppingListEffects {
 			ofType(SLActions.startRemoveListItem),
 			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
 			mergeMap(([props, shoppingLists]) => {
-				return this.SLService.removeListItem(
-					props.itemID,
-					props.listIdx,
-					shoppingLists
+				return from(
+					this.SLService.removeListItem(
+						props.itemID,
+						props.listId,
+						shoppingLists
+					)
 				).pipe(
 					map(shoppingLists => {
 						return SLActions.endRemoveListItem({ shoppingLists });
@@ -208,7 +256,7 @@ export class ShoppingListEffects {
 			ofType(SLActions.startAddToItemGroup),
 			concatLatestFrom(() => this.store$.select(selectItemGroups)),
 			mergeMap(([props, itemGroups]) => {
-				return this.SLService.addToItemGroup(props, itemGroups).pipe(
+				return from(this.SLService.addToItemGroup(props, itemGroups)).pipe(
 					map(newItemGroup => {
 						return SLActions.endAddToItemGroup({
 							itemGroups: newItemGroup,
@@ -227,11 +275,139 @@ export class ShoppingListEffects {
 			ofType(SLActions.startRemoveFromItemGroup),
 			concatLatestFrom(() => this.store$.select(selectItemGroups)),
 			mergeMap(([props, itemGroups]) => {
-				return this.SLService.removeFromItemGroup(props, itemGroups).pipe(
+				return from(this.SLService.removeFromItemGroup(props, itemGroups)).pipe(
 					map(itemGroups => {
 						return SLActions.endRemoveFromItemGroup({ itemGroups });
 					}),
 					catchError((err: Error) => {
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startUpdateSettings$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startUpdateSettings),
+			mergeMap(props => {
+				document.body.setAttribute('color-theme', props.theme);
+				this.translate.changeLanguage(props.language);
+				const { type, ...newSettings } = props;
+				this.storage.set(Constants.SETTINGS_KEY, newSettings);
+
+				return of(SLActions.endUpdateSettings(newSettings));
+			}),
+			catchError((err: Error) => {
+				return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+			})
+		)
+	);
+
+	startAddShoppingList$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startAddShoppingList),
+			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
+			mergeMap(([props, shoppingLists]) => {
+				return from(this.SLService.addShoppingList(props, shoppingLists)).pipe(
+					map(data => {
+						return SLActions.endAddShoppingList({
+							shoppingLists: data.shoppingLists,
+							newListId: data.newListId,
+						});
+					}),
+					catchError((err: Error) => {
+						console.log(err);
+
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startUpdateShoppingList$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startUpdateShoppingList),
+			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
+			mergeMap(([props, shoppingLists]) => {
+				return from(
+					this.SLService.updateShoppingList(props, shoppingLists)
+				).pipe(
+					map(shoppingLists => {
+						return SLActions.endUpdateShoppingList({
+							shoppingLists,
+						});
+					}),
+					catchError((err: Error) => {
+						console.log(err);
+
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startRemoveShoppingList$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startRemoveShoppingList),
+			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
+			mergeMap(([props, shoppingLists]) => {
+				return from(
+					this.SLService.removeShoppingList(props, shoppingLists)
+				).pipe(
+					map(data => {
+						return SLActions.endRemoveShoppingList({
+							shoppingLists: data.shoppingLists,
+							newListId: data.newListId,
+						});
+					}),
+					catchError((err: Error) => {
+						console.log(err);
+
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startToggleListMode$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startToggleListMode),
+			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
+			mergeMap(([props, shoppingLists]) => {
+				return from(this.SLService.toggleListMode(props, shoppingLists)).pipe(
+					map(shoppingLists => {
+						return SLActions.endToggleListMode({
+							shoppingLists,
+						});
+					}),
+					catchError((err: Error) => {
+						console.log(err);
+
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startSetNewCurrentList$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startSetNewCurrentList),
+			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
+			mergeMap(([props, shoppingLists]) => {
+				return from(this.SLService.updateStateDetails(props)).pipe(
+					map(listId => {
+						return SLActions.endSetNewCurrentList({
+							listId,
+						});
+					}),
+					catchError((err: Error) => {
+						console.log(err);
+
 						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
 					})
 				);

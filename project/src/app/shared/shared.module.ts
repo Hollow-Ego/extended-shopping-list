@@ -8,6 +8,7 @@ import { ImagePickerComponent } from '../components/image-picker/image-picker.co
 import { ImagePreloadDirective } from './image-preload.directive';
 import { LanguagePickerComponent } from '../components/language-picker/language-picker.component';
 import { TagInputComponent } from '../components/tag-input/tag-input.component';
+import { ShoppingListActionPopoverComponent } from '../components/shopping-list-action-popover/shopping-list-action-popover.component';
 
 @NgModule({
 	declarations: [
@@ -16,6 +17,7 @@ import { TagInputComponent } from '../components/tag-input/tag-input.component';
 		ImagePreloadDirective,
 		LanguagePickerComponent,
 		TagInputComponent,
+		ShoppingListActionPopoverComponent,
 	],
 	imports: [
 		TranslateModule.forChild({ extend: true }),
@@ -27,6 +29,7 @@ import { TagInputComponent } from '../components/tag-input/tag-input.component';
 	exports: [
 		TranslateModule,
 		ImagePreloadDirective,
+
 		CommonModule,
 		IonicModule,
 		FormsModule,

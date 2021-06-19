@@ -1,13 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as Modes from '../../../shared/constants';
 
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
 import { ModalController } from '@ionic/angular';
 import { singleCurrencyData } from '../../../shared/models/currency-data.model';
 import { LibraryItem } from '../../../shared/models/library-item.model';
-import * as data from '../../../shared/i18n/currencymap.json';
+import * as data from '../../../shared/i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
+import { MODAL_ADD_MODE } from '../../../shared/constants';
 @Component({
 	selector: 'pxsl1-add-edit-modal',
 	templateUrl: './add-edit-modal.component.html',
@@ -21,10 +21,12 @@ export class AddEditModalComponent implements OnInit {
 	) {}
 
 	@Input() item: PopulatedItem | LibraryItem = null;
-	@Input() mode: string = Modes.MODAL_ADD_MODE;
+	@Input() mode: string = MODAL_ADD_MODE;
 	@Input() availableTags: string[];
+	@Input() isNewLibraryItem: boolean = true;
 
 	public itemForm: FormGroup;
+	public updateLibrary = false;
 
 	public allCurrencyData: singleCurrencyData[];
 	// To be refactored into a setting
@@ -73,7 +75,7 @@ export class AddEditModalComponent implements OnInit {
 	}
 
 	isNewItem() {
-		return this.mode === Modes.MODAL_ADD_MODE;
+		return this.mode === MODAL_ADD_MODE;
 	}
 
 	compareWith(cur1: singleCurrencyData, cur2: singleCurrencyData) {
@@ -90,7 +92,11 @@ export class AddEditModalComponent implements OnInit {
 		}
 		this.imageService.deleteImagesFromStack();
 
-		this.modalController.dismiss({ canceled, itemData });
+		this.modalController.dismiss({
+			canceled,
+			itemData,
+			updateLibrary: this.updateLibrary,
+		});
 	}
 
 	cancelInput() {

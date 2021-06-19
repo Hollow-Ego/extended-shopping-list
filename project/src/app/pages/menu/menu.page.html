@@ -1,0 +1,29 @@
+<ion-split-pane contentId="menu-content" when="xs" [disabled]="true">
+  <ion-menu contentId="menu-content" menuId="menu-content" side="start" type="overlay">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{'menu.title' | translate}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item>
+            <ion-button (click)="onAddShoppingList()" fill="none">
+              {{'menu.addNewList' | translate}}
+            </ion-button>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-item-divider>
+        </ion-item-divider>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item [routerLink]="['/menu/settings']" [class.active-item]="currentPath.includes('settings')">
+            <ion-icon slot="start" name="settings"></ion-icon>
+            <ion-label>{{'menu.settings' | translate}}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  <ion-router-outlet id="menu-content"></ion-router-outlet>
+</ion-split-pane>

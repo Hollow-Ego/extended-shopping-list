@@ -3,6 +3,7 @@
 		"amount": "Menge",
 		"clearImageText": "Bild entfernen",
 		"currency": "Währung",
+		"defaultAmount": "Standardmenge",
 		"imgUrl": "Bild",
 		"name": "Name",
 		"optionalText": "Optional",
@@ -22,28 +23,51 @@
 		"saveText": "Speichern",
 		"searchText": "Suchen..."
 	},
+	"menu": {
+		"addNewList": "Einkaufsliste hinzufügen",
+		"settings": "Einstellungen",
+		"title": "Menü"
+	},
 	"messages": {
 		"closeToast": "Tippen Sie erneut auf Zurück, um die App zu schließen!",
 		"deletingImageError": "Bild konnte nicht entfernt werden!"
 	},
+	"shoppingList": {
+		"actions": {
+			"removeList": "Liste löschen",
+			"renameList": "Liste umbenennen"
+		},
+		"confirmRemovalQuestion": "Soll die Liste wirklich gelöscht werden?",
+		"nameInputPlaceholder": "Name",
+		"newListNameHeader": "Namen eingeben",
+		"noListCreateNewText": "Eine neue Einkaufsliste anlegen",
+		"removalHeader": "Entfernen"
+	},
 	"titles": {
 		"addItemTitle": "Neuen Artikel hinzufügen",
 		"editItemTitle": "Artikel bearbeiten",
-		"editModeTitle": "Bearbeiten",
+		"editModeTitle": "Schreiben",
 		"listingTitle": "Einkaufsliste",
 		"photoPromptTitle": "Bild",
+		"settingsTitle": "Einstellungen",
 		"shoppingModeTitle": "Einkaufen"
 	},
 	"uiStrings": {
 		"activeListText": "Aktuelle Liste",
 		"addTagPlaceholder": "Tag-Namen eingeben",
 		"addTagText": "Tags",
+		"addToLibraryCheckboxText": "Zur Bibliothek hinzufügen",
 		"fromGalleryText": "Aus Album",
 		"includeTagsText": "Tags in Suche einbeziehen",
 		"library": "Bibliothek",
 		"listsLong": "Einkaufslisten",
 		"listsShort": "Listen",
+		"settings": {
+			"darkModeToggle": "Dunklen Modus umschalten",
+			"language": "Sprache"
+		},
 		"takePictureText": "Bild aufnehmen",
-		"unnamedList": "Unbenannte Liste"
+		"unnamedList": "Unbenannte Liste",
+		"updateLibraryCheckboxText": "In Bibliothek aktualisieren"
 	}
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LanguageDetails } from '../../shared/i18n/language-details.model';
 import { TranslationService } from '../../shared/i18n/translation.service';
 
@@ -8,8 +8,9 @@ import { TranslationService } from '../../shared/i18n/translation.service';
 	styleUrls: ['./language-picker.component.scss'],
 })
 export class LanguagePickerComponent implements OnInit {
-	public language: string;
+	@Input() language: string;
 	public availableLanguages: LanguageDetails[];
+	@Output() languageChange = new EventEmitter<string>();
 
 	constructor(private translate: TranslationService) {}
 
@@ -19,6 +20,6 @@ export class LanguagePickerComponent implements OnInit {
 	}
 
 	onLanguageChange() {
-		this.translate.changeLanguage(this.language);
+		this.languageChange.emit(this.language);
 	}
 }

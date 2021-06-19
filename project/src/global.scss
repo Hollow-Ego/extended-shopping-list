@@ -26,13 +26,21 @@
 @import '~@ionic/angular/css/flex-utils.css';
 
 .image-modal .popover-content {
-  --width: 90%;
-  --box-shadow: 0;
+	--width: 90%;
+	--box-shadow: 0;
 
-  background: transparent;
+	background: transparent;
 
-  top: 25% !important;
-  left: 25%;
+	top: 25% !important;
+	left: 25%;
 
-  transform-origin: right top !important;
+	transform-origin: right top !important;
+}
+
+.large-label {
+	font-size: large;
+}
+
+.large-icon {
+	font-size: 5rem;
 }

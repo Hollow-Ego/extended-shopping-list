@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="menu/tabs"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{'titles.settingsTitle' | translate}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-card>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <pxsl1-language-picker (languageChange)="onUpdateLanguage($event)" [(language)]="settings.language">
+          </pxsl1-language-picker>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item lines="full">
+            <ion-label>
+              {{'uiStrings.settings.darkModeToggle' | translate}}
+            </ion-label>
+            <ion-toggle slot="end" (click)="onToggleTheme()" [(ngModel)]="isDarkMode">
+            </ion-toggle>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+</ion-content>

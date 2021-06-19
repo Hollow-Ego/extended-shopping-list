@@ -11,3 +11,12 @@ pxsl1-shopping-list-page {
 .full-width {
 	width: 100%;
 }
+
+.centered-flex {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+}
