@@ -8,15 +8,15 @@ import { PopulatedItem } from '../../../shared/models/populated-item.model';
 import * as fromApp from '../../../store/app.reducer';
 import * as SLActions from '../../../store/shopping-list.actions';
 import {
-	LIST_ACTION_DELETE,
-	LIST_ACTION_RENAME,
+	ACTION_DELETE,
+	ACTION_RENAME,
 	MODAL_EDIT_MODE,
 	EDIT_MODE,
 	SHOPPING_MODE,
 } from '../../../shared/constants';
 import { selectShoppingList } from '../../../store/shopping-list.selectors';
 import { Subscription } from 'rxjs';
-import { ShoppingListActionPopoverComponent } from '../../../components/shopping-list-action-popover/shopping-list-action-popover.component';
+import { ActionPopoverComponent } from '../../../components/action-popover/action-popover.component';
 import { ShoppingListService } from '../../../services/shopping-list.service';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
@@ -37,7 +37,7 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 	constructor(
 		private store: Store<fromApp.AppState>,
 		private modalCtrl: ModalController,
-		public popoverController: PopoverController,
+		public popoverCtrl: PopoverController,
 		private SLService: ShoppingListService
 	) {}
 
@@ -113,21 +113,22 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		this.store.dispatch(SLActions.startToggleListMode({ listId: this.listId }));
 	}
 
-	async onListActions(ev) {
-		const popover = await this.popoverController.create({
-			component: ShoppingListActionPopoverComponent,
-			event: ev,
+	async onListActions($event) {
+		const popover = await this.popoverCtrl.create({
+			component: ActionPopoverComponent,
+			event: $event,
 			translucent: true,
+			componentProps: { options: [ACTION_RENAME, ACTION_DELETE] },
 		});
 
 		await popover.present();
 		const { data: action } = await popover.onDidDismiss();
 
 		switch (action) {
-			case LIST_ACTION_DELETE:
+			case ACTION_DELETE:
 				this.removeList();
 				return;
-			case LIST_ACTION_RENAME:
+			case ACTION_RENAME:
 				this.renameList();
 				return;
 			default:

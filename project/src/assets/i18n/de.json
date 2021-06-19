@@ -13,6 +13,11 @@
 		"unit": "Einheit",
 		"warnImageLoadError": "Bild konnte nicht geladen werden!"
 	},
+	"actions": {
+		"edit": "Bearbeiten",
+		"remove": "Löschen",
+		"rename": "Umbenennen"
+	},
 	"appname": "Simple Einkaufsliste",
 	"common": {
 		"addText": "Hinzufügen",
@@ -33,10 +38,6 @@
 		"deletingImageError": "Bild konnte nicht entfernt werden!"
 	},
 	"shoppingList": {
-		"actions": {
-			"removeList": "Liste löschen",
-			"renameList": "Liste umbenennen"
-		},
 		"confirmRemovalQuestion": "Soll die Liste wirklich gelöscht werden?",
 		"nameInputPlaceholder": "Name",
 		"newListNameHeader": "Namen eingeben",

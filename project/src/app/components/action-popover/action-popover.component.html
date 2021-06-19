@@ -1,0 +1,11 @@
+<ion-list>
+  <ion-item *ngIf="edit" (click)="onEdit()">
+    <ion-label>{{'actions.edit' | translate}}</ion-label>
+  </ion-item>
+  <ion-item *ngIf="rename" (click)="onRename()">
+    <ion-label>{{'actions.rename' | translate}}</ion-label>
+  </ion-item>
+  <ion-item *ngIf="delete" (click)="onDelete()">
+    <ion-label>{{'actions.remove' | translate}}</ion-label>
+  </ion-item>
+</ion-list>

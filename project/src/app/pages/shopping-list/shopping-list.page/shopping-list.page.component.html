@@ -18,8 +18,8 @@
   </ion-card-header>
   <ion-card-content>
     <ion-list>
-      <pxsl1-populated-item *ngFor="let item of items; trackBy: trackByID" [item]="item" (editItem)="onEditItem($event)"
-        (deleteItem)="onDeleteItem($event)">
+      <pxsl1-populated-item *ngFor="let item of items;" [item]="item" [isEditMode]="currentMode === EDIT_MODE"
+        (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
       </pxsl1-populated-item>
     </ion-list>
   </ion-card-content>

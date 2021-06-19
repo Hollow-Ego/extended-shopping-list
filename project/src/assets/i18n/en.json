@@ -13,6 +13,11 @@
 		"unit": "Unit",
 		"warnImageLoadError": "Image couldn't be loaded!"
 	},
+	"actions": {
+		"edit": "Edit",
+		"remove": "Remove",
+		"rename": "Rename"
+	},
 	"appname": "Simplistic Shopping List",
 	"common": {
 		"addText": "Add",
@@ -33,10 +38,6 @@
 		"deletingImageError": "Image couldn't be removed!"
 	},
 	"shoppingList": {
-		"actions": {
-			"removeList": "Remove List",
-			"renameList": "Rename List"
-		},
 		"confirmRemovalQuestion": "Are you sure you want to delete this list?",
 		"nameInputPlaceholder": "Name",
 		"newListNameHeader": "Enter a name",

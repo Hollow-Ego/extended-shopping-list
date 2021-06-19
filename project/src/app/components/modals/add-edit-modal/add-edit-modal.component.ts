@@ -63,11 +63,6 @@ export class AddEditModalComponent implements OnInit {
 			price: this.item.price,
 			currency: this.item.currency,
 		});
-
-		// this.itemForm.valueChanges.subscribe(() => {
-		// 	console.log(this.itemForm.value);
-		// 	console.log(this.itemForm);
-		// });
 	}
 
 	onSubmit() {
@@ -87,7 +82,7 @@ export class AddEditModalComponent implements OnInit {
 		if (!this.itemForm.dirty) {
 			canceled = true;
 		}
-		if (canceled) {
+		if (canceled || (!this.isNewItem() && !this.updateLibrary)) {
 			this.imageService.clearDeletionStack();
 		}
 		this.imageService.deleteImagesFromStack();

@@ -7,13 +7,11 @@ import {
 	Output,
 	ViewChild,
 } from '@angular/core';
-import {
-	IonItemSliding,
-	ModalController,
-	PopoverController,
-} from '@ionic/angular';
+import { PopoverController } from '@ionic/angular';
 
 import { ImageModalComponent } from '../../../../components/modals/image-modal/image-modal.component';
+import { ActionPopoverComponent } from '../../../../components/action-popover/action-popover.component';
+import { ACTION_DELETE, ACTION_EDIT } from '../../../../shared/constants';
 import { PopulatedItem } from '../../../../shared/models/populated-item.model';
 
 @Component({
@@ -23,22 +21,37 @@ import { PopulatedItem } from '../../../../shared/models/populated-item.model';
 })
 export class PopulatedItemComponent implements OnInit {
 	@Input() item: PopulatedItem;
+	@Input() isEditMode = true;
 	@Output() editItem = new EventEmitter<PopulatedItem>();
 	@Output() deleteItem = new EventEmitter<PopulatedItem>();
-	@ViewChild('shoppingItem') shoppingItemRef: ElementRef;
+
 	private lastOnStart = 0;
 	private DOUBLE_CLICK_THRESHOLD = 500;
 
+	public hasImage = false;
+	public amountString: string;
+
 	constructor(private popoverCtrl: PopoverController) {}
 
-	ngOnInit() {}
+	ngOnInit() {
+		this.hasImage = this.item?.imgData.fileName.trim().length > 0;
+		this.amountString = this.buildAmountString();
+	}
+
+	buildAmountString(): string {
+		if (!this.item?.amount && !this.item?.unit) return;
+		return (
+			(this.item?.amount ? this.item?.amount : '') +
+			(this.item?.unit ? ` ${this.item.unit}` : '')
+		);
+	}
 
 	onStartDoubleClick() {
+		if (this.isEditMode) return;
 		const now = Date.now();
 		if (Math.abs(now - this.lastOnStart) <= this.DOUBLE_CLICK_THRESHOLD) {
-			// this.shoppingListService.removeItem(this.item[0]).subscribe(() => {
-			// 	this.lastOnStart = 0;
-			// });
+			this.deleteItem.emit(this.item);
+			this.lastOnStart = 0;
 		} else {
 			this.lastOnStart = now;
 		}
@@ -58,14 +71,27 @@ export class PopulatedItemComponent implements OnInit {
 		await popover.present();
 	}
 
-	async onEditItem(item: PopulatedItem, slidingItem: IonItemSliding) {
-		slidingItem.close();
-		this.editItem.emit(item);
-	}
+	async onItemActions($event) {
+		const popover = await this.popoverCtrl.create({
+			component: ActionPopoverComponent,
+			event: $event,
+			translucent: true,
+			componentProps: { options: [ACTION_EDIT, ACTION_DELETE] },
+		});
 
-	onDeleteItem(item: PopulatedItem, slidingItem: IonItemSliding) {
-		slidingItem.close();
-		this.deleteItem.emit(item);
+		await popover.present();
+		const { data: action } = await popover.onDidDismiss();
+
+		switch (action) {
+			case ACTION_DELETE:
+				this.deleteItem.emit(this.item);
+				return;
+			case ACTION_EDIT:
+				this.editItem.emit(this.item);
+				return;
+			default:
+				return;
+		}
 	}
 
 	onError() {

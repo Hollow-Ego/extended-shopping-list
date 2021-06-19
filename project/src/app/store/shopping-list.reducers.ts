@@ -135,8 +135,6 @@ function updateItemGroupState(state: State, props: GeneralReturnProps) {
 }
 
 function updateListsAndLib(state: State, props: GeneralReturnProps) {
-	console.log(state.shoppingLists);
-
 	return {
 		...state,
 		shoppingLists: props.shoppingLists,

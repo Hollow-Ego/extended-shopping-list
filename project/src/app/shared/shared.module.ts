@@ -8,7 +8,7 @@ import { ImagePickerComponent } from '../components/image-picker/image-picker.co
 import { ImagePreloadDirective } from './image-preload.directive';
 import { LanguagePickerComponent } from '../components/language-picker/language-picker.component';
 import { TagInputComponent } from '../components/tag-input/tag-input.component';
-import { ShoppingListActionPopoverComponent } from '../components/shopping-list-action-popover/shopping-list-action-popover.component';
+import { ActionPopoverComponent } from '../components/action-popover/action-popover.component';
 
 @NgModule({
 	declarations: [
@@ -17,7 +17,7 @@ import { ShoppingListActionPopoverComponent } from '../components/shopping-list-
 		ImagePreloadDirective,
 		LanguagePickerComponent,
 		TagInputComponent,
-		ShoppingListActionPopoverComponent,
+		ActionPopoverComponent,
 	],
 	imports: [
 		TranslateModule.forChild({ extend: true }),

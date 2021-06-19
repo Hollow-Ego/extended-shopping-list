@@ -1,33 +1,12 @@
-h2,
-.shopping-list-item-label {
-  display: inline;
-}
-
-.item-container {
-  background-color: var(--ion-color-danger);
-  display: grid;
-}
-
-ion-item {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.icon-row {
-  grid-column: 1;
-  grid-row: 1;
-  display: grid;
-  align-items: center;
-  text-align: right;
-  color: #fff;
-  margin-right: 20px;
-}
-
 .item-height {
-  min-height: 73px;
-  max-height: 75px;
+	min-height: 73px;
+	max-height: 75px;
 }
 
 .item-full-height {
-  --min-height: 73px;
+	--min-height: 73px;
+}
+
+ion-item {
+	--inner-padding-end: 0;
 }
