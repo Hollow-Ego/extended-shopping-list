@@ -4,11 +4,13 @@
 
 This is a shopping list app with a lot of functionality, unlike my Simplistic Shopping List. In this version you get to create your own library of items that you shop for. This makes it easier to add the items to the actual shopping list. You can define the name, default amount, the unit per amount, the price per unit, the currency, set an image and tags to group the items.
 
+This app is based on my [Simplistic Shopping List app](https://github.com/Hollow-Ego/simplistic-shopping-list)
+
 ## Status
 
-Stage: Pre-Alpha
+Stage: Alpha
 
-Latest Stable Version:
+Latest Stable Version: 0.1.0.0-alpha
 
 ## Technical Details
 

@@ -29,6 +29,5 @@ npm-debug.log*
 /project/platforms
 /project/plugins
 /project/www
-/project/ios
-/project/android
+
 
