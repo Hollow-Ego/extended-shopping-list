@@ -16,6 +16,7 @@ export const selectShoppingList = (props: { id: string }) =>
 		return {
 			list: state.shoppingLists.get(props.id),
 			library: state.itemLibrary,
+			isLoading: state.isLoading,
 		};
 	});
 

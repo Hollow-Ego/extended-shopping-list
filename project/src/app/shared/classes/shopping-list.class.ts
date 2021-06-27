@@ -1,4 +1,9 @@
-import { EDIT_MODE, SHOPPING_MODE } from '../constants';
+import {
+	EDIT_MODE,
+	SHOPPING_MODE,
+	SORT_ASCENDING,
+	SORT_BY_NAME,
+} from '../constants';
 import { PopulatedItem } from '../models/populated-item.model';
 
 export class ShoppingList {
@@ -6,19 +11,13 @@ export class ShoppingList {
 		private shoppingItems: Map<string, PopulatedItem>,
 		private name: string,
 		private id: string,
-		private mode: string = EDIT_MODE
+		private mode: string = EDIT_MODE,
+		private sortMode: string = SORT_BY_NAME,
+		private sortDirection: string = SORT_ASCENDING
 	) {}
 
 	get(id: string) {
 		return this.shoppingItems.get(id);
-	}
-
-	getListID() {
-		return this.id;
-	}
-
-	getAllItems() {
-		return this.shoppingItems;
 	}
 
 	add(item: PopulatedItem) {
@@ -31,6 +30,10 @@ export class ShoppingList {
 
 	update(item: PopulatedItem) {
 		this.shoppingItems.set(item.itemID, item);
+	}
+
+	getListID() {
+		return this.id;
 	}
 
 	updateName(newName: string) {
@@ -51,5 +54,18 @@ export class ShoppingList {
 
 	toggleMode() {
 		this.mode = this.isShoppingMode() ? EDIT_MODE : SHOPPING_MODE;
+	}
+
+	getAllItems() {
+		return this.shoppingItems;
+	}
+
+	getSortDetails() {
+		return { sortMode: this.sortMode, sortDirection: this.sortDirection };
+	}
+
+	setSortDetails(newMode: string, newDirection: string) {
+		this.sortMode = newMode;
+		this.sortDirection = newDirection;
 	}
 }

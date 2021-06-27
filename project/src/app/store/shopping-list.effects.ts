@@ -47,6 +47,7 @@ export class ShoppingListEffects {
 						this.storage.get(Constants.SHOPPING_LIST_KEY)
 					),
 					loadedSettings: from(this.storage.get(Constants.SETTINGS_KEY)),
+					loadedStateData: from(this.storage.get(Constants.STATE_KEY)),
 				}).pipe(
 					map(
 						({
@@ -54,6 +55,7 @@ export class ShoppingListEffects {
 							loadedItemGroup,
 							loadedShoppingList,
 							loadedSettings,
+							loadedStateData,
 						}) => {
 							const itemLibrary = new ItemLibrary(
 								new Map<string, LibraryItem>()
@@ -82,14 +84,22 @@ export class ShoppingListEffects {
 										rawList.shoppingItems,
 										rawList.name,
 										rawList.id,
-										rawList.mode
+										rawList.mode,
+										rawList.sortMode,
+										rawList.sortDirection
 									);
 									shoppingLists.set(list.getListID(), list);
 								});
 							}
-
-							//  To-Do check for stored information
 							let latestListId = shoppingLists.keys().next().value;
+							if (loadedStateData) {
+								if (
+									loadedStateData.currentListId &&
+									shoppingLists.has(loadedStateData.currentListId)
+								) {
+									latestListId = loadedStateData.currentListId;
+								}
+							}
 
 							const settings: SettingsData = loadedSettings
 								? loadedSettings
@@ -397,12 +407,11 @@ export class ShoppingListEffects {
 	startSetNewCurrentList$ = createEffect(() =>
 		this.actions$.pipe(
 			ofType(SLActions.startSetNewCurrentList),
-			concatLatestFrom(() => this.store$.select(selectShoppingLists)),
-			mergeMap(([props, shoppingLists]) => {
+			mergeMap(props => {
 				return from(this.SLService.updateStateDetails(props)).pipe(
-					map(listId => {
+					map(stateData => {
 						return SLActions.endSetNewCurrentList({
-							listId,
+							listId: stateData.currentListId,
 						});
 					}),
 					catchError((err: Error) => {

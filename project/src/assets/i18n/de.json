@@ -42,7 +42,9 @@
 		"nameInputPlaceholder": "Name",
 		"newListNameHeader": "Namen eingeben",
 		"noListCreateNewText": "Eine neue Einkaufsliste anlegen",
-		"removalHeader": "Entfernen"
+		"removalHeader": "Entfernen",
+		"sortByName": "Name",
+		"sortByTag": "Tag"
 	},
 	"titles": {
 		"addItemTitle": "Neuen Artikel hinzufügen",

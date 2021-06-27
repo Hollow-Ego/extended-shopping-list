@@ -120,7 +120,7 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 	}
 
 	getListName() {
-		if (!this.shoppingLists || !this.currentListId) return;
+		if (!this.shoppingLists || !this.currentListId) return '-';
 		return this.shoppingLists.get(this.currentListId).getName();
 	}
 

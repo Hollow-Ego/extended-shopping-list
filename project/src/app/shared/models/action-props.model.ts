@@ -4,9 +4,9 @@ import { ItemLibrary } from '../classes/item-library.class';
 import { ShoppingList } from '../classes/shopping-list.class';
 import { Image } from './image.model';
 
-import { singleCurrencyData } from './currency-data.model';
+import { SingleCurrencyData } from './currency-data.model';
 import { PopulatedItem } from './populated-item.model';
-import { SettingsData as SettingsData } from './settings.model';
+import { SettingsData } from './settings.model';
 
 export interface GeneralActionProps {
 	mode?: string;
@@ -15,6 +15,8 @@ export interface GeneralActionProps {
 	shoppingLists?: Map<string, ShoppingList>;
 	settings?: SettingsData;
 	currentListId?: string;
+	sortMode?: string;
+	sortDirection?: string;
 }
 
 export interface GeneralReturnProps {
@@ -34,7 +36,7 @@ export interface LibraryItemProps {
 	tags: string[];
 	unit: string;
 	price: number;
-	currency: singleCurrencyData;
+	currency: SingleCurrencyData;
 	addToListId?: string;
 }
 
@@ -73,7 +75,13 @@ export interface AddShoppingListProps {
 	name: string;
 }
 export interface UpdateShoppingListProps {
-	name?: string;
+	name: string;
+	listId: string;
+	sortMode: string;
+	sortDirection: string;
+}
+
+export interface ToggleListModeProps {
 	listId: string;
 }
 
@@ -83,4 +91,8 @@ export interface RemoveItemShortProps {
 
 export interface ListIdProps {
 	listId: string;
+}
+
+export interface StateDetailsProps {
+	currentListId?: string;
 }

@@ -25,3 +25,8 @@ export const DEFAULT_SETTINGS = {
 export const ACTION_EDIT = '[PXSL1] ACTION_EDIT';
 export const ACTION_RENAME = '[PXSL1] ACTION_RENAME';
 export const ACTION_DELETE = '[PXSL1] ACTION_DELETE';
+
+export const SORT_BY_NAME = '[PXSL1] SORT_BY_NAME';
+export const SORT_BY_TAG = '[PXSL1] SORT_BY_TAG';
+export const SORT_ASCENDING = '[PXSL1] SORT_ASCENDING';
+export const SORT_DESCENDING = '[PXSL1] SORT_DESCENDING';

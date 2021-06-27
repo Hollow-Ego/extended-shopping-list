@@ -15,10 +15,14 @@
     <ion-searchbar inputmode="text" (ionChange)="onSearchChange($event)"
       placeholder="{{'common.searchText' | translate}}">
     </ion-searchbar>
+    <ion-button (click)="onNewLibraryItem()" fill="outline" class="position-right ion-margin-horizontal">
+      <ion-icon slot="icon-only" name="add" color="primary"></ion-icon>
+    </ion-button>
     <ion-item>
       <ion-label>{{'uiStrings.includeTagsText' | translate}}</ion-label>
       <ion-checkbox [(ngModel)]="includeTags" slot="start"></ion-checkbox>
     </ion-item>
+
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -29,8 +33,3 @@
     </pxsl1-library-list-item>
   </ion-list>
 </ion-content>
-<ion-fab vertical="bottom" horizontal="end" slot="fixed">
-  <ion-fab-button (click)="onNewLibraryItem()">
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>

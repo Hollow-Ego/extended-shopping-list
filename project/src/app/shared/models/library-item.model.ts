@@ -1,4 +1,4 @@
-import { singleCurrencyData } from './currency-data.model';
+import { SingleCurrencyData } from './currency-data.model';
 import { Image } from './image.model';
 
 export interface LibraryItem {
@@ -9,5 +9,5 @@ export interface LibraryItem {
 	amount?: number;
 	unit?: string;
 	price?: number;
-	currency?: singleCurrencyData;
+	currency?: SingleCurrencyData;
 }

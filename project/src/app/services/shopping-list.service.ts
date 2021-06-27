@@ -14,6 +14,8 @@ import {
 	AddShoppingListProps,
 	UpdateShoppingListProps,
 	ListIdProps,
+	StateDetailsProps,
+	ToggleListModeProps,
 } from '../shared/models/action-props.model';
 
 import { PopulatedItem } from '../shared/models/populated-item.model';
@@ -106,8 +108,6 @@ export class ShoppingListService {
 			let activeList: ShoppingList = newShoppingLists.get(listId);
 
 			if (!activeList) {
-				console.log('NO list found');
-
 				activeList = new ShoppingList(
 					new Map(),
 					Constants.DEFAULT_SHOPPING_LIST_NAME,
@@ -233,9 +233,13 @@ export class ShoppingListService {
 			);
 			const originalList = newShoppingLists.get(data.listId);
 			const listName: string = data.name;
+			const sortMode: string = data.sortMode;
+			const sortDirection: string = data.sortDirection;
+
 			const newShoppingList: ShoppingList =
 				this.cloneShoppingList(originalList);
 			newShoppingList.updateName(listName);
+			newShoppingList.setSortDetails(sortMode, sortDirection);
 			newShoppingLists.set(originalList.getListID(), newShoppingList);
 			return this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists);
 		} catch (error) {
@@ -257,7 +261,7 @@ export class ShoppingListService {
 				.then(shoppingLists => {
 					return Promise.resolve({
 						shoppingLists,
-						newListId: shoppingLists.entries().next().value,
+						newListId: shoppingLists.keys().next().value,
 					});
 				});
 		} catch (error) {
@@ -266,7 +270,7 @@ export class ShoppingListService {
 	}
 
 	toggleListMode(
-		data: UpdateShoppingListProps,
+		data: ToggleListModeProps,
 		shoppingLists: Map<string, ShoppingList>
 	) {
 		try {
@@ -284,10 +288,11 @@ export class ShoppingListService {
 		}
 	}
 
-	updateStateDetails(data: ListIdProps) {
+	updateStateDetails(data: StateDetailsProps) {
 		//  To-Do: Implement saving of additional state state
-
-		return Promise.resolve(data.listId);
+		const newStateData = { currentListId: data.currentListId };
+		return this.storage.set(Constants.STATE_KEY, newStateData);
+		// return Promise.resolve(data.listId);
 	}
 
 	cloneItemLibrary(sourceLib: ItemLibrary) {
@@ -298,11 +303,14 @@ export class ShoppingListService {
 
 	cloneShoppingList(sourceList: ShoppingList) {
 		const newItemMap = new Map(sourceList.getAllItems());
+		let { sortMode, sortDirection } = sourceList.getSortDetails();
 		return new ShoppingList(
 			newItemMap,
 			sourceList.getName(),
 			sourceList.getListID(),
-			sourceList.getMode()
+			sourceList.getMode(),
+			sortMode,
+			sortDirection
 		);
 	}
 

@@ -9,6 +9,7 @@
 | Edit/Shopping Mode | Switch modes for easier usage. Shopping will f.e. disable the editing triggers, but allow for easy removal | 0.1.0.0-alpha          |               |
 | Multi-Language     | Switches UI strings from one language into another. Currently planned are: English, German                 | 0.1.0.0-alpha          |               |
 | Item Images        | Add images for items, to have a visual cue as to what to look for                                          | 0.1.0.0-alpha          |               |
+| Sort items (basic) | Sort items on a shopping list based on the first tag or name                                               | 0.2.0.0-alpha          |               |
 
 ## Planed
 

@@ -1,4 +1,4 @@
-import { singleCurrencyData } from './currency-data.model';
+import { SingleCurrencyData } from './currency-data.model';
 import { Image } from './image.model';
 import { LibraryItem } from './library-item.model';
 import { PopulatedItem } from './populated-item.model';
@@ -11,7 +11,7 @@ export interface AddEditModalOutput {
 	tags: string[];
 	unit: string;
 	price: number;
-	currency: singleCurrencyData;
+	currency: SingleCurrencyData;
 }
 
 export interface AddEditModalInput {

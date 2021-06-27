@@ -1,4 +1,4 @@
-export interface singleCurrencyData {
+export interface SingleCurrencyData {
 	symbol: string;
 	code: string;
 	symbol_native: string;

@@ -29,5 +29,6 @@ npm-debug.log*
 /project/platforms
 /project/plugins
 /project/www
+/builds
 
 

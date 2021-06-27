@@ -1,4 +1,4 @@
-import { singleCurrencyData } from './currency-data.model';
+import { SingleCurrencyData } from './currency-data.model';
 import { Image } from './image.model';
 
 export interface PopulatedItem {
@@ -8,6 +8,6 @@ export interface PopulatedItem {
 	unit?: string;
 	amount?: number;
 	price?: number;
-	currency?: singleCurrencyData;
+	currency?: SingleCurrencyData;
 	tags?: string[];
 }

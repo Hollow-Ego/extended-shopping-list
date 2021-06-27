@@ -5,8 +5,9 @@ import {
 	GeneralActionProps,
 	GeneralReturnProps,
 	ListIdProps,
+	StateDetailsProps,
 } from '../shared/models/action-props.model';
-import { SettingsData as SettingsData } from '../shared/models/settings.model';
+import { SettingsData } from '../shared/models/settings.model';
 
 const initialState: State = {
 	isLoading: false,
@@ -34,6 +35,7 @@ const _shoppingListReducer = createReducer(
 		SLActions.startUpdateShoppingList,
 		SLActions.startRemoveShoppingList,
 		SLActions.startToggleListMode,
+		SLActions.startUpdateSortMode,
 		state => ({
 			...state,
 			isLoading: true,
@@ -117,9 +119,21 @@ function updateLibraryItemState(state: State, props: GeneralReturnProps) {
 }
 
 function updateListItemState(state: State, props: GeneralReturnProps) {
+	const { shoppingLists } = props;
+
+	let currentListId = state.currentListId;
+
+	if (props.newListId) {
+		currentListId = props.newListId;
+	}
+	if (!currentListId) {
+		currentListId = shoppingLists.keys().next().value;
+	}
+
 	return {
 		...state,
-		shoppingLists: props.shoppingLists,
+		shoppingLists,
+		currentListId,
 		isLoading: false,
 		errors: null,
 	};
@@ -135,9 +149,14 @@ function updateItemGroupState(state: State, props: GeneralReturnProps) {
 }
 
 function updateListsAndLib(state: State, props: GeneralReturnProps) {
+	let newLib = props.itemLibrary;
+	if (!newLib) {
+		newLib = state.itemLibrary;
+	}
 	return {
 		...state,
 		shoppingLists: props.shoppingLists,
+		itemLibrary: newLib,
 		isLoading: false,
 		errors: null,
 	};

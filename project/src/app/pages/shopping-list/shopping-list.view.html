@@ -18,17 +18,12 @@
 </ion-content>
 
 <ion-content *ngIf="shoppingLists?.length>0">
-  <ion-slides pager="true" #slides (ionSlideDidChange)="onSlideChange($event)">
+  <ion-slides #slides (ionSlideDidChange)="onSlideChange($event)">
     <ion-slide *ngFor="let list of shoppingLists; trackBy: trackById">
       <pxsl1-shopping-list-page class="full-width" [listId]="list.getListID()">
       </pxsl1-shopping-list-page>
     </ion-slide>
   </ion-slides>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="onAddItem()">
-      <ion-icon name="pricetag"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 
 </ion-content>

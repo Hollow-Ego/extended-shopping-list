@@ -1,23 +1,29 @@
-<ion-item #slidingItem (click)="onStartDoubleClick()" class="item-full-height">
+<ion-reorder>
+  <ion-item (click)="onStartDoubleClick()" class="item-full-height">
 
-  <ion-label>
-    <h2>{{item.name}}</h2>
+    <ion-label>
+      <h2>{{item.name}}</h2>
 
-    <ion-text class="shopping-list-item-label" *ngIf="amountString">
-      {{amountString}}
-    </ion-text>
+      <ion-text class="shopping-list-item-label" *ngIf="amountString">
+        {{amountString}}
+      </ion-text>
 
-  </ion-label>
+      <ion-text class="shopping-list-item-label" *ngIf="item.price">
+        {{item.price}} {{item.currency.symbol_native}}
+      </ion-text>
+
+    </ion-label>
 
 
 
-  <ion-thumbnail slot="end" *ngIf="hasImage">
-    <ion-img *ngIf="item.imgData.webviewPath" [src]="item.imgData.webviewPath"
-      default="assets/broken-img-placeholder.png" (click)="onItemClick(item.name, item.imgData.webviewPath)">
-    </ion-img>
-  </ion-thumbnail>
+    <ion-thumbnail slot="end" *ngIf="hasImage">
+      <ion-img *ngIf="item.imgData.webviewPath" [src]="item.imgData.webviewPath"
+        default="assets/broken-img-placeholder.png" (click)="onItemClick(item.name, item.imgData.webviewPath)">
+      </ion-img>
+    </ion-thumbnail>
 
-  <ion-icon *ngIf="isEditMode" slot="end" name="ellipsis-vertical" style="float: right;"
-    (click)="onItemActions($event)"></ion-icon>
+    <ion-icon *ngIf="isEditMode" slot="end" name="ellipsis-vertical" style="float: right;"
+      (click)="onItemActions($event)"></ion-icon>
 
-</ion-item>
+  </ion-item>
+</ion-reorder>

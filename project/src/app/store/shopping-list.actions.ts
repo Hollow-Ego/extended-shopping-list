@@ -12,6 +12,8 @@ import {
 	AddShoppingListProps,
 	UpdateShoppingListProps,
 	ListIdProps,
+	StateDetailsProps,
+	ToggleListModeProps,
 } from '../shared/models/action-props.model';
 import { SettingsData } from '../shared/models/settings.model';
 
@@ -167,7 +169,7 @@ export const endRemoveShoppingList = createAction(
 
 export const startToggleListMode = createAction(
 	'[PSXL1] START_CHANGE_LIST_MODE',
-	props<UpdateShoppingListProps>()
+	props<ToggleListModeProps>()
 );
 export const endToggleListMode = createAction(
 	'[PSXL1] END_CHANGE_LIST_MODE',
@@ -176,12 +178,22 @@ export const endToggleListMode = createAction(
 
 export const startSetNewCurrentList = createAction(
 	'[PSXL1] START_SET_NEW_CURRENT_LIST',
-	props<ListIdProps>()
+	props<StateDetailsProps>()
 );
 
 export const endSetNewCurrentList = createAction(
 	'[PSXL1] END_SET_NEW_CURRENT_LIST',
 	props<ListIdProps>()
+);
+
+export const startUpdateSortMode = createAction(
+	'[PSXL1] START_UPDATE_SORT_MODE',
+	props<StateDetailsProps>()
+);
+
+export const endUpdateSortMode = createAction(
+	'[PSXL1] END_UPDATE_SORT_MODE',
+	props<StateDetailsProps>()
 );
 
 export const raiseGeneralError = createAction(
@@ -228,6 +240,9 @@ const actions = union({
 
 	startSetNewCurrentList,
 	endSetNewCurrentList,
+
+	startUpdateSortMode,
+	endUpdateSortMode,
 
 	raiseGeneralError,
 });

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
 import { ModalController } from '@ionic/angular';
-import { singleCurrencyData } from '../../../shared/models/currency-data.model';
+import { SingleCurrencyData } from '../../../shared/models/currency-data.model';
 import { LibraryItem } from '../../../shared/models/library-item.model';
 import * as data from '../../../shared/i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
@@ -28,9 +28,9 @@ export class AddEditModalComponent implements OnInit {
 	public itemForm: FormGroup;
 	public updateLibrary = false;
 
-	public allCurrencyData: singleCurrencyData[];
+	public allCurrencyData: SingleCurrencyData[];
 	// To be refactored into a setting
-	private defaultCurrency: singleCurrencyData = {
+	private defaultCurrency: SingleCurrencyData = {
 		symbol: '\u20AC',
 		code: 'EUR',
 		symbol_native: '\u20AC',
@@ -73,7 +73,7 @@ export class AddEditModalComponent implements OnInit {
 		return this.mode === MODAL_ADD_MODE;
 	}
 
-	compareWith(cur1: singleCurrencyData, cur2: singleCurrencyData) {
+	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData) {
 		return cur1 && cur2 ? cur1.code === cur2.code : cur1 === cur2;
 	}
 
