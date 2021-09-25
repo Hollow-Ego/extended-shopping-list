@@ -8,6 +8,7 @@ import { LibraryItem } from '../../../shared/models/library-item.model';
 import * as data from '../../../shared/i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
 import { MODAL_ADD_MODE } from '../../../shared/constants';
+import { LibraryService } from '../../../services/library.service';
 @Component({
 	selector: 'pxsl1-add-edit-modal',
 	templateUrl: './add-edit-modal.component.html',
@@ -18,20 +19,21 @@ export class AddEditModalComponent implements OnInit {
 		public formBuilder: FormBuilder,
 		public modalController: ModalController,
 		public alertController: AlertController,
-		private imageService: ImageService
+		private imageService: ImageService,
+		private libraryService: LibraryService
 	) {}
 
 	@Input() item: PopulatedItem | LibraryItem = null;
 	@Input() mode: string = MODAL_ADD_MODE;
-	@Input() availableTags: string[];
-	@Input() availableUnits: string[];
 	@Input() isNewLibraryItem: boolean = true;
 
+	public availableUnits: string[];
+	public availableTags: string[];
 	public itemForm: FormGroup;
 	public updateLibrary = false;
 
 	public allCurrencyData: SingleCurrencyData[];
-	// To be refactored into a setting
+	// TODO To be refactored into a setting
 	private defaultCurrency: SingleCurrencyData = {
 		symbol: '\u20AC',
 		code: 'EUR',
@@ -44,7 +46,7 @@ export class AddEditModalComponent implements OnInit {
 		this.allCurrencyData = Object.values(data['default'].currencies);
 		if (!this.item) {
 			this.item = {
-				itemID: null,
+				itemId: null,
 				name: null,
 				imgData: { filepath: '', fileName: '', webviewPath: '' },
 				amount: null,
@@ -56,7 +58,7 @@ export class AddEditModalComponent implements OnInit {
 		}
 
 		this.itemForm = this.formBuilder.group({
-			itemID: this.item.itemID,
+			itemId: this.item.itemId,
 			name: [this.item.name, [Validators.required, Validators.minLength(3)]],
 			amount: this.item.amount,
 			imgData: this.item.imgData,
@@ -64,6 +66,11 @@ export class AddEditModalComponent implements OnInit {
 			unit: this.item.unit,
 			price: this.item.price,
 			currency: this.item.currency,
+		});
+
+		this.libraryService.libraryChanges.subscribe(libraryState => {
+			this.availableTags = libraryState.tagLibrary;
+			this.availableUnits = libraryState.unitLibrary;
 		});
 	}
 

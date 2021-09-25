@@ -6,9 +6,8 @@ import { BackButtonEvent } from '@ionic/core';
 import { TranslationService } from './shared/i18n/translation.service';
 import { App } from '@capacitor/app';
 import { Toast } from '@capacitor/toast';
-import { Store } from '@ngrx/store';
-import * as fromApp from './store/app.reducer';
-import * as SLActions from './store/shopping-list.actions';
+import { SettingsService } from './services/settings.service';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-root',
@@ -18,13 +17,13 @@ import * as SLActions from './store/shopping-list.actions';
 export class AppComponent {
 	private lastOnStart = 0;
 	private DOUBLE_CLICK_THRESHOLD = 2000;
-
+	private settingsSub: Subscription;
 	constructor(
 		private platform: Platform,
 		private splashScreen: SplashScreen,
 		private statusBar: StatusBar,
 		private translate: TranslationService,
-		private store: Store<fromApp.AppState>
+		private settingsService: SettingsService
 	) {
 		this.initializeApp();
 	}
@@ -33,7 +32,13 @@ export class AppComponent {
 		this.platform.ready().then(() => {
 			this.statusBar.styleDefault();
 			this.splashScreen.hide();
-			this.store.dispatch(SLActions.startInitialLoad({}));
+			this.settingsSub = this.settingsService.settingChanges.subscribe(
+				settings => {
+					document.body.setAttribute('color-theme', settings.theme);
+					this.translate.changeLanguage(settings.language);
+				}
+			);
+
 			document.addEventListener('ionBackButton', (ev: BackButtonEvent) => {
 				ev.detail.register(-1, () => {
 					const path = window.location.pathname;

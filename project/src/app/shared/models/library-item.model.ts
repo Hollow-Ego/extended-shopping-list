@@ -2,7 +2,7 @@ import { SingleCurrencyData } from './currency-data.model';
 import { Image } from './image.model';
 
 export interface LibraryItem {
-	itemID: string;
+	itemId: string;
 	name: string;
 	imgData?: Image;
 	tags?: string[];

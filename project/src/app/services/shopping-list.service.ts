@@ -1,328 +1,257 @@
 import { Injectable } from '@angular/core';
-import { LibraryItem } from '../shared/models/library-item.model';
 import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@ionic/storage';
-import { ImageService } from './image.service';
-import { ItemLibrary } from '../shared/classes/item-library.class';
+import { cloneDeep } from 'lodash';
 import { ShoppingList } from '../shared/classes/shopping-list.class';
-import { ItemGroup } from '../shared/classes/item-group.class';
 import * as Constants from '../shared/constants';
-import {
-	LibraryItemProps,
-	ListItemProps,
-	ItemGroupProps,
-	AddShoppingListProps,
-	UpdateShoppingListProps,
-	ListIdProps,
-	StateDetailsProps,
-	ToggleListModeProps,
-	UpdateLibraryProps,
-} from '../shared/models/action-props.model';
 
 import { PopulatedItem } from '../shared/models/populated-item.model';
 import { AlertController } from '@ionic/angular';
 import { TranslationService } from '../shared/i18n/translation.service';
+import { createOrCopyID } from '../shared/utils';
+import { BehaviorSubject } from 'rxjs';
+import { ShoppingListServiceState } from './../shared/models/service-models';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class ShoppingListService {
+	private currentStateVersion = '1.0';
+	private defaultState: ShoppingListServiceState = {
+		shoppingLists: new Map<string, ShoppingList>(),
+		activeList: '',
+		stateVersion: this.currentStateVersion,
+	};
+	private listState: ShoppingListServiceState = cloneDeep(this.defaultState);
+
+	shoppingListChanges: BehaviorSubject<ShoppingListServiceState> =
+		new BehaviorSubject<ShoppingListServiceState>(this.listState);
+
 	constructor(
 		private storage: Storage,
-		private imageService: ImageService,
 		private alertController: AlertController,
 		private translate: TranslationService
-	) {}
-
-	addLibraryItem(data: LibraryItemProps, itemLibrary: ItemLibrary) {
-		try {
-			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
-			const newID: string = this.createCopyID(data.itemID);
-			const newItem: LibraryItem = { ...data, itemID: newID };
-			newLibrary.add(newID, newItem);
-			return this.storage.set(Constants.LIBRARY_KEY, newLibrary);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-	createCopyID(itemID: string): string {
-		return itemID ? itemID : uuidv4();
-	}
-
-	updateLibraryItem(item: LibraryItemProps, itemLibrary: ItemLibrary) {
-		try {
-			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
-			const updatedItem: LibraryItem = { ...item };
-			newLibrary.update(item.itemID, updatedItem);
-			return this.storage.set(Constants.LIBRARY_KEY, newLibrary);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-
-	updateLibrary(state: UpdateLibraryProps, itemLibrary: ItemLibrary) {
-		try {
-			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
-			newLibrary.setSortDetails(state.sortMode, state.sortDirection);
-			return this.storage.set(Constants.LIBRARY_KEY, newLibrary);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-
-	removeLibraryItem(itemID: string, itemLibrary: ItemLibrary) {
-		try {
-			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
-			const deprecatedItem = newLibrary.get(itemID);
-			const associatedImg = deprecatedItem.imgData;
-
-			if (associatedImg) {
-				this.imageService.deleteImage(associatedImg.fileName);
-			}
-			newLibrary.remove(itemID);
-			return this.storage.set(Constants.LIBRARY_KEY, newLibrary);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-
-	async syncListAndLibrary(
-		data: LibraryItemProps,
-		shoppingLists: Map<string, ShoppingList>,
-		itemLibrary: ItemLibrary
 	) {
-		try {
-			const newID: string = this.createCopyID(data.itemID);
-			const newItem: LibraryItem = { ...data, itemID: newID };
-			const modifiedProps: LibraryItemProps = { ...data, itemID: newID };
-			const newListItem: ListItemProps = {
-				item: newItem,
-				listId: data?.addToListId,
-			};
-
-			const newLibrary = await this.addLibraryItem(modifiedProps, itemLibrary);
-			const newLists = await this.addListItem(newListItem, shoppingLists);
-			return { shoppingLists: newLists, itemLibrary: newLibrary };
-		} catch (error) {
-			throw Error(error);
-		}
+		this.initializeService();
 	}
 
-	addListItem(data: ListItemProps, shoppingLists: Map<string, ShoppingList>) {
-		try {
-			const { item, amount, listId } = data;
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
+	async initializeService() {
+		const loadedListState = await this.storage.get(Constants.SHOPPING_LIST_KEY);
+		const compatibleState = this.ensureCompatibility(loadedListState);
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+
+		compatibleState.shoppingLists.forEach(rawList => {
+			const list = new ShoppingList(
+				rawList.shoppingItems,
+				rawList.name,
+				rawList.id,
+				rawList.mode,
+				rawList.sortMode,
+				rawList.sortDirection
 			);
-			const itemID: string = this.createCopyID(item.itemID);
-			const newItem = { ...item, amount, itemID };
-			let activeList: ShoppingList = newShoppingLists.get(listId);
+			updatedListMap.set(list.getListID(), list);
+		});
 
-			if (!activeList) {
-				activeList = new ShoppingList(
-					new Map(),
-					Constants.DEFAULT_SHOPPING_LIST_NAME,
-					uuidv4()
-				);
+		let updatedActiveList = compatibleState.activeList;
 
-				newShoppingLists.set(activeList.getListID(), activeList);
-			}
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+			activeList: updatedActiveList,
+			stateVersion: this.currentStateVersion,
+		};
+		this.shoppingListChanges.next(this.listState);
+	}
 
-			const newActiveList: ShoppingList = this.cloneShoppingList(activeList);
-			newActiveList.add(newItem);
-			newShoppingLists.set(newActiveList.getListID(), newActiveList);
-
-			return this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists);
-		} catch (error) {
-			throw Error(error);
+	ensureCompatibility(loadedListState: any) {
+		switch (loadedListState.stateVersion) {
+			case undefined:
+			case null:
+				const compatibleState = this.convertUndefinedState(loadedListState);
+				return compatibleState;
+			default:
+				return loadedListState;
 		}
 	}
 
-	updateListItem(
+	convertUndefinedState(oldState: any) {
+		const compatibleState = { shoppingLists: new Map(), activeList: '' };
+		if (oldState.constructor === Map) {
+			compatibleState.shoppingLists = oldState;
+		}
+		return compatibleState;
+	}
+
+	async addListItem(
 		item: PopulatedItem,
-		listId: string,
-		shoppingLists: Map<string, ShoppingList>
+		amount: number,
+		listId: string = null
 	) {
-		try {
-			const activeList: ShoppingList = shoppingLists.get(listId);
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
-			);
-			const newActiveList: ShoppingList = this.cloneShoppingList(activeList);
-			newActiveList.update(item);
-
-			newShoppingLists.set(newActiveList.getListID(), newActiveList);
-			return this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists);
-		} catch (error) {
-			throw Error(error);
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+		const itemId: string = createOrCopyID(item.itemId);
+		const newItem = { ...item, amount, itemId };
+		if (!listId) {
+			listId = this.listState.activeList;
 		}
-	}
+		let activeList: ShoppingList = updatedListMap.get(listId);
 
-	removeListItem(
-		itemID: string,
-		listId: string,
-		shoppingLists: Map<string, ShoppingList>
-	) {
-		try {
-			const activeList: ShoppingList = shoppingLists.get(listId);
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
-			);
-			const newActiveList: ShoppingList = this.cloneShoppingList(activeList);
-			newActiveList.remove(itemID);
-			newShoppingLists.set(newActiveList.getListID(), newActiveList);
-
-			return this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-
-	addToItemGroup(data: ItemGroupProps, itemGroups: Map<string, ItemGroup>) {
-		try {
-			const newItemGroup: Map<string, ItemGroup> = new Map(itemGroups);
-			const { itemID, groupId: groupIdx } = data;
-			let activeGroup = newItemGroup[groupIdx];
-			activeGroup.add(itemID);
-			return this.storage.set(Constants.ITEM_GROUP_KEY, newItemGroup);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-
-	removeFromItemGroup(
-		data: ItemGroupProps,
-		itemGroups: Map<string, ItemGroup>
-	) {
-		try {
-			const newItemGroup: Map<string, ItemGroup> = new Map(itemGroups);
-			const { itemID, groupId: groupIdx } = data;
-			let activeGroup = newItemGroup[groupIdx];
-			activeGroup.remove(itemID);
-			return this.storage.set(Constants.ITEM_GROUP_KEY, newItemGroup);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
-
-	addShoppingList(
-		data: AddShoppingListProps,
-		shoppingLists: Map<string, ShoppingList>
-	) {
-		try {
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
-			);
-			const newListId = uuidv4();
-			const listName: string = data.name;
-			const newShoppingList: ShoppingList = new ShoppingList(
+		if (!activeList) {
+			activeList = new ShoppingList(
 				new Map(),
-				listName,
-				newListId
+				Constants.DEFAULT_SHOPPING_LIST_NAME,
+				uuidv4()
 			);
-			newShoppingLists.set(newListId, newShoppingList);
-			return this.storage
-				.set(Constants.SHOPPING_LIST_KEY, newShoppingLists)
-				.then(shoppingLists => {
-					return Promise.resolve({
-						shoppingLists,
-						newListId: newShoppingList.getListID(),
-					});
-				});
-		} catch (error) {
-			throw Error(error);
+
+			updatedListMap.set(activeList.getListID(), activeList);
 		}
+
+		const activeListCopy: ShoppingList = cloneDeep(activeList);
+
+		activeListCopy.add(newItem);
+		updatedListMap.set(activeListCopy.getListID(), activeListCopy);
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+			activeList: activeListCopy.getListID(),
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
 	}
 
-	updateShoppingList(
-		data: UpdateShoppingListProps,
-		shoppingLists: Map<string, ShoppingList>
-	) {
-		try {
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
-			);
-			const originalList = newShoppingLists.get(data.listId);
-			const listName: string = data.name;
-			const sortMode: string = data.sortMode;
-			const sortDirection: string = data.sortDirection;
-
-			const newShoppingList: ShoppingList =
-				this.cloneShoppingList(originalList);
-			newShoppingList.updateName(listName);
-			newShoppingList.setSortDetails(sortMode, sortDirection);
-			newShoppingLists.set(originalList.getListID(), newShoppingList);
-			return this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists);
-		} catch (error) {
-			throw Error(error);
+	async updateListItem(item: PopulatedItem, listId: string = null) {
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+		if (!listId) {
+			listId = this.listState.activeList;
 		}
+		const activeList: ShoppingList = updatedListMap.get(listId);
+		const activeListCopy: ShoppingList = cloneDeep(activeList);
+
+		activeListCopy.update(item);
+		updatedListMap.set(activeListCopy.getListID(), activeListCopy);
+
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
 	}
 
-	removeShoppingList(
-		data: ListIdProps,
-		shoppingLists: Map<string, ShoppingList>
-	) {
-		try {
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
-			);
-			newShoppingLists.delete(data.listId);
-			return this.storage
-				.set(Constants.SHOPPING_LIST_KEY, newShoppingLists)
-				.then(shoppingLists => {
-					return Promise.resolve({
-						shoppingLists,
-						newListId: shoppingLists.keys().next().value,
-					});
-				});
-		} catch (error) {
-			throw Error(error);
+	async removeListItem(itemId: string, listId: string = null) {
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+		if (!listId) {
+			listId = this.listState.activeList;
 		}
+		const activeList: ShoppingList = updatedListMap.get(listId);
+		const activeListCopy: ShoppingList = cloneDeep(activeList);
+		activeListCopy.remove(itemId);
+		updatedListMap.set(activeListCopy.getListID(), activeListCopy);
+
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
 	}
 
-	toggleListMode(
-		data: ToggleListModeProps,
-		shoppingLists: Map<string, ShoppingList>
-	) {
-		try {
-			const originalList = shoppingLists.get(data.listId);
-			const newShoppingLists: Map<string, ShoppingList> = new Map(
-				shoppingLists
-			);
-			const newShoppingList: ShoppingList =
-				this.cloneShoppingList(originalList);
-			newShoppingList.toggleMode();
-			newShoppingLists.set(originalList.getListID(), newShoppingList);
-			return this.storage.set(Constants.SHOPPING_LIST_KEY, newShoppingLists);
-		} catch (error) {
-			throw Error(error);
-		}
-	}
+	async addShoppingList() {
+		const { data, role } = await this.showNamingModal();
+		if (role === 'cancel' || !data) return null;
 
-	updateStateDetails(data: StateDetailsProps) {
-		//  To-Do: Implement saving of additional state state
-		const newStateData = { currentListId: data.currentListId };
-		return this.storage.set(Constants.STATE_KEY, newStateData);
-		// return Promise.resolve(data.listId);
-	}
+		let listName = data.values.listName;
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 
-	cloneItemLibrary(sourceLib: ItemLibrary) {
-		const newItemMap = new Map(sourceLib.getAllItems());
-		const newLibrary: ItemLibrary = new ItemLibrary(newItemMap);
-		return newLibrary;
-	}
-
-	cloneShoppingList(sourceList: ShoppingList) {
-		const newItemMap = new Map(sourceList.getAllItems());
-		let { sortMode, sortDirection } = sourceList.getSortDetails();
-		return new ShoppingList(
-			newItemMap,
-			sourceList.getName(),
-			sourceList.getListID(),
-			sourceList.getMode(),
-			sortMode,
-			sortDirection
+		const newListId = uuidv4();
+		const newShoppingList: ShoppingList = new ShoppingList(
+			new Map(),
+			listName,
+			newListId
 		);
+		updatedListMap.set(newListId, newShoppingList);
+
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+			activeList: newListId,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
+	}
+
+	async updateShoppingList(
+		updatedData: {
+			listName?: string;
+			sortDirection?: string;
+			sortMode?: string;
+		},
+		listId: string = null
+	) {
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+		if (!listId) {
+			listId = this.listState.activeList;
+		}
+
+		const originalList = updatedListMap.get(listId);
+		const updatedShoppingList: ShoppingList = cloneDeep(originalList);
+		const { sortMode: oSortMode, sortDirection: oSortDirection } =
+			originalList.getSortDetails();
+		let {
+			listName = originalList.getName(),
+			sortMode = oSortMode,
+			sortDirection = oSortDirection,
+		} = updatedData;
+		updatedShoppingList.updateName(listName);
+		updatedShoppingList.setSortDetails(sortMode, sortDirection);
+		updatedListMap.set(originalList.getListID(), updatedShoppingList);
+
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
+	}
+
+	async removeShoppingList(listId: string = null) {
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+
+		updatedListMap.delete(listId);
+
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+			activeList: updatedListMap.keys().next().value,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
+	}
+
+	async toggleListMode(listId: string = null) {
+		const updatedListMap = cloneDeep(this.listState.shoppingLists);
+		if (!listId) {
+			listId = this.listState.activeList;
+		}
+		const originalList = updatedListMap.get(listId);
+		const updatedShoppingList: ShoppingList = cloneDeep(originalList);
+
+		updatedShoppingList.toggleMode();
+
+		this.listState = {
+			...this.listState,
+			shoppingLists: updatedListMap,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
+	}
+
+	async setActiveList(newActiveListId) {
+		this.listState = {
+			...this.listState,
+			activeList: newActiveListId,
+		};
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
 	}
 
 	async createShoppingListNameAlert(prevName: string) {
@@ -366,16 +295,27 @@ export class ShoppingListService {
 		return alert;
 	}
 
-	async getNewListName(prevName: string = '') {
+	async renameList(prevName: string = '', listId: string = null) {
+		const { data, role } = await this.showNamingModal();
+		if (role === 'cancel' || !data) return null;
+
+		let newName = data.values.listName;
+		const needDefaultName = newName.trim().length <= 0;
+		if (!listId) {
+			listId = this.listState.activeList;
+		}
+
+		if (needDefaultName) {
+			newName = Constants.DEFAULT_SHOPPING_LIST_NAME;
+		}
+		this.updateShoppingList({ listName: newName }, listId);
+	}
+
+	async showNamingModal(prevName: string = '') {
 		const alert = await this.createShoppingListNameAlert(prevName);
 		alert.present();
 		const { data, role } = await alert.onDidDismiss();
-		if (role === 'cancel' || !data) return null;
-
-		const newName = data.values.listName;
-		const needDefaultName = newName.trim().length <= 0;
-
-		return needDefaultName ? Constants.DEFAULT_SHOPPING_LIST_NAME : newName;
+		return { data, role };
 	}
 
 	async confirmRemoval() {

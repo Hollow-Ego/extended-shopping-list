@@ -35,8 +35,7 @@
 </ion-header>
 <ion-content class="list-card" *ngIf="this.sortMode === SORT_BY_NAME">
   <ion-reorder-group *ngIf="itemLibrary">
-    <pxsl1-library-list-item *ngFor="let item of items" [item]="item" (editItem)="onEditLibraryItem($event)"
-      (deleteItem)="onDeleteItem($event)" (addItemToList)="onAddItemToList($event)" [hidden]="!shouldBeVisible(item)">
+    <pxsl1-library-list-item *ngFor="let item of items" [item]="item" [hidden]="!shouldBeVisible(item)">
     </pxsl1-library-list-item>
   </ion-reorder-group>
 </ion-content>
@@ -46,8 +45,7 @@
     <ion-item-divider>
       <ion-label>{{category | translate}}</ion-label>
     </ion-item-divider>
-    <pxsl1-library-list-item *ngFor="let item of sortedTagItems[i]" [item]="item" (editItem)="onEditLibraryItem($event)"
-      (deleteItem)="onDeleteItem($event)" (addItemToList)="onAddItemToList($event)" [hidden]="!shouldBeVisible(item)">
+    <pxsl1-library-list-item *ngFor="let item of sortedTagItems[i]" [item]="item" [hidden]="!shouldBeVisible(item)">
     </pxsl1-library-list-item>
   </ion-reorder-group>
 </ion-content>

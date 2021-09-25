@@ -21,7 +21,7 @@ export class ShoppingList {
 	}
 
 	add(item: PopulatedItem) {
-		this.shoppingItems.set(item.itemID, item);
+		this.shoppingItems.set(item.itemId, item);
 	}
 
 	remove(id: string) {
@@ -29,7 +29,7 @@ export class ShoppingList {
 	}
 
 	update(item: PopulatedItem) {
-		this.shoppingItems.set(item.itemID, item);
+		this.shoppingItems.set(item.itemId, item);
 	}
 
 	getListID() {

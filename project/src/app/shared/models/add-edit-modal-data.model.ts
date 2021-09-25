@@ -4,7 +4,7 @@ import { LibraryItem } from './library-item.model';
 import { PopulatedItem } from './populated-item.model';
 
 export interface AddEditModalOutput {
-	itemID: string;
+	itemId: string;
 	name: string;
 	amount: number;
 	imgData: Image;

@@ -29,7 +29,7 @@ export interface GeneralReturnProps {
 }
 
 export interface LibraryItemProps {
-	itemID: string;
+	itemId: string;
 	name: string;
 	amount: number;
 	imgData: Image;
@@ -53,7 +53,7 @@ export interface UpdateListItemProps {
 }
 
 export interface RemoveListItemProps {
-	itemID: string;
+	itemId: string;
 	listId: string;
 }
 
@@ -67,7 +67,7 @@ export interface ShoppingListReturnProps {
 }
 
 export interface ItemGroupProps {
-	itemID: string;
+	itemId: string;
 	groupId: string;
 }
 
@@ -90,7 +90,7 @@ export interface ToggleListModeProps {
 }
 
 export interface RemoveItemShortProps {
-	itemID: string;
+	itemId: string;
 }
 
 export interface ListIdProps {

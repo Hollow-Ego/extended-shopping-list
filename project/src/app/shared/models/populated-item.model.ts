@@ -2,7 +2,7 @@ import { SingleCurrencyData } from './currency-data.model';
 import { Image } from './image.model';
 
 export interface PopulatedItem {
-	itemID: string;
+	itemId: string;
 	name: string;
 	imgData?: Image;
 	unit?: string;

@@ -1,10 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import * as fromApp from '../../store/app.reducer';
-import * as SLActions from '../../store/shopping-list.actions';
-import { selectSettings } from '../../store/shopping-list.selectors';
-import * as Constants from '../..//shared/constants';
+import { DARK_THEME, LIGHT_THEME } from '../../shared/constants';
 import { SettingsData } from '../../shared/models/settings.model';
 
 @Component({
@@ -13,41 +9,40 @@ import { SettingsData } from '../../shared/models/settings.model';
 	styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit, OnDestroy {
-	constructor(private store: Store<fromApp.AppState>) {}
+	constructor() {}
 
 	private stateSub: Subscription;
-	public isDarkMode =
-		document.body.getAttribute('color-theme') === Constants.DARK_THEME;
+	public isDarkMode = document.body.getAttribute('color-theme') === DARK_THEME;
 	public language: string;
 	public settings: SettingsData;
 
 	ngOnInit() {
-		this.stateSub = this.store.select(selectSettings).subscribe(settings => {
-			if (!settings) return;
-			this.settings = { ...settings };
-		});
+		// this.stateSub = this.store.select(selectSettings).subscribe(settings => {
+		// 	if (!settings) return;
+		// 	this.settings = { ...settings };
+		// });
 	}
 
 	onToggleTheme() {
-		this.store.dispatch(
-			SLActions.startUpdateSettings({
-				...this.settings,
-				theme: this.getNewTheme(),
-			})
-		);
+		// this.store.dispatch(
+		// 	SLActions.startUpdateSettings({
+		// 		...this.settings,
+		// 		theme: this.getNewTheme(),
+		// 	})
+		// );
 	}
 
 	getNewTheme() {
-		return this.isDarkMode ? Constants.LIGHT_THEME : Constants.DARK_THEME;
+		return this.isDarkMode ? LIGHT_THEME : DARK_THEME;
 	}
 
 	onUpdateLanguage(language) {
-		this.store.dispatch(
-			SLActions.startUpdateSettings({
-				...this.settings,
-				language,
-			})
-		);
+		// this.store.dispatch(
+		// 	SLActions.startUpdateSettings({
+		// 		...this.settings,
+		// 		language,
+		// 	})
+		// );
 	}
 
 	ngOnDestroy() {
