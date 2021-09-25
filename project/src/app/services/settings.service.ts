@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
-import { SettingsServiceState } from './../shared/models/service-models';
+import { SettingsServiceState } from '../shared/models/service.models';
 import { cloneDeep } from 'lodash';
 import { DARK_THEME, LIGHT_THEME, SETTINGS_KEY } from '../shared/constants';
 
@@ -18,10 +18,10 @@ export class SettingsService {
 		stateVersion: this.currentStateVersion,
 	};
 
-	private settingState: SettingsServiceState = cloneDeep(this.defaultState);
+	private settingsState: SettingsServiceState = cloneDeep(this.defaultState);
 
 	settingChanges: BehaviorSubject<SettingsServiceState> =
-		new BehaviorSubject<SettingsServiceState>(this.settingState);
+		new BehaviorSubject<SettingsServiceState>(this.settingsState);
 
 	constructor(private storage: Storage) {
 		this.initializeService();
@@ -30,16 +30,14 @@ export class SettingsService {
 	async initializeService() {
 		const loadedSettingsState = await this.storage.get(SETTINGS_KEY);
 		const compatibleState = this.ensureCompatibility(loadedSettingsState);
-		console.log(loadedSettingsState);
-		console.log(compatibleState);
 
-		this.settingState = {
-			...this.settingState,
+		this.settingsState = {
+			...this.settingsState,
 			...compatibleState,
 			stateVersion: this.currentStateVersion,
 		};
-		console.log(this.settingState);
-		this.settingChanges.next(this.settingState);
+		console.log(this.settingsState);
+		this.settingChanges.next(this.settingsState);
 	}
 
 	ensureCompatibility(loadedListState: any) {
@@ -56,5 +54,20 @@ export class SettingsService {
 	convertUndefinedState(oldState: any) {
 		const compatibleState = cloneDeep(this.defaultState);
 		return { ...compatibleState, ...oldState };
+	}
+
+	async setTheme(theme: string) {
+		this.settingsState = { ...this.settingsState, theme };
+		this.updateState();
+	}
+
+	async setLanguage(language: string) {
+		this.settingsState = { ...this.settingsState, language };
+		this.updateState();
+	}
+
+	async updateState() {
+		await this.storage.set(SETTINGS_KEY, this.settingsState);
+		this.settingChanges.next(this.settingsState);
 	}
 }

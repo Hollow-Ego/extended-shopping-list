@@ -10,7 +10,7 @@ import { AlertController } from '@ionic/angular';
 import { TranslationService } from '../shared/i18n/translation.service';
 import { createOrCopyID } from '../shared/utils';
 import { BehaviorSubject } from 'rxjs';
-import { ShoppingListServiceState } from './../shared/models/service-models';
+import { ShoppingListServiceState } from '../shared/models/service.models';
 
 @Injectable({
 	providedIn: 'root',
@@ -82,11 +82,7 @@ export class ShoppingListService {
 		return compatibleState;
 	}
 
-	async addListItem(
-		item: PopulatedItem,
-		amount: number,
-		listId: string = null
-	) {
+	addListItem(item: PopulatedItem, amount: number, listId: string = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		const itemId: string = createOrCopyID(item.itemId);
 		const newItem = { ...item, amount, itemId };
@@ -114,11 +110,10 @@ export class ShoppingListService {
 			shoppingLists: updatedListMap,
 			activeList: activeListCopy.getListID(),
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
-	async updateListItem(item: PopulatedItem, listId: string = null) {
+	updateListItem(item: PopulatedItem, listId: string = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
 			listId = this.listState.activeList;
@@ -133,11 +128,10 @@ export class ShoppingListService {
 			...this.listState,
 			shoppingLists: updatedListMap,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
-	async removeListItem(itemId: string, listId: string = null) {
+	removeListItem(itemId: string, listId: string = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
 			listId = this.listState.activeList;
@@ -151,8 +145,7 @@ export class ShoppingListService {
 			...this.listState,
 			shoppingLists: updatedListMap,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
 	async addShoppingList() {
@@ -175,11 +168,10 @@ export class ShoppingListService {
 			shoppingLists: updatedListMap,
 			activeList: newListId,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
-	async updateShoppingList(
+	updateShoppingList(
 		updatedData: {
 			listName?: string;
 			sortDirection?: string;
@@ -209,11 +201,10 @@ export class ShoppingListService {
 			...this.listState,
 			shoppingLists: updatedListMap,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
-	async removeShoppingList(listId: string = null) {
+	removeShoppingList(listId: string = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 
 		updatedListMap.delete(listId);
@@ -223,11 +214,10 @@ export class ShoppingListService {
 			shoppingLists: updatedListMap,
 			activeList: updatedListMap.keys().next().value,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
-	async toggleListMode(listId: string = null) {
+	toggleListMode(listId: string = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
 			listId = this.listState.activeList;
@@ -241,17 +231,15 @@ export class ShoppingListService {
 			...this.listState,
 			shoppingLists: updatedListMap,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
-	async setActiveList(newActiveListId) {
+	setActiveList(newActiveListId) {
 		this.listState = {
 			...this.listState,
 			activeList: newActiveListId,
 		};
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
-		this.shoppingListChanges.next(this.listState);
+		this.updateState();
 	}
 
 	async createShoppingListNameAlert(prevName: string) {
@@ -352,5 +340,10 @@ export class ShoppingListService {
 		await alert.present();
 		const { role } = await alert.onDidDismiss();
 		return role === 'confirm';
+	}
+
+	async updateState() {
+		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		this.shoppingListChanges.next(this.listState);
 	}
 }
