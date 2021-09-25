@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { SettingsService } from '../../services/settings.service';
 import { DARK_THEME, LIGHT_THEME } from '../../shared/constants';
-import { SettingsData } from '../../shared/models/settings.model';
 
 @Component({
 	selector: 'pxsl1-settings',
@@ -9,27 +9,24 @@ import { SettingsData } from '../../shared/models/settings.model';
 	styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit, OnDestroy {
-	constructor() {}
+	constructor(private settingsService: SettingsService) {}
 
-	private stateSub: Subscription;
+	private settingsStateSub: Subscription;
 	public isDarkMode = document.body.getAttribute('color-theme') === DARK_THEME;
 	public language: string;
-	public settings: SettingsData;
 
 	ngOnInit() {
-		// this.stateSub = this.store.select(selectSettings).subscribe(settings => {
-		// 	if (!settings) return;
-		// 	this.settings = { ...settings };
-		// });
+		this.settingsStateSub = this.settingsService.settingChanges.subscribe(
+			settings => {
+				this.language = settings.language;
+				this.isDarkMode = settings.theme === DARK_THEME;
+			}
+		);
 	}
 
 	onToggleTheme() {
-		// this.store.dispatch(
-		// 	SLActions.startUpdateSettings({
-		// 		...this.settings,
-		// 		theme: this.getNewTheme(),
-		// 	})
-		// );
+		const newTheme = this.getNewTheme();
+		this.settingsService.setTheme(newTheme);
 	}
 
 	getNewTheme() {
@@ -37,15 +34,10 @@ export class SettingsPage implements OnInit, OnDestroy {
 	}
 
 	onUpdateLanguage(language) {
-		// this.store.dispatch(
-		// 	SLActions.startUpdateSettings({
-		// 		...this.settings,
-		// 		language,
-		// 	})
-		// );
+		this.settingsService.setLanguage(language);
 	}
 
 	ngOnDestroy() {
-		this.stateSub.unsubscribe();
+		this.settingsStateSub.unsubscribe();
 	}
 }

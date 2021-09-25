@@ -5,7 +5,7 @@ import { LibraryItem } from '../shared/models/library-item.model';
 import * as Constants from '../shared/constants';
 import { ImageService } from './image.service';
 import { createOrCopyID } from '../shared/utils';
-import { LibraryServiceState } from '../shared/models/service-models';
+import { LibraryServiceState } from '../shared/models/service.models';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 
@@ -79,7 +79,7 @@ export class LibraryService {
 		return compatibleState;
 	}
 
-	async addLibraryItem(item: LibraryItem, itemId: string = null) {
+	addLibraryItem(item: LibraryItem, itemId: string = null) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const newId: string = createOrCopyID(itemId);
 		const newItem: LibraryItem = { ...item, itemId: newId };
@@ -87,31 +87,28 @@ export class LibraryService {
 		updatedLibrary.add(newId, newItem);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
-		await this.storage.set(Constants.LIBRARY_KEY, this.libraryState);
-		this.libraryChanges.next(this.libraryState);
+		this.updateState();
 	}
 
-	async updateLibraryItem(updatedItem: LibraryItem) {
+	updateLibraryItem(updatedItem: LibraryItem) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 
 		updatedLibrary.update(updatedItem.itemId, updatedItem);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
-		await this.storage.set(Constants.LIBRARY_KEY, this.libraryState);
-		this.libraryChanges.next(this.libraryState);
+		this.updateState();
 	}
 
-	async updateSortDetails(sortMode: string, sortDirection: string) {
+	updateSortDetails(sortMode: string, sortDirection: string) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 
 		updatedLibrary.setSortDetails(sortMode, sortDirection);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
-		await this.storage.set(Constants.LIBRARY_KEY, this.libraryState);
-		this.libraryChanges.next(this.libraryState);
+		this.updateState();
 	}
 
-	async removeLibraryItem(itemId: string) {
+	removeLibraryItem(itemId: string) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const deprecatedItem = updatedLibrary.get(itemId);
 
@@ -123,6 +120,10 @@ export class LibraryService {
 		updatedLibrary.remove(itemId);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
+		this.updateState();
+	}
+
+	async updateState() {
 		await this.storage.set(Constants.LIBRARY_KEY, this.libraryState);
 		this.libraryChanges.next(this.libraryState);
 	}
