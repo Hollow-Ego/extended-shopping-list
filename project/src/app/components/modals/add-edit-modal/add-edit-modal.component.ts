@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { SingleCurrencyData } from '../../../shared/models/currency-data.model';
 import { LibraryItem } from '../../../shared/models/library-item.model';
 import * as data from '../../../shared/i18n/currency-map.json';
@@ -17,12 +17,14 @@ export class AddEditModalComponent implements OnInit {
 	constructor(
 		public formBuilder: FormBuilder,
 		public modalController: ModalController,
+		public alertController: AlertController,
 		private imageService: ImageService
 	) {}
 
 	@Input() item: PopulatedItem | LibraryItem = null;
 	@Input() mode: string = MODAL_ADD_MODE;
 	@Input() availableTags: string[];
+	@Input() availableUnits: string[];
 	@Input() isNewLibraryItem: boolean = true;
 
 	public itemForm: FormGroup;
@@ -63,6 +65,40 @@ export class AddEditModalComponent implements OnInit {
 			price: this.item.price,
 			currency: this.item.currency,
 		});
+	}
+
+	async onUnitChanged(unitSelect) {
+		const selectedUnit = unitSelect.value;
+		if (selectedUnit === 'new') {
+			const newUnit = await this.inputNewUnit();
+			if (!newUnit || newUnit.length <= 0) {
+				this.itemForm.controls['unit'].reset();
+				return;
+			}
+			if (!this.availableUnits.includes(newUnit)) {
+				this.availableUnits.push(newUnit);
+			}
+			this.itemForm.controls['unit'].setValue(newUnit);
+		}
+	}
+
+	async inputNewUnit() {
+		const inputAlert = await this.alertController.create({
+			inputs: [
+				{
+					type: 'text',
+					attributes: { autoComplete: 'off' },
+				},
+			],
+			buttons: [{ text: 'Cancel' }, { text: 'Ok' }],
+		});
+		await inputAlert.present();
+		const { data } = await inputAlert.onDidDismiss();
+		if (!data.values) {
+			data.values = [];
+		}
+		const newUnit = data.values[0];
+		return newUnit;
 	}
 
 	onSubmit() {

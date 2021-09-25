@@ -74,6 +74,10 @@ export interface ItemGroupProps {
 export interface AddShoppingListProps {
 	name: string;
 }
+export interface UpdateLibraryProps {
+	sortMode: string;
+	sortDirection: string;
+}
 export interface UpdateShoppingListProps {
 	name: string;
 	listId: string;

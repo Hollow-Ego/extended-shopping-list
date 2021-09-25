@@ -29,13 +29,14 @@ const _shoppingListReducer = createReducer(
 		SLActions.startAddListItem,
 		SLActions.startAddToItemGroup,
 		SLActions.startUpdateLibraryItem,
+		SLActions.startUpdateLibrary,
 		SLActions.startSyncListItemAndLibItem,
 		SLActions.startUpdateSettings,
 		SLActions.startAddShoppingList,
 		SLActions.startUpdateShoppingList,
 		SLActions.startRemoveShoppingList,
 		SLActions.startToggleListMode,
-		SLActions.startUpdateSortMode,
+
 		state => ({
 			...state,
 			isLoading: true,
@@ -48,6 +49,7 @@ const _shoppingListReducer = createReducer(
 	on(
 		SLActions.endAddLibraryItem,
 		SLActions.endUpdateLibraryItem,
+		SLActions.endUpdateLibrary,
 		SLActions.endRemoveLibraryItem,
 		(state, props) => {
 			return updateLibraryItemState(state, props);

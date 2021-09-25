@@ -1,7 +1,12 @@
+import { SORT_BY_NAME, SORT_ASCENDING } from '../constants';
 import { LibraryItem } from '../models/library-item.model';
 
 export class ItemLibrary {
-	constructor(private items: Map<string, LibraryItem> = new Map()) {}
+	constructor(
+		private items: Map<string, LibraryItem> = new Map(),
+		private sortMode: string = SORT_BY_NAME,
+		private sortDirection: string = SORT_ASCENDING
+	) {}
 
 	get(id: string) {
 		return this.items.get(id);
@@ -47,5 +52,25 @@ export class ItemLibrary {
 			}
 		});
 		return [...new Set(tags)];
+	}
+
+	getAllUnits() {
+		const units = [];
+		this.items.forEach(item => {
+			const unit = item.unit;
+			if (unit && typeof unit !== 'undefined') {
+				units.push(unit);
+			}
+		});
+		return [...new Set(units)];
+	}
+
+	getSortDetails() {
+		return { sortMode: this.sortMode, sortDirection: this.sortDirection };
+	}
+
+	setSortDetails(newMode: string, newDirection: string) {
+		this.sortMode = newMode;
+		this.sortDirection = newDirection;
 	}
 }

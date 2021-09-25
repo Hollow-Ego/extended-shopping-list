@@ -16,6 +16,7 @@ import {
 	ListIdProps,
 	StateDetailsProps,
 	ToggleListModeProps,
+	UpdateLibraryProps,
 } from '../shared/models/action-props.model';
 
 import { PopulatedItem } from '../shared/models/populated-item.model';
@@ -53,6 +54,16 @@ export class ShoppingListService {
 			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
 			const updatedItem: LibraryItem = { ...item };
 			newLibrary.update(item.itemID, updatedItem);
+			return this.storage.set(Constants.LIBRARY_KEY, newLibrary);
+		} catch (error) {
+			throw Error(error);
+		}
+	}
+
+	updateLibrary(state: UpdateLibraryProps, itemLibrary: ItemLibrary) {
+		try {
+			const newLibrary: ItemLibrary = this.cloneItemLibrary(itemLibrary);
+			newLibrary.setSortDetails(state.sortMode, state.sortDirection);
 			return this.storage.set(Constants.LIBRARY_KEY, newLibrary);
 		} catch (error) {
 			throw Error(error);

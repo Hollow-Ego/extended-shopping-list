@@ -14,6 +14,7 @@ import {
 	ListIdProps,
 	StateDetailsProps,
 	ToggleListModeProps,
+	UpdateLibraryProps,
 } from '../shared/models/action-props.model';
 import { SettingsData } from '../shared/models/settings.model';
 
@@ -44,6 +45,16 @@ export const startUpdateLibraryItem = createAction(
 
 export const endUpdateLibraryItem = createAction(
 	'[PSXL1] END_UPDATE_LIBRARY_ITEM',
+	props<GeneralReturnProps>()
+);
+
+export const startUpdateLibrary = createAction(
+	'[PSXL1] START_UPDATE_LIBRARY',
+	props<UpdateLibraryProps>()
+);
+
+export const endUpdateLibrary = createAction(
+	'[PSXL1] END_UPDATE_LIBRARY',
 	props<GeneralReturnProps>()
 );
 
@@ -186,16 +197,6 @@ export const endSetNewCurrentList = createAction(
 	props<ListIdProps>()
 );
 
-export const startUpdateSortMode = createAction(
-	'[PSXL1] START_UPDATE_SORT_MODE',
-	props<StateDetailsProps>()
-);
-
-export const endUpdateSortMode = createAction(
-	'[PSXL1] END_UPDATE_SORT_MODE',
-	props<StateDetailsProps>()
-);
-
 export const raiseGeneralError = createAction(
 	'[PSXL1] RAISE_GENERAL_ERROR',
 	props<GeneralReturnProps>()
@@ -209,6 +210,8 @@ const actions = union({
 	endAddLibraryItem,
 	startUpdateLibraryItem,
 	endUpdateLibraryItem,
+	startUpdateLibrary,
+	endUpdateLibrary,
 	startRemoveLibraryItem,
 	endRemoveLibraryItem,
 
@@ -240,9 +243,6 @@ const actions = union({
 
 	startSetNewCurrentList,
 	endSetNewCurrentList,
-
-	startUpdateSortMode,
-	endUpdateSortMode,
 
 	raiseGeneralError,
 });

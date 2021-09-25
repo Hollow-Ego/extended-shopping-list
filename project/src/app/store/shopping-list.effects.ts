@@ -65,6 +65,10 @@ export class ShoppingListEffects {
 
 							if (loadedItemLibrary) {
 								itemLibrary.setItems(loadedItemLibrary.items);
+								itemLibrary.setSortDetails(
+									loadedItemLibrary.sortMode,
+									loadedItemLibrary.sortDirection
+								);
 							}
 
 							if (loadedItemGroup) {
@@ -148,6 +152,23 @@ export class ShoppingListEffects {
 				return from(this.SLService.updateLibraryItem(props, itemLibrary)).pipe(
 					map(itemLibrary => {
 						return SLActions.endUpdateLibraryItem({ itemLibrary });
+					}),
+					catchError((err: Error) => {
+						return of(SLActions.raiseGeneralError({ errors: [err.message] }));
+					})
+				);
+			})
+		)
+	);
+
+	startUpdateLibrary$ = createEffect(() =>
+		this.actions$.pipe(
+			ofType(SLActions.startUpdateLibrary),
+			concatLatestFrom(() => this.store$.select(selectItemLibrary)),
+			mergeMap(([props, itemLibrary]) => {
+				return from(this.SLService.updateLibrary(props, itemLibrary)).pipe(
+					map(itemLibrary => {
+						return SLActions.endUpdateLibrary({ itemLibrary });
 					}),
 					catchError((err: Error) => {
 						return of(SLActions.raiseGeneralError({ errors: [err.message] }));

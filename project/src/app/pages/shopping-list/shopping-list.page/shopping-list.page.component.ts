@@ -22,6 +22,7 @@ import { selectShoppingList } from '../../../store/shopping-list.selectors';
 import { Subscription } from 'rxjs';
 import { ActionPopoverComponent } from '../../../components/action-popover/action-popover.component';
 import { ShoppingListService } from '../../../services/shopping-list.service';
+import { sortItemByName, sortItemByTag } from '../../../shared/sorting';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
 	templateUrl: './shopping-list.page.component.html',
@@ -42,6 +43,8 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 	public SORT_ASCENDING: string = SORT_ASCENDING;
 	public SORT_DESCENDING: string = SORT_DESCENDING;
 	public arrowName: string = 'arrow-down';
+	public sortingCategories = [];
+	public sortedTagItems = [];
 	private listSub: Subscription;
 
 	constructor(
@@ -60,7 +63,6 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 				}
 
 				let { sortMode, sortDirection } = list.getSortDetails();
-				// console.log(sortMode, sortDirection);
 
 				if (!sortMode) {
 					sortMode = SORT_BY_NAME;
@@ -72,14 +74,33 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 
 				this.sortMode = sortMode;
 				this.sortDirection = sortDirection;
+				this.sortingCategories = [];
+				this.sortedTagItems = [];
 
 				const stateItemArray = Array.from(list.getAllItems().values());
-				const sortFunction =
-					this.sortMode === SORT_BY_NAME
-						? this.sortItemByName
-						: this.sortItemByTag;
-				this.items = stateItemArray.sort(sortFunction.bind(this));
 
+				const sortFunction =
+					this.sortMode === SORT_BY_NAME ? sortItemByName : sortItemByTag;
+				this.items = stateItemArray.sort(
+					sortFunction.bind(this, this.sortDirection)
+				);
+
+				if (this.sortMode === SORT_BY_TAG) {
+					this.items.forEach(item => {
+						let tag = item.tags[0];
+						if (typeof tag === 'undefined') {
+							tag = 'aboutItems.undefinedTagName';
+						}
+
+						if (!this.sortingCategories.includes(tag)) {
+							const newIndex = this.sortingCategories.push(tag);
+							this.sortedTagItems[newIndex - 1] = [];
+						}
+
+						const categoryIndex = this.sortingCategories.indexOf(tag);
+						this.sortedTagItems[categoryIndex].push(item);
+					});
+				}
 				this.arrowName =
 					this.sortDirection === SORT_ASCENDING ? 'arrow-up' : 'arrow-down';
 
@@ -94,6 +115,7 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 			component: AddEditModalComponent,
 			componentProps: {
 				availableTags: this.library.getAllTags(),
+				availableUnits: this.library.getAllUnits(),
 				isNewLibraryItem: false,
 			},
 		});
@@ -136,6 +158,7 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 			component: AddEditModalComponent,
 			componentProps: {
 				availableTags: this.library.getAllTags(),
+				availableUnits: this.library.getAllUnits(),
 				item,
 				mode: MODAL_EDIT_MODE,
 				isNewLibraryItem: false,
@@ -256,31 +279,6 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		this.store.dispatch(
 			SLActions.startRemoveShoppingList({ listId: this.listId })
 		);
-	}
-
-	sortItemByName(a: PopulatedItem, b: PopulatedItem) {
-		const nameA = a.name.toUpperCase();
-		const nameB = b.name.toUpperCase();
-		const ascending = this.sortDirection === SORT_ASCENDING;
-		if (nameA < nameB) {
-			return ascending ? -1 : 1;
-		}
-		return ascending ? 1 : -1;
-	}
-
-	sortItemByTag(a: PopulatedItem, b: PopulatedItem) {
-		const tagNameA = a.tags[0]?.toUpperCase();
-		const tagNameB = b.tags[0]?.toUpperCase();
-
-		const ascending = this.sortDirection === SORT_ASCENDING;
-
-		if (tagNameA === tagNameB) {
-			return this.sortItemByName(a, b);
-		}
-		if (tagNameA < tagNameB) {
-			return ascending ? -1 : 1;
-		}
-		return ascending ? 1 : -1;
 	}
 
 	trackByID(index: number, item) {

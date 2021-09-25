@@ -29,9 +29,20 @@
   </ion-card-content>
 </ion-card>
 
-<ion-card class="list-card ">
+<ion-card class="list-card" *ngIf="this.sortMode === SORT_BY_NAME">
   <ion-reorder-group>
     <pxsl1-populated-item *ngFor="let item of items;" [item]="item" [isEditMode]="currentMode === EDIT_MODE"
+      (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
+    </pxsl1-populated-item>
+  </ion-reorder-group>
+</ion-card>
+
+<ion-card class="list-card" *ngIf="this.sortMode === SORT_BY_TAG">
+  <ion-reorder-group *ngFor="let category of sortingCategories; index as i">
+    <ion-item-divider>
+      <ion-label>{{category | translate}}</ion-label>
+    </ion-item-divider>
+    <pxsl1-populated-item *ngFor="let item of sortedTagItems[i];" [item]="item" [isEditMode]="currentMode === EDIT_MODE"
       (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
     </pxsl1-populated-item>
   </ion-reorder-group>

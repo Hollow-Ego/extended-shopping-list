@@ -16,6 +16,7 @@ import * as SLActions from '../../store/shopping-list.actions';
 
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { take } from 'rxjs/operators';
+import { sortListByName } from '../../shared/sorting';
 
 @Component({
 	selector: 'pxsl1-shopping-list',
@@ -44,7 +45,7 @@ export class ShoppingListView implements OnInit, OnDestroy, AfterViewInit {
 
 			this.itemGroups = state.itemGroups;
 			const stateListArray = Array.from(state.shoppingLists.values());
-			this.shoppingLists = stateListArray.sort(this.sortListByName);
+			this.shoppingLists = stateListArray.sort(sortListByName);
 		});
 	}
 
@@ -77,15 +78,6 @@ export class ShoppingListView implements OnInit, OnDestroy, AfterViewInit {
 				SLActions.startSetNewCurrentList({ currentListId: newListId })
 			);
 		});
-	}
-
-	sortListByName(a: ShoppingList, b: ShoppingList) {
-		var nameA = a.getName().toUpperCase();
-		var nameB = b.getName().toUpperCase();
-		if (nameA < nameB) {
-			return -1;
-		}
-		return 1;
 	}
 
 	ngOnDestroy() {
