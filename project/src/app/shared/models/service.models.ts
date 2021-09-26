@@ -17,5 +17,6 @@ export interface LibraryServiceState {
 export interface SettingsServiceState {
 	language: string;
 	theme: string;
+	defaultCurrency: string;
 	stateVersion: string;
 }

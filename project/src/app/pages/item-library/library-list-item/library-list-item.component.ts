@@ -1,14 +1,17 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
 import { ActionPopoverComponent } from '../../../components/action-popover/action-popover.component';
 import { AddEditModalComponent } from '../../../components/modals/add-edit-modal/add-edit-modal.component';
 import { LibraryService } from '../../../services/library.service';
 import { ShoppingListService } from '../../../services/shopping-list.service';
+import { ToastService } from '../../../services/toast.service';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 import {
 	ACTION_EDIT,
 	ACTION_DELETE,
 	MODAL_EDIT_MODE,
 } from '../../../shared/constants';
+import { TranslationService } from '../../../shared/i18n/translation.service';
 import { AddEditModalOutput } from '../../../shared/models/add-edit-modal-data.model';
 import { LibraryItem } from '../../../shared/models/library-item.model';
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
@@ -20,15 +23,24 @@ import { PopulatedItem } from '../../../shared/models/populated-item.model';
 })
 export class LibraryListItemComponent implements OnInit {
 	@Input() item: LibraryItem;
+	private addItemToastMessage: string;
 
 	constructor(
 		private popoverCtrl: PopoverController,
 		private modalCtrl: ModalController,
 		private libraryService: LibraryService,
-		private SLService: ShoppingListService
+		private SLService: ShoppingListService,
+		private toastService: ToastService,
+		private translate: TranslationService
 	) {}
 
-	ngOnInit() {}
+	ngOnInit() {
+		this.translate
+			.getTranslation('messages.addItemToast')
+			.subscribe((translation: string) => {
+				this.addItemToastMessage = translation;
+			});
+	}
 
 	hasImage() {
 		return this.item.imgData.webviewPath !== '';
@@ -84,13 +96,18 @@ export class LibraryListItemComponent implements OnInit {
 		this.libraryService.removeLibraryItem(itemId);
 	}
 
-	onAddToList(item: LibraryItem) {
+	async onAddToList(item: LibraryItem) {
 		const { amount } = item;
 		const newShoppingItem: PopulatedItem = {
 			amount,
 			itemId: null,
 			name: item.name,
+			tags: [],
 		};
 		this.SLService.addListItem(newShoppingItem, amount);
+		Haptics.notification({ type: NotificationType.Success });
+		this.toastService.showSimpleToast(
+			`${item.name} ${this.addItemToastMessage} `
+		);
 	}
 }

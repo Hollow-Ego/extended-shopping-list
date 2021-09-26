@@ -27,6 +27,19 @@
           </ion-item>
         </ion-col>
       </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">{{ 'aboutItems.currency' | translate }}
+            </ion-label>
+            <ion-select [value]="defaultCurrency" (ionChange)="onUpdateCurrency($event)">
+              <ion-select-option *ngFor="let currency of allCurrencyData" [value]="currency.code">
+                {{currency.symbol_native}} ({{currency.code}})
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
     </ion-grid>
   </ion-card>
 </ion-content>

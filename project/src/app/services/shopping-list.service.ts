@@ -17,6 +17,11 @@ import { ShoppingListServiceState } from '../shared/models/service.models';
 })
 export class ShoppingListService {
 	private currentStateVersion = '1.0';
+	private defaultShoppingList: ShoppingList = new ShoppingList(
+		new Map(),
+		'Unnamed',
+		'def'
+	);
 	private defaultState: ShoppingListServiceState = {
 		shoppingLists: new Map<string, ShoppingList>(),
 		activeList: '',
@@ -26,6 +31,7 @@ export class ShoppingListService {
 
 	shoppingListChanges: BehaviorSubject<ShoppingListServiceState> =
 		new BehaviorSubject<ShoppingListServiceState>(this.listState);
+	defaultCompatibleState: any = { shoppingLists: new Map(), activeList: '' };
 
 	constructor(
 		private storage: Storage,
@@ -40,19 +46,23 @@ export class ShoppingListService {
 		const compatibleState = this.ensureCompatibility(loadedListState);
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 
-		compatibleState.shoppingLists.forEach(rawList => {
-			const list = new ShoppingList(
-				rawList.shoppingItems,
-				rawList.name,
-				rawList.id,
-				rawList.mode,
-				rawList.sortMode,
-				rawList.sortDirection
-			);
-			updatedListMap.set(list.getListID(), list);
-		});
-
-		let updatedActiveList = compatibleState.activeList;
+		let updatedActiveList = '';
+		if (compatibleState.shoppingLists.size > 0) {
+			compatibleState.shoppingLists.forEach(rawList => {
+				const list = new ShoppingList(
+					rawList.shoppingItems,
+					rawList.name,
+					rawList.id,
+					rawList.mode,
+					rawList.sortMode,
+					rawList.sortDirection
+				);
+				updatedListMap.set(list.getListID(), list);
+			});
+			if (updatedListMap.has(compatibleState.activeList)) {
+				updatedActiveList = compatibleState.activeList;
+			}
+		}
 
 		this.listState = {
 			...this.listState,
@@ -64,6 +74,9 @@ export class ShoppingListService {
 	}
 
 	ensureCompatibility(loadedListState: any) {
+		if (!loadedListState) {
+			return cloneDeep(this.defaultCompatibleState);
+		}
 		switch (loadedListState.stateVersion) {
 			case undefined:
 			case null:
@@ -75,7 +88,7 @@ export class ShoppingListService {
 	}
 
 	convertUndefinedState(oldState: any) {
-		const compatibleState = { shoppingLists: new Map(), activeList: '' };
+		const compatibleState = cloneDeep(this.defaultCompatibleState);
 		if (oldState.constructor === Map) {
 			compatibleState.shoppingLists = oldState;
 		}
@@ -222,9 +235,7 @@ export class ShoppingListService {
 		if (!listId) {
 			listId = this.listState.activeList;
 		}
-		const originalList = updatedListMap.get(listId);
-		const updatedShoppingList: ShoppingList = cloneDeep(originalList);
-
+		const updatedShoppingList: ShoppingList = updatedListMap.get(listId);
 		updatedShoppingList.toggleMode();
 
 		this.listState = {

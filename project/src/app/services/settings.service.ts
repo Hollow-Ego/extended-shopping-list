@@ -9,12 +9,14 @@ import { DARK_THEME, LIGHT_THEME, SETTINGS_KEY } from '../shared/constants';
 	providedIn: 'root',
 })
 export class SettingsService {
-	private currentStateVersion = '1.0';
+	private currentStateVersion = '1.1';
+	private defaultCurrency = 'EUR';
 	private defaultState: SettingsServiceState = {
 		language: 'en',
 		theme: window.matchMedia('(prefers-color-scheme: dark)').matches
 			? DARK_THEME
 			: LIGHT_THEME,
+		defaultCurrency: this.defaultCurrency,
 		stateVersion: this.currentStateVersion,
 	};
 
@@ -36,18 +38,25 @@ export class SettingsService {
 			...compatibleState,
 			stateVersion: this.currentStateVersion,
 		};
-		console.log(this.settingsState);
 		this.settingChanges.next(this.settingsState);
 	}
 
-	ensureCompatibility(loadedListState: any) {
-		switch (loadedListState.stateVersion) {
+	ensureCompatibility(loadedSettingsState: any) {
+		if (!loadedSettingsState) {
+			return cloneDeep(this.defaultState);
+		}
+		switch (loadedSettingsState.stateVersion) {
 			case undefined:
 			case null:
-				const compatibleState = this.convertUndefinedState(loadedListState);
+				const compatibleState = this.convertUndefinedState(loadedSettingsState);
 				return compatibleState;
+			case '1.0':
+				return {
+					...loadedSettingsState,
+					defaultCurrency: this.defaultCurrency,
+				};
 			default:
-				return loadedListState;
+				return loadedSettingsState;
 		}
 	}
 
@@ -56,13 +65,18 @@ export class SettingsService {
 		return { ...compatibleState, ...oldState };
 	}
 
-	async setTheme(theme: string) {
+	setTheme(theme: string) {
 		this.settingsState = { ...this.settingsState, theme };
 		this.updateState();
 	}
 
-	async setLanguage(language: string) {
+	setLanguage(language: string) {
 		this.settingsState = { ...this.settingsState, language };
+		this.updateState();
+	}
+
+	setDefaultCurrency(defaultCurrency: string) {
+		this.settingsState = { ...this.settingsState, defaultCurrency };
 		this.updateState();
 	}
 

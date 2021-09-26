@@ -36,6 +36,7 @@
 		"title": "Menu"
 	},
 	"messages": {
+		"addItemToast": "was added",
 		"closeToast": "Tap back again to close app!",
 		"deletingImageError": "Image couldn't be removed!"
 	},
@@ -58,7 +59,7 @@
 		"shoppingModeTitle": "Shop"
 	},
 	"uiStrings": {
-		"activeListText": "Current List",
+		"activeListText": "Active List",
 		"addTagPlaceholder": "Enter a tag name...",
 		"addTagText": "Tags",
 		"addToLibraryCheckboxText": "Add to Library",

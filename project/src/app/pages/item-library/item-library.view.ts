@@ -135,12 +135,6 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 		this.libraryService.updateSortDetails(sortMode, this.sortDirection);
 	}
 
-	getListName() {
-		// if (!this.shoppingLists || !this.currentListId) return '-';
-		// return this.shoppingLists.get(this.currentListId).getName();
-		return 'Dummy';
-	}
-
 	ngOnDestroy() {
 		this.libraryStateSub.unsubscribe();
 	}

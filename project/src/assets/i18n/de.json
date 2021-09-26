@@ -36,6 +36,7 @@
 		"title": "Menü"
 	},
 	"messages": {
+		"addItemToast": "wurde hinzugefügt",
 		"closeToast": "Tippen Sie erneut auf Zurück, um die App zu schließen!",
 		"deletingImageError": "Bild konnte nicht entfernt werden!"
 	},
