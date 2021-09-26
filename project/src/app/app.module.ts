@@ -11,10 +11,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { IonicStorageModule } from '@ionic/storage';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 export function HttpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -36,10 +32,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 			},
 		}),
 		AppRoutingModule,
-		StoreDevtoolsModule.instrument({
-			maxAge: 25, // Retains last 25 states
-			serialize: true,
-		}),
 	],
 	providers: [StatusBar, SplashScreen],
 	bootstrap: [AppComponent],
