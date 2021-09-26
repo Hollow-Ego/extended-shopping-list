@@ -6,10 +6,12 @@
 		"defaultAmount": "Standardmenge",
 		"imgUrl": "Bild",
 		"name": "Name",
+		"newUnitText": "Neue Einheit",
 		"optionalText": "Optional",
 		"price": "Preis pro Einheit",
 		"tags": "Tags",
 		"takePictureText": "Bild aufnehmen / auswählen",
+		"undefinedTagName": "Ohne Label",
 		"unit": "Einheit",
 		"warnImageLoadError": "Bild konnte nicht geladen werden!"
 	},
@@ -34,6 +36,7 @@
 		"title": "Menü"
 	},
 	"messages": {
+		"addItemToast": "wurde hinzugefügt",
 		"closeToast": "Tippen Sie erneut auf Zurück, um die App zu schließen!",
 		"deletingImageError": "Bild konnte nicht entfernt werden!"
 	},
@@ -60,6 +63,7 @@
 		"addTagPlaceholder": "Tag-Namen eingeben",
 		"addTagText": "Tags",
 		"addToLibraryCheckboxText": "Zur Bibliothek hinzufügen",
+		"addUnitText": "Neue Einheit eingeben",
 		"fromGalleryText": "Aus Album",
 		"includeTagsText": "Tags in Suche einbeziehen",
 		"library": "Bibliothek",

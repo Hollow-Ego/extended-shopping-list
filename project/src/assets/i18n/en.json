@@ -6,10 +6,12 @@
 		"defaultAmount": "Default Amount",
 		"imgUrl": "Image",
 		"name": "Name",
+		"newUnitText": "New Unit",
 		"optionalText": "Optional",
 		"price": "Price per Unit",
 		"tags": "Tags",
 		"takePictureText": "Take/Select Picture",
+		"undefinedTagName": "Without Label",
 		"unit": "Unit",
 		"warnImageLoadError": "Image couldn't be loaded!"
 	},
@@ -34,6 +36,7 @@
 		"title": "Menu"
 	},
 	"messages": {
+		"addItemToast": "was added",
 		"closeToast": "Tap back again to close app!",
 		"deletingImageError": "Image couldn't be removed!"
 	},
@@ -56,10 +59,11 @@
 		"shoppingModeTitle": "Shop"
 	},
 	"uiStrings": {
-		"activeListText": "Current List",
+		"activeListText": "Active List",
 		"addTagPlaceholder": "Enter a tag name...",
 		"addTagText": "Tags",
 		"addToLibraryCheckboxText": "Add to Library",
+		"addUnitText": "Enter new Unit",
 		"fromGalleryText": "From Gallery",
 		"includeTagsText": "Include Tags in search",
 		"library": "Library",

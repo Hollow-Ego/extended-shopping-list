@@ -2,12 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { SingleCurrencyData } from '../../../shared/models/currency-data.model';
 import { LibraryItem } from '../../../shared/models/library-item.model';
 import * as data from '../../../shared/i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
 import { MODAL_ADD_MODE } from '../../../shared/constants';
+import { LibraryService } from '../../../services/library.service';
 @Component({
 	selector: 'pxsl1-add-edit-modal',
 	templateUrl: './add-edit-modal.component.html',
@@ -17,19 +18,22 @@ export class AddEditModalComponent implements OnInit {
 	constructor(
 		public formBuilder: FormBuilder,
 		public modalController: ModalController,
-		private imageService: ImageService
+		public alertController: AlertController,
+		private imageService: ImageService,
+		private libraryService: LibraryService
 	) {}
 
 	@Input() item: PopulatedItem | LibraryItem = null;
 	@Input() mode: string = MODAL_ADD_MODE;
-	@Input() availableTags: string[];
 	@Input() isNewLibraryItem: boolean = true;
 
+	public availableUnits: string[];
+	public availableTags: string[];
 	public itemForm: FormGroup;
 	public updateLibrary = false;
 
 	public allCurrencyData: SingleCurrencyData[];
-	// To be refactored into a setting
+	// TODO To be refactored into a setting
 	private defaultCurrency: SingleCurrencyData = {
 		symbol: '\u20AC',
 		code: 'EUR',
@@ -42,7 +46,7 @@ export class AddEditModalComponent implements OnInit {
 		this.allCurrencyData = Object.values(data['default'].currencies);
 		if (!this.item) {
 			this.item = {
-				itemID: null,
+				itemId: null,
 				name: null,
 				imgData: { filepath: '', fileName: '', webviewPath: '' },
 				amount: null,
@@ -54,7 +58,7 @@ export class AddEditModalComponent implements OnInit {
 		}
 
 		this.itemForm = this.formBuilder.group({
-			itemID: this.item.itemID,
+			itemId: this.item.itemId,
 			name: [this.item.name, [Validators.required, Validators.minLength(3)]],
 			amount: this.item.amount,
 			imgData: this.item.imgData,
@@ -63,6 +67,45 @@ export class AddEditModalComponent implements OnInit {
 			price: this.item.price,
 			currency: this.item.currency,
 		});
+
+		this.libraryService.libraryChanges.subscribe(libraryState => {
+			this.availableTags = libraryState.tagLibrary;
+			this.availableUnits = libraryState.unitLibrary;
+		});
+	}
+
+	async onUnitChanged(unitSelect) {
+		const selectedUnit = unitSelect.value;
+		if (selectedUnit === 'new') {
+			const newUnit = await this.inputNewUnit();
+			if (!newUnit || newUnit.length <= 0) {
+				this.itemForm.controls['unit'].reset();
+				return;
+			}
+			if (!this.availableUnits.includes(newUnit)) {
+				this.availableUnits.push(newUnit);
+			}
+			this.itemForm.controls['unit'].setValue(newUnit);
+		}
+	}
+
+	async inputNewUnit() {
+		const inputAlert = await this.alertController.create({
+			inputs: [
+				{
+					type: 'text',
+					attributes: { autoComplete: 'off' },
+				},
+			],
+			buttons: [{ text: 'Cancel' }, { text: 'Ok' }],
+		});
+		await inputAlert.present();
+		const { data } = await inputAlert.onDidDismiss();
+		if (!data.values) {
+			data.values = [];
+		}
+		const newUnit = data.values[0];
+		return newUnit;
 	}
 
 	onSubmit() {

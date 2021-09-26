@@ -1,12 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
-import { Store } from '@ngrx/store';
 import { AddEditModalComponent } from '../../../components/modals/add-edit-modal/add-edit-modal.component';
-import { ItemLibrary } from '../../../shared/classes/item-library.class';
 import { AddEditModalOutput } from '../../../shared/models/add-edit-modal-data.model';
 import { PopulatedItem } from '../../../shared/models/populated-item.model';
-import * as fromApp from '../../../store/app.reducer';
-import * as SLActions from '../../../store/shopping-list.actions';
 import {
 	ACTION_DELETE,
 	ACTION_RENAME,
@@ -18,10 +14,11 @@ import {
 	SORT_BY_TAG,
 	SORT_DESCENDING,
 } from '../../../shared/constants';
-import { selectShoppingList } from '../../../store/shopping-list.selectors';
 import { Subscription } from 'rxjs';
 import { ActionPopoverComponent } from '../../../components/action-popover/action-popover.component';
 import { ShoppingListService } from '../../../services/shopping-list.service';
+import { sortItemByName, sortItemByTag } from '../../../shared/sorting';
+import { ShoppingList } from '../../../shared/classes/shopping-list.class';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
 	templateUrl: './shopping-list.page.component.html',
@@ -29,71 +26,80 @@ import { ShoppingListService } from '../../../services/shopping-list.service';
 })
 export class ShoppingListPageComponent implements OnInit, OnDestroy {
 	@Input() listId: string;
-	public library: ItemLibrary;
+	public list: ShoppingList;
 	public items: PopulatedItem[];
 	public listName: string;
-	public currentMode: string;
-	public EDIT_MODE: string = EDIT_MODE;
-	public SHOPPING_MODE: string = SHOPPING_MODE;
 	public sortMode: string;
 	public sortDirection: string;
+	public viewMode: string;
+
+	public EDIT_MODE: string = EDIT_MODE;
+	public SHOPPING_MODE: string = SHOPPING_MODE;
 	public SORT_BY_NAME: string = SORT_BY_NAME;
 	public SORT_BY_TAG: string = SORT_BY_TAG;
 	public SORT_ASCENDING: string = SORT_ASCENDING;
 	public SORT_DESCENDING: string = SORT_DESCENDING;
+
 	public arrowName: string = 'arrow-down';
+	public sortingCategories = [];
+	public sortedTagItems = [];
 	private listSub: Subscription;
 
 	constructor(
-		private store: Store<fromApp.AppState>,
 		private modalCtrl: ModalController,
 		public popoverCtrl: PopoverController,
 		private SLService: ShoppingListService
 	) {}
 
 	ngOnInit() {
-		this.listSub = this.store
-			.select(selectShoppingList({ id: this.listId }))
-			.subscribe(({ list, library, isLoading }) => {
-				if (!list || isLoading) {
-					return;
-				}
+		this.listSub = this.SLService.shoppingListChanges.subscribe(listState => {
+			this.list = listState.shoppingLists.get(this.listId);
+			let { sortMode, sortDirection } = this.list.getSortDetails();
+			if (!sortMode) {
+				sortMode = SORT_BY_NAME;
+			}
+			if (!sortDirection) {
+				sortDirection = SORT_ASCENDING;
+			}
+			this.sortMode = sortMode;
+			this.sortDirection = sortDirection;
+			this.sortingCategories = [];
+			this.sortedTagItems = [];
+			const stateItemArray = Array.from(this.list.getAllItems().values());
+			const sortFunction =
+				this.sortMode === SORT_BY_NAME ? sortItemByName : sortItemByTag;
+			this.items = stateItemArray.sort(
+				sortFunction.bind(this, this.sortDirection)
+			);
+			if (this.sortMode === SORT_BY_TAG) {
+				this.items.forEach(item => {
+					let tags = item.tags;
+					let tag;
+					if (typeof tags === 'undefined') {
+						tag = 'aboutItems.undefinedTagName';
+					} else {
+						tag = tags[0];
+					}
 
-				let { sortMode, sortDirection } = list.getSortDetails();
-				// console.log(sortMode, sortDirection);
-
-				if (!sortMode) {
-					sortMode = SORT_BY_NAME;
-				}
-
-				if (!sortDirection) {
-					sortDirection = SORT_ASCENDING;
-				}
-
-				this.sortMode = sortMode;
-				this.sortDirection = sortDirection;
-
-				const stateItemArray = Array.from(list.getAllItems().values());
-				const sortFunction =
-					this.sortMode === SORT_BY_NAME
-						? this.sortItemByName
-						: this.sortItemByTag;
-				this.items = stateItemArray.sort(sortFunction.bind(this));
-
-				this.arrowName =
-					this.sortDirection === SORT_ASCENDING ? 'arrow-up' : 'arrow-down';
-
-				this.listName = list.getName();
-				this.currentMode = list.getMode();
-				this.library = library;
-			});
+					if (!this.sortingCategories.includes(tag)) {
+						const newIndex = this.sortingCategories.push(tag);
+						this.sortedTagItems[newIndex - 1] = [];
+					}
+					const categoryIndex = this.sortingCategories.indexOf(tag);
+					this.sortedTagItems[categoryIndex].push(item);
+				});
+			}
+			this.arrowName =
+				this.sortDirection === SORT_ASCENDING ? 'arrow-up' : 'arrow-down';
+			this.listName = this.list.getName();
+			this.viewMode = this.list.getMode();
+		});
 	}
 
 	async onAddItem() {
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
-				availableTags: this.library.getAllTags(),
 				isNewLibraryItem: false,
 			},
 		});
@@ -102,40 +108,24 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		const {
 			canceled,
 			itemData,
-			updateLibrary,
 		}: {
 			canceled: boolean;
 			itemData: AddEditModalOutput;
-			updateLibrary: boolean;
 		} = (await modal.onWillDismiss()).data;
 
 		if (canceled) {
 			return;
 		}
 
-		if (updateLibrary) {
-			this.store.dispatch(
-				SLActions.startSyncListItemAndLibItem({
-					...itemData,
-					addToListId: this.listId,
-				})
-			);
-			return;
-		}
+		const { amount } = itemData;
 
-		this.store.dispatch(
-			SLActions.startAddListItem({
-				item: itemData,
-				listId: this.listId,
-			})
-		);
+		this.SLService.addListItem(itemData, amount);
 	}
 
 	async onEditItem(item: PopulatedItem) {
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
-				availableTags: this.library.getAllTags(),
 				item,
 				mode: MODAL_EDIT_MODE,
 				isNewLibraryItem: false,
@@ -146,7 +136,6 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		const {
 			canceled,
 			itemData,
-			updateLibrary,
 		}: {
 			canceled: boolean;
 			itemData: AddEditModalOutput;
@@ -156,36 +145,15 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		if (canceled) {
 			return;
 		}
-
-		if (updateLibrary) {
-			this.store.dispatch(
-				SLActions.startSyncListItemAndLibItem({
-					...itemData,
-					addToListId: this.listId,
-				})
-			);
-			return;
-		}
-
-		this.store.dispatch(
-			SLActions.startUpdateListItem({
-				item: itemData,
-				listId: this.listId,
-			})
-		);
+		this.SLService.updateListItem(itemData);
 	}
 
 	onDeleteItem(item: PopulatedItem) {
-		this.store.dispatch(
-			SLActions.startRemoveListItem({
-				itemID: item.itemID,
-				listId: this.listId,
-			})
-		);
+		this.SLService.removeListItem(item.itemId);
 	}
 
 	onModeChange() {
-		this.store.dispatch(SLActions.startToggleListMode({ listId: this.listId }));
+		this.SLService.toggleListMode();
 	}
 
 	async onListActions($event) {
@@ -212,79 +180,28 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 	}
 
 	async renameList() {
-		const newName = await this.SLService.getNewListName(this.listName);
-		if (!newName) return;
-
-		this.store.dispatch(
-			SLActions.startUpdateShoppingList({
-				name: newName,
-				listId: this.listId,
-				sortMode: this.sortMode,
-				sortDirection: this.sortDirection,
-			})
-		);
+		this.SLService.renameList(this.listName);
 	}
 
 	changeSortMode($event) {
 		const sortMode = $event.detail.value;
-		this.store.dispatch(
-			SLActions.startUpdateShoppingList({
-				listId: this.listId,
-				name: this.listName,
-				sortMode: sortMode,
-				sortDirection: this.sortDirection,
-			})
-		);
+		this.SLService.updateShoppingList({ sortMode });
 	}
 
 	changeSortDirection() {
 		const sortDirection =
 			this.sortDirection === SORT_ASCENDING ? SORT_DESCENDING : SORT_ASCENDING;
-		this.store.dispatch(
-			SLActions.startUpdateShoppingList({
-				listId: this.listId,
-				name: this.listName,
-				sortMode: this.sortMode,
-				sortDirection: sortDirection,
-			})
-		);
+		this.SLService.updateShoppingList({ sortDirection });
 	}
 
 	async removeList() {
 		const confirmed = await this.SLService.confirmRemoval();
 		if (!confirmed) return;
-		this.store.dispatch(
-			SLActions.startRemoveShoppingList({ listId: this.listId })
-		);
-	}
-
-	sortItemByName(a: PopulatedItem, b: PopulatedItem) {
-		const nameA = a.name.toUpperCase();
-		const nameB = b.name.toUpperCase();
-		const ascending = this.sortDirection === SORT_ASCENDING;
-		if (nameA < nameB) {
-			return ascending ? -1 : 1;
-		}
-		return ascending ? 1 : -1;
-	}
-
-	sortItemByTag(a: PopulatedItem, b: PopulatedItem) {
-		const tagNameA = a.tags[0]?.toUpperCase();
-		const tagNameB = b.tags[0]?.toUpperCase();
-
-		const ascending = this.sortDirection === SORT_ASCENDING;
-
-		if (tagNameA === tagNameB) {
-			return this.sortItemByName(a, b);
-		}
-		if (tagNameA < tagNameB) {
-			return ascending ? -1 : 1;
-		}
-		return ascending ? 1 : -1;
+		this.SLService.removeShoppingList();
 	}
 
 	trackByID(index: number, item) {
-		return item ? item.itemID : undefined;
+		return item ? item.itemId : undefined;
 	}
 
 	ngOnDestroy() {

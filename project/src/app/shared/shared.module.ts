@@ -9,6 +9,7 @@ import { ImagePreloadDirective } from './image-preload.directive';
 import { LanguagePickerComponent } from '../components/language-picker/language-picker.component';
 import { TagInputComponent } from '../components/tag-input/tag-input.component';
 import { ActionPopoverComponent } from '../components/action-popover/action-popover.component';
+import { ActiveListNameComponent } from '../components/active-list-name/active-list-name.component';
 
 @NgModule({
 	declarations: [
@@ -18,6 +19,7 @@ import { ActionPopoverComponent } from '../components/action-popover/action-popo
 		LanguagePickerComponent,
 		TagInputComponent,
 		ActionPopoverComponent,
+		ActiveListNameComponent,
 	],
 	imports: [
 		TranslateModule.forChild({ extend: true }),
@@ -34,6 +36,7 @@ import { ActionPopoverComponent } from '../components/action-popover/action-popo
 		IonicModule,
 		FormsModule,
 		LanguagePickerComponent,
+		ActiveListNameComponent,
 	],
 })
 export class SharedModule {}

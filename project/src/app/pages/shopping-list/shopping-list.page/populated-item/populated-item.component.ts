@@ -34,7 +34,7 @@ export class PopulatedItemComponent implements OnInit {
 	constructor(private popoverCtrl: PopoverController) {}
 
 	ngOnInit() {
-		this.hasImage = this.item?.imgData.fileName.trim().length > 0;
+		this.hasImage = this.item?.imgData?.fileName.trim().length > 0;
 		this.amountString = this.buildAmountString();
 	}
 

@@ -15,13 +15,6 @@ export const DEFAULT_SHOPPING_LIST_NAME = 'uiStrings.unnamedList';
 export const DARK_THEME = '[PXSL1] DARK';
 export const LIGHT_THEME = '[PXSL1] LIGHT';
 
-export const DEFAULT_SETTINGS = {
-	language: 'en',
-	theme: window.matchMedia('(prefers-color-scheme: dark)').matches
-		? DARK_THEME
-		: LIGHT_THEME,
-};
-
 export const ACTION_EDIT = '[PXSL1] ACTION_EDIT';
 export const ACTION_RENAME = '[PXSL1] ACTION_RENAME';
 export const ACTION_DELETE = '[PXSL1] ACTION_DELETE';

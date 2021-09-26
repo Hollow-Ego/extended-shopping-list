@@ -1,56 +1,61 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import * as fromApp from '../../store/app.reducer';
-import * as SLActions from '../../store/shopping-list.actions';
-import { selectSettings } from '../../store/shopping-list.selectors';
-import * as Constants from '../..//shared/constants';
-import { SettingsData } from '../../shared/models/settings.model';
-
+import { SettingsService } from '../../services/settings.service';
+import { DARK_THEME, LIGHT_THEME } from '../../shared/constants';
+import { SingleCurrencyData } from '../../shared/models/currency-data.model';
+import * as data from '../../shared/i18n/currency-map.json';
+import { TranslationService } from '../../shared/i18n/translation.service';
 @Component({
 	selector: 'pxsl1-settings',
 	templateUrl: './settings.page.html',
 	styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit, OnDestroy {
-	constructor(private store: Store<fromApp.AppState>) {}
+	constructor(private settingsService: SettingsService) {}
 
-	private stateSub: Subscription;
-	public isDarkMode =
-		document.body.getAttribute('color-theme') === Constants.DARK_THEME;
+	private settingsStateSub: Subscription;
+	public isDarkMode = document.body.getAttribute('color-theme') === DARK_THEME;
 	public language: string;
-	public settings: SettingsData;
+	public allCurrencyData: SingleCurrencyData[];
+
+	defaultCurrency: string;
 
 	ngOnInit() {
-		this.stateSub = this.store.select(selectSettings).subscribe(settings => {
-			if (!settings) return;
-			this.settings = { ...settings };
-		});
+		this.allCurrencyData = Object.values(data['default'].currencies);
+		this.settingsStateSub = this.settingsService.settingChanges.subscribe(
+			settings => {
+				this.language = settings.language;
+				this.isDarkMode = settings.theme === DARK_THEME;
+				this.defaultCurrency = settings.defaultCurrency;
+			}
+		);
 	}
 
 	onToggleTheme() {
-		this.store.dispatch(
-			SLActions.startUpdateSettings({
-				...this.settings,
-				theme: this.getNewTheme(),
-			})
-		);
+		const newTheme = this.getNewTheme();
+		this.settingsService.setTheme(newTheme);
 	}
 
 	getNewTheme() {
-		return this.isDarkMode ? Constants.LIGHT_THEME : Constants.DARK_THEME;
+		return this.isDarkMode ? LIGHT_THEME : DARK_THEME;
 	}
 
 	onUpdateLanguage(language) {
-		this.store.dispatch(
-			SLActions.startUpdateSettings({
-				...this.settings,
-				language,
-			})
-		);
+		this.settingsService.setLanguage(language);
+	}
+
+	onUpdateCurrency(event) {
+		const currency = event.detail.value;
+		console.log(currency);
+
+		this.settingsService.setDefaultCurrency(currency);
 	}
 
 	ngOnDestroy() {
-		this.stateSub.unsubscribe();
+		this.settingsStateSub.unsubscribe();
+	}
+
+	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData) {
+		return cur1 && cur2 ? cur1.code === cur2.code : cur1 === cur2;
 	}
 }

@@ -12,7 +12,7 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <pxsl1-language-picker (languageChange)="onUpdateLanguage($event)" [(language)]="settings.language">
+          <pxsl1-language-picker (languageChange)="onUpdateLanguage($event)" [(language)]="language">
           </pxsl1-language-picker>
         </ion-col>
       </ion-row>
@@ -24,6 +24,19 @@
             </ion-label>
             <ion-toggle slot="end" (click)="onToggleTheme()" [(ngModel)]="isDarkMode">
             </ion-toggle>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">{{ 'aboutItems.currency' | translate }}
+            </ion-label>
+            <ion-select [value]="defaultCurrency" (ionChange)="onUpdateCurrency($event)">
+              <ion-select-option *ngFor="let currency of allCurrencyData" [value]="currency.code">
+                {{currency.symbol_native}} ({{currency.code}})
+              </ion-select-option>
+            </ion-select>
           </ion-item>
         </ion-col>
       </ion-row>

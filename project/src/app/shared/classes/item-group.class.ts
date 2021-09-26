@@ -7,8 +7,8 @@ export class ItemGroup {
 		private id: string
 	) {}
 
-	add(itemID: string) {
-		const newMembers = [...this.groupMembers, itemID];
+	add(itemId: string) {
+		const newMembers = [...this.groupMembers, itemId];
 		this.groupMembers = newMembers;
 	}
 
@@ -16,8 +16,8 @@ export class ItemGroup {
 		return this.id;
 	}
 
-	remove(itemID: string) {
-		const newMembers = this.groupMembers.filter(el => el !== itemID);
+	remove(itemId: string) {
+		const newMembers = this.groupMembers.filter(el => el !== itemId);
 		this.groupMembers = newMembers;
 	}
 
