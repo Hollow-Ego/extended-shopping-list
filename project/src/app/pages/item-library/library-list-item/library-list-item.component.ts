@@ -19,7 +19,6 @@ import { PopulatedItem } from '../../../shared/models/populated-item.model';
 @Component({
 	selector: 'pxsl1-library-list-item',
 	templateUrl: './library-list-item.component.html',
-	styleUrls: ['./library-list-item.component.scss'],
 })
 export class LibraryListItemComponent implements OnInit {
 	@Input() item: LibraryItem;

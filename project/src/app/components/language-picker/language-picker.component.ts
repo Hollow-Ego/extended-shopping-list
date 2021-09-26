@@ -5,7 +5,6 @@ import { TranslationService } from '../../shared/i18n/translation.service';
 @Component({
 	selector: 'pxsl1-language-picker',
 	templateUrl: './language-picker.component.html',
-	styleUrls: ['./language-picker.component.scss'],
 })
 export class LanguagePickerComponent implements OnInit {
 	@Input() language: string;

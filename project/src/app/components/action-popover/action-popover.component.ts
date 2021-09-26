@@ -9,7 +9,6 @@ import {
 @Component({
 	selector: 'pxsl1-action-popover',
 	templateUrl: './action-popover.component.html',
-	styleUrls: ['./action-popover.component.scss'],
 })
 export class ActionPopoverComponent implements OnInit {
 	@Input() options = [];

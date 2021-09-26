@@ -3,7 +3,6 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
 	selector: 'pxsl1-image',
 	templateUrl: './image-modal.component.html',
-	styleUrls: ['./image.component.scss'],
 })
 export class ImageModalComponent implements OnInit {
 	@Input() imageUrl: string;

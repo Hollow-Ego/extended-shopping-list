@@ -4,11 +4,10 @@ import { SettingsService } from '../../services/settings.service';
 import { DARK_THEME, LIGHT_THEME } from '../../shared/constants';
 import { SingleCurrencyData } from '../../shared/models/currency-data.model';
 import * as data from '../../shared/i18n/currency-map.json';
-import { TranslationService } from '../../shared/i18n/translation.service';
+
 @Component({
 	selector: 'pxsl1-settings',
 	templateUrl: './settings.page.html',
-	styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit, OnDestroy {
 	constructor(private settingsService: SettingsService) {}
