@@ -10,7 +10,7 @@ This app is based on my [Simplistic Shopping List app](https://github.com/Hollow
 
 Stage: Alpha
 
-Latest Stable Version: 0.2.0.0-alpha
+Latest Stable Version: 0.4.1.0-alpha
 
 ## Technical Details
 
