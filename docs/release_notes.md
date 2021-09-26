@@ -1,5 +1,26 @@
 # Release Notes for Extended Shopping List (XSL)
 
+## Version 0.4.1.0-alpha
+
+Second stable release. This is mostly refactoring from unreleased version 0.3.0.0-alpha.
+
+### New
+
+- Component to display active list name
+- Default currency is now a setting
+
+### Improved
+
+- Removed NgRx Store and switched to Services
+
+### Bug Fixes
+
+- Picking an image from library was not possible
+
+### Other
+
+Database solution will be reviewed in upcoming version. For that reason default currency will not be considered when adding a new item.
+
 ## Version 0.2.0.0-alpha
 
 Second stable release. Additional features were added, UI was restructured a bit and bugs were fixed.
@@ -22,6 +43,32 @@ Second stable release. Additional features were added, UI was restructured a bit
 ### Other
 
 More sorting options need to be implemented. App will stay in this state for a while, until I got more time to work on it again.
+
+## Version 0.1.0.0-alpha
+
+First stable release. Basic functionality (compared to Simplistic Shopping List) was restored. Shopping Mode now allows for double tapping to delete item, items can be put on any shopping list and be updated in the library, item library is functional.
+
+### New
+
+- Item Library is working
+- Shopping Lists can be added, renamed and removed
+- Items can be added to library and lists and edited/deleted independently
+- App now uses a tabbed layout
+- Side menu added; can be accessed by clicking on a button on the top left, on the action bar
+- Added Settings page
+- Added setting for language and dark/light theme
+
+### Improved
+
+None
+
+### Bug Fixes
+
+None
+
+### Other
+
+None
 
 ## Version 0.1.0.0-alpha
 
