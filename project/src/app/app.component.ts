@@ -7,7 +7,7 @@ import { TranslationService } from './shared/i18n/translation.service';
 import { App } from '@capacitor/app';
 import { Toast } from '@capacitor/toast';
 import { SettingsService } from './services/settings.service';
-import { Subscription } from 'rxjs';
+import { SQLiteService } from './services/sqlite.service';
 
 @Component({
 	selector: 'app-root',
@@ -17,13 +17,13 @@ import { Subscription } from 'rxjs';
 export class AppComponent {
 	private lastOnStart = 0;
 	private DOUBLE_CLICK_THRESHOLD = 2000;
-	private settingsSub: Subscription;
 	constructor(
 		private platform: Platform,
 		private splashScreen: SplashScreen,
 		private statusBar: StatusBar,
 		private translate: TranslationService,
-		private settingsService: SettingsService
+		private settingsService: SettingsService,
+		private database: SQLiteService
 	) {
 		this.initializeApp();
 	}
@@ -32,12 +32,13 @@ export class AppComponent {
 		this.platform.ready().then(() => {
 			this.statusBar.styleDefault();
 			this.splashScreen.hide();
-			this.settingsSub = this.settingsService.settingChanges.subscribe(
-				settings => {
-					document.body.setAttribute('color-theme', settings.theme);
-					this.translate.changeLanguage(settings.language);
-				}
-			);
+			this.database.initializePlugin().then(ret => {
+				console.log('>>>> in App  this.initPlugin ' + ret);
+			});
+			this.settingsService.settingChanges.subscribe(settings => {
+				document.body.setAttribute('color-theme', settings.theme);
+				this.translate.changeLanguage(settings.language);
+			});
 
 			document.addEventListener('ionBackButton', (ev: BackButtonEvent) => {
 				ev.detail.register(-1, () => {

@@ -8,7 +8,6 @@ import { createOrCopyID } from '../shared/utils';
 import { LibraryServiceState } from '../shared/models/service.models';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
-import { StoreService } from './store.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -31,16 +30,11 @@ export class LibraryService {
 	libraryChanges: BehaviorSubject<LibraryServiceState> =
 		new BehaviorSubject<LibraryServiceState>(this.libraryState);
 
-	constructor(
-		private storage: Storage,
-		private imageService: ImageService,
-		private _StoreService: StoreService
-	) {
+	constructor(private storage: Storage, private imageService: ImageService) {
 		this.initializeService();
 	}
 
 	async initializeService() {
-		await this._StoreService.init();
 		const loadedLibraryState = await this.storage.get(Constants.LIBRARY_KEY);
 		const compatibleState = this.ensureCompatibility(loadedLibraryState);
 
