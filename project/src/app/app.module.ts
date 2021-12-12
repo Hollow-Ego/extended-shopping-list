@@ -17,23 +17,22 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 @NgModule({
-	declarations: [AppComponent],
-	entryComponents: [],
-	imports: [
-		BrowserModule,
-		IonicModule.forRoot(),
-		HttpClientModule,
-		IonicStorageModule.forRoot(),
-		TranslateModule.forRoot({
-			loader: {
-				provide: TranslateLoader,
-				useFactory: HttpLoaderFactory,
-				deps: [HttpClient],
-			},
-		}),
-		AppRoutingModule,
-	],
-	providers: [StatusBar, SplashScreen],
-	bootstrap: [AppComponent],
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot(),
+        HttpClientModule,
+        IonicStorageModule.forRoot(),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            },
+        }),
+        AppRoutingModule,
+    ],
+    providers: [StatusBar, SplashScreen],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}
