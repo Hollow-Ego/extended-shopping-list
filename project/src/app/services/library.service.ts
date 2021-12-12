@@ -8,12 +8,18 @@ import { createOrCopyID } from '../shared/utils';
 import { LibraryServiceState } from '../shared/models/service.models';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
+import { StoreService } from './store.service';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class LibraryService {
 	private currentStateVersion = '1.0';
+	private defaultCompatibleState = {
+		itemLibrary: { items: new Map(), sortMode: null, sortDirection: null },
+		tagLibrary: [],
+		unitLibrary: [],
+	};
 	private defaultState: LibraryServiceState = {
 		itemLibrary: new ItemLibrary(new Map<string, LibraryItem>()),
 		tagLibrary: [],
@@ -25,18 +31,25 @@ export class LibraryService {
 	libraryChanges: BehaviorSubject<LibraryServiceState> =
 		new BehaviorSubject<LibraryServiceState>(this.libraryState);
 
-	constructor(private storage: Storage, private imageService: ImageService) {
+	constructor(
+		private storage: Storage,
+		private imageService: ImageService,
+		private _StoreService: StoreService
+	) {
 		this.initializeService();
 	}
 
 	async initializeService() {
+		await this._StoreService.init();
 		const loadedLibraryState = await this.storage.get(Constants.LIBRARY_KEY);
 		const compatibleState = this.ensureCompatibility(loadedLibraryState);
 
 		const updatedLibrary: ItemLibrary = cloneDeep(
 			this.libraryState.itemLibrary
 		);
+
 		const compatibleLibrary = compatibleState.itemLibrary;
+
 		updatedLibrary.setItems(compatibleLibrary.items);
 		updatedLibrary.setSortDetails(
 			compatibleLibrary.sortMode,
@@ -57,6 +70,9 @@ export class LibraryService {
 	}
 
 	ensureCompatibility(loadedLibraryState: any) {
+		if (!loadedLibraryState) {
+			return cloneDeep(this.defaultCompatibleState);
+		}
 		switch (loadedLibraryState.stateVersion) {
 			case undefined:
 			case null:
@@ -68,11 +84,7 @@ export class LibraryService {
 	}
 
 	convertUndefinedState(oldState: any) {
-		const compatibleState = {
-			itemLibrary: {},
-			tagLibrary: [],
-			unitLibrary: [],
-		};
+		const compatibleState = cloneDeep(this.defaultCompatibleState);
 		if (typeof oldState === 'object') {
 			compatibleState.itemLibrary = oldState;
 		}
