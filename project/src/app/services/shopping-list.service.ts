@@ -20,11 +20,7 @@ import { UpdateListData } from '../shared/interfaces/update-list-data.interface'
 })
 export class ShoppingListService {
 	private currentStateVersion = '1.0';
-	private defaultShoppingList: ShoppingList = new ShoppingList(
-		new Map(),
-		'Unnamed',
-		'def'
-	);
+
 	private defaultState: ShoppingListState = {
 		shoppingLists: new Map<string, ShoppingList>(),
 		activeList: '',

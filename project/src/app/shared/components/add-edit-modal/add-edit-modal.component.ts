@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { PopulatedItem } from '../../interfaces/populated-item.interface';
@@ -6,24 +6,22 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { SingleCurrencyData } from '../../interfaces/currency-data.interface';
 import { LibraryItem } from '../../interfaces/library-item.interface';
 
-import * as data from '../../../i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
 
 import { LibraryService } from '../../../services/library.service';
 import { ModalMode } from '../../enums/modal-mode.enum';
+import { currencies } from './../../../i18n/currency-map';
 @Component({
 	selector: 'pxsl1-add-edit-modal',
 	templateUrl: './add-edit-modal.component.html',
 	styleUrls: ['./add-edit-modal.component.scss'],
 })
-export class AddEditModalComponent implements OnChanges {
+export class AddEditModalComponent implements OnInit {
 	@Input() isNewLibraryItem: boolean = true;
 	@Input() item: PopulatedItem | LibraryItem | null = null;
 	@Input() mode: number = ModalMode.Add;
 
-	public allCurrencyData: SingleCurrencyData[] = Object.values(
-		(data as any)['default'].currencies
-	);
+	public allCurrencyData: SingleCurrencyData[] = currencies;
 	public availableTags: string[] = [];
 	public availableUnits: string[] = [];
 	public itemForm: FormGroup | undefined;
@@ -47,7 +45,7 @@ export class AddEditModalComponent implements OnChanges {
 		private libraryService: LibraryService
 	) {}
 
-	ngOnChanges() {
+	ngOnInit() {
 		if (!this.item) {
 			this.item = {
 				itemId: '',

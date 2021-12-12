@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SettingsService } from '../../services/settings.service';
-
 import { SingleCurrencyData } from '../../shared/interfaces/currency-data.interface';
-import * as data from '../../i18n/currency-map.json';
 import { Theme } from '../../shared/enums/theme.enum';
 import { SettingsState } from '../../shared/interfaces/service.interface';
+import { currencies } from './../../i18n/currency-map';
 
 @Component({
 	selector: 'pxsl1-settings',
@@ -13,9 +12,8 @@ import { SettingsState } from '../../shared/interfaces/service.interface';
 })
 export class SettingsPage implements OnInit, OnDestroy {
 	constructor(private settingsService: SettingsService) {}
-	public allCurrencyData: SingleCurrencyData[] = Object.values(
-		(data as any)['default'].currencies
-	);
+	public allCurrencyData: SingleCurrencyData[] = currencies;
+
 	public defaultCurrency: string = '';
 	public isDarkMode = document.body.getAttribute('color-theme') === Theme.Dark;
 	public language: string = 'en';

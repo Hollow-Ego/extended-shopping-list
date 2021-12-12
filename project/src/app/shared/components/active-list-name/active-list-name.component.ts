@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ShoppingListService } from '../../../services/shopping-list.service';
 import { TranslationService } from '../../../services/translation.service';
+import { ShoppingListState } from '../../interfaces/service.interface';
 
 @Component({
 	selector: 'pxsl1-active-list-name',
@@ -16,8 +17,10 @@ export class ActiveListNameComponent implements OnInit, OnDestroy {
 	activeListName: string = '';
 	ngOnInit() {
 		this.slServiceSubscription = this.SLService.shoppingListChanges.subscribe(
-			listState => {
-				if (!this.slServiceSubscription) {
+			(listState: ShoppingListState) => {
+				const lists = listState.shoppingLists;
+				if (!lists || lists.size <= 0) {
+					this.activeListName = '-';
 					return;
 				}
 				if (!listState) return;
