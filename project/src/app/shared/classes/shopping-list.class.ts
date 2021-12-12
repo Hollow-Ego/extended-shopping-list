@@ -1,9 +1,5 @@
-import {
-	EDIT_MODE,
-	SHOPPING_MODE,
-	SORT_ASCENDING,
-	SORT_BY_NAME,
-} from '../constants';
+import { Mode } from '../enums/mode.enum';
+import { Sort } from '../enums/sorting.enum';
 import { PopulatedItem } from '../interfaces/populated-item.interface';
 
 export class ShoppingList {
@@ -11,9 +7,9 @@ export class ShoppingList {
 		private shoppingItems: Map<string, PopulatedItem>,
 		private name: string,
 		private id: string,
-		private mode: string = EDIT_MODE,
-		private sortMode: string = SORT_BY_NAME,
-		private sortDirection: string = SORT_ASCENDING
+		private mode: string = Mode.Edit,
+		private sortMode: number = Sort.ByName,
+		private sortDirection: number = Sort.Ascending
 	) {}
 
 	get(id: string) {
@@ -49,11 +45,11 @@ export class ShoppingList {
 	}
 
 	isShoppingMode() {
-		return this.mode === SHOPPING_MODE;
+		return this.mode === Mode.Shopping;
 	}
 
 	toggleMode() {
-		this.mode = this.isShoppingMode() ? EDIT_MODE : SHOPPING_MODE;
+		this.mode = this.isShoppingMode() ? Mode.Edit : Mode.Shopping;
 	}
 
 	getAllItems() {
@@ -64,7 +60,7 @@ export class ShoppingList {
 		return { sortMode: this.sortMode, sortDirection: this.sortDirection };
 	}
 
-	setSortDetails(newMode: string, newDirection: string) {
+	setSortDetails(newMode: number, newDirection: number) {
 		this.sortMode = newMode;
 		this.sortDirection = newDirection;
 	}

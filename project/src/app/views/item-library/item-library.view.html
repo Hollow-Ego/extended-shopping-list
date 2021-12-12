@@ -23,8 +23,8 @@
     </ion-item>
     <ion-item class="position-left">
       <ion-select value="{{sortMode}}" interface="popover" (ionChange)="changeSortMode($event)">
-        <ion-select-option [value]="SORT_BY_NAME">{{'shoppingList.sortByName' | translate}}</ion-select-option>
-        <ion-select-option [value]="SORT_BY_TAG">{{'shoppingList.sortByTag' | translate}}</ion-select-option>
+        <ion-select-option [value]="sort.ByName">{{'shoppingList.sortByName' | translate}}</ion-select-option>
+        <ion-select-option [value]="sort.ByTag">{{'shoppingList.sortByTag' | translate}}</ion-select-option>
       </ion-select>
     </ion-item>
     <ion-item class="position-left ion-no-padding">
@@ -32,14 +32,14 @@
     </ion-item>
   </ion-toolbar>
 </ion-header>
-<ion-content class="list-card" *ngIf="this.sortMode === SORT_BY_NAME">
+<ion-content class="list-card" *ngIf="this.sortMode === sort.ByName">
   <ion-reorder-group *ngIf="itemLibrary">
     <pxsl1-library-list-item *ngFor="let item of items" [item]="item" [hidden]="!shouldBeVisible(item)">
     </pxsl1-library-list-item>
   </ion-reorder-group>
 </ion-content>
 
-<ion-content class="list-card" *ngIf="this.sortMode === SORT_BY_TAG">
+<ion-content class="list-card" *ngIf="this.sortMode === sort.ByTag">
   <ion-reorder-group *ngFor="let category of sortingCategories; index as i">
     <ion-item-divider>
       <ion-label>{{category | translate}}</ion-label>

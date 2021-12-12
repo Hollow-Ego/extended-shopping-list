@@ -1,13 +1,13 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-title class="ion-align-items-center">{{listName | translate}} <ion-icon name="ellipsis-vertical"
+    <ion-card-title class="ion-align-items-center">{{listName! | translate}} <ion-icon name="ellipsis-vertical"
         style="float: right;" (click)="onListActions($event)"></ion-icon>
     </ion-card-title>
     <ion-segment (ionChange)="onModeChange()" value="{{viewMode}}">
-      <ion-segment-button value="{{EDIT_MODE}}">
+      <ion-segment-button value="{{mode.Edit}}">
         <ion-label>{{ 'titles.editModeTitle' | translate }}</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="{{SHOPPING_MODE}}">
+      <ion-segment-button value="{{mode.Shopping}}">
         <ion-label>{{ 'titles.shoppingModeTitle' | translate }}</ion-label>
       </ion-segment-button>
     </ion-segment>
@@ -19,8 +19,8 @@
     </ion-button>
     <ion-item class="position-left ion-no-padding">
       <ion-select value="{{sortMode}}" interface="popover" (ionChange)="changeSortMode($event)">
-        <ion-select-option [value]="SORT_BY_NAME">{{'shoppingList.sortByName' | translate}}</ion-select-option>
-        <ion-select-option [value]="SORT_BY_TAG">{{'shoppingList.sortByTag' | translate}}</ion-select-option>
+        <ion-select-option [value]="sort.ByName">{{'shoppingList.sortByName' | translate}}</ion-select-option>
+        <ion-select-option [value]="sort.ByTag">{{'shoppingList.sortByTag' | translate}}</ion-select-option>
       </ion-select>
     </ion-item>
     <ion-item class="position-left ion-no-padding">
@@ -29,20 +29,20 @@
   </ion-card-content>
 </ion-card>
 
-<ion-card class="list-card" *ngIf="this.sortMode === SORT_BY_NAME">
+<ion-card class="list-card" *ngIf="this.sortMode === sort.ByName">
   <ion-reorder-group>
-    <pxsl1-populated-item *ngFor="let item of items;" [item]="item" [isEditMode]="viewMode === EDIT_MODE"
+    <pxsl1-populated-item *ngFor="let item of items;" [item]="item" [isEditMode]="viewMode === mode.Edit"
       (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
     </pxsl1-populated-item>
   </ion-reorder-group>
 </ion-card>
 
-<ion-card class="list-card" *ngIf="this.sortMode === SORT_BY_TAG">
+<ion-card class="list-card" *ngIf="this.sortMode === sort.ByTag">
   <ion-reorder-group *ngFor="let category of sortingCategories; index as i">
     <ion-item-divider>
       <ion-label>{{category | translate}}</ion-label>
     </ion-item-divider>
-    <pxsl1-populated-item *ngFor="let item of sortedTagItems[i];" [item]="item" [isEditMode]="viewMode === EDIT_MODE"
+    <pxsl1-populated-item *ngFor="let item of sortedTagItems[i];" [item]="item" [isEditMode]="viewMode === mode.Edit"
       (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
     </pxsl1-populated-item>
   </ion-reorder-group>

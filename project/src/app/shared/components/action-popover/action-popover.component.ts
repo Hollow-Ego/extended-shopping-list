@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
-import { ACTION_DELETE, ACTION_EDIT, ACTION_RENAME } from '../../constants';
+import { ModalAction } from '../../enums/modal-action.enum';
 
 @Component({
 	selector: 'pxsl1-action-popover',
@@ -17,18 +17,18 @@ export class ActionPopoverComponent implements OnInit {
 		if (!this.options) {
 			return;
 		}
-		this.edit = this.options.includes(ACTION_EDIT);
-		this.rename = this.options.includes(ACTION_RENAME);
-		this.delete = this.options.includes(ACTION_DELETE);
+		this.edit = this.options.includes(ModalAction.Edit);
+		this.rename = this.options.includes(ModalAction.Rename);
+		this.delete = this.options.includes(ModalAction.Delete);
 	}
 
 	onRename() {
-		this.popoverController.dismiss(ACTION_RENAME);
+		this.popoverController.dismiss(ModalAction.Rename);
 	}
 	onEdit() {
-		this.popoverController.dismiss(ACTION_EDIT);
+		this.popoverController.dismiss(ModalAction.Edit);
 	}
 	onDelete() {
-		this.popoverController.dismiss(ACTION_DELETE);
+		this.popoverController.dismiss(ModalAction.Delete);
 	}
 }

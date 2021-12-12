@@ -3,14 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@ionic/storage';
 import { cloneDeep } from 'lodash';
 import { ShoppingList } from '../shared/classes/shopping-list.class';
-import * as Constants from '../shared/constants';
 
 import { PopulatedItem } from '../shared/interfaces/populated-item.interface';
 import { AlertController } from '@ionic/angular';
 import { TranslationService } from './translation.service';
-import { createOrCopyID } from '../shared/utils';
+
 import { BehaviorSubject } from 'rxjs';
 import { ShoppingListServiceState } from '../shared/interfaces/service.interface';
+import { StorageKey } from '../shared/enums/storage-key.enum';
+import { createOrCopyID } from '../shared/utilities/utils';
+import { DEFAULT_SHOPPING_LIST_NAME } from '../shared/defaults/list-name.default';
 
 @Injectable({
 	providedIn: 'root',
@@ -42,7 +44,7 @@ export class ShoppingListService {
 	}
 
 	async initializeService() {
-		const loadedListState = await this.storage.get(Constants.SHOPPING_LIST_KEY);
+		const loadedListState = await this.storage.get(StorageKey.ShoppingList);
 		const compatibleState = this.ensureCompatibility(loadedListState);
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 
@@ -107,7 +109,7 @@ export class ShoppingListService {
 		if (!activeList) {
 			activeList = new ShoppingList(
 				new Map(),
-				Constants.DEFAULT_SHOPPING_LIST_NAME,
+				DEFAULT_SHOPPING_LIST_NAME,
 				uuidv4()
 			);
 
@@ -305,7 +307,7 @@ export class ShoppingListService {
 		}
 
 		if (needDefaultName) {
-			newName = Constants.DEFAULT_SHOPPING_LIST_NAME;
+			newName = DEFAULT_SHOPPING_LIST_NAME;
 		}
 		this.updateShoppingList({ listName: newName }, listId);
 	}
@@ -354,7 +356,7 @@ export class ShoppingListService {
 	}
 
 	async updateState() {
-		await this.storage.set(Constants.SHOPPING_LIST_KEY, this.listState);
+		await this.storage.set(StorageKey.ShoppingList, this.listState);
 		this.shoppingListChanges.next(this.listState);
 	}
 }

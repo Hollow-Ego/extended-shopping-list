@@ -6,15 +6,11 @@ import { ItemLibrary } from '../../shared/classes/item-library.class';
 import { AddEditModalComponent } from '../../shared/components/add-edit-modal/add-edit-modal.component';
 import { LibraryItem } from '../../shared/interfaces/library-item.interface';
 import { AddEditModalOutput } from '../../shared/interfaces/add-edit-modal-data.interface';
-import {
-	SORT_ASCENDING,
-	SORT_BY_NAME,
-	SORT_BY_TAG,
-	SORT_DESCENDING,
-} from '../../shared/constants';
+
 import { PopulatedItem } from '../../shared/interfaces/populated-item.interface';
-import { sortItemByName, sortItemByTag } from '../../shared/sorting';
+import { sortItemByName, sortItemByTag } from '../../shared/utilities/sorting';
 import { LibraryService } from '../../services/library.service';
+import { Sort } from '../../shared/enums/sorting.enum';
 
 @Component({
 	selector: 'pxsl1-item-library',
@@ -29,12 +25,10 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 	public includeTags: boolean = true;
 
 	public items: PopulatedItem[];
-	public sortMode: string;
-	public sortDirection: string;
-	public SORT_BY_NAME: string = SORT_BY_NAME;
-	public SORT_BY_TAG: string = SORT_BY_TAG;
-	public SORT_ASCENDING: string = SORT_ASCENDING;
-	public SORT_DESCENDING: string = SORT_DESCENDING;
+	public sortMode: number;
+	public sortDirection: number;
+	public sort = Sort;
+
 	public arrowName: string = 'arrow-down';
 	public sortingCategories = [];
 	public sortedTagItems = [];
@@ -53,10 +47,10 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 
 				let { sortMode, sortDirection } = this.itemLibrary.getSortDetails();
 				if (!sortMode) {
-					sortMode = SORT_BY_NAME;
+					sortMode = Sort.ByName;
 				}
 				if (!sortDirection) {
-					sortDirection = SORT_ASCENDING;
+					sortDirection = Sort.Ascending;
 				}
 				this.sortMode = sortMode;
 				this.sortDirection = sortDirection;
@@ -64,11 +58,11 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 				this.sortedTagItems = [];
 				const stateItemArray = Array.from(this.itemLibrary.values());
 				const sortFunction =
-					this.sortMode === SORT_BY_NAME ? sortItemByName : sortItemByTag;
+					this.sortMode === Sort.ByName ? sortItemByName : sortItemByTag;
 				this.items = stateItemArray.sort(
 					sortFunction.bind(this, this.sortDirection)
 				);
-				if (this.sortMode === SORT_BY_TAG) {
+				if (this.sortMode === Sort.ByName) {
 					this.items.forEach(item => {
 						let tag = item.tags[0];
 						if (typeof tag === 'undefined') {
@@ -83,7 +77,7 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 					});
 				}
 				this.arrowName =
-					this.sortDirection === SORT_ASCENDING ? 'arrow-up' : 'arrow-down';
+					this.sortDirection === Sort.Ascending ? 'arrow-up' : 'arrow-down';
 			}
 		);
 	}
@@ -126,7 +120,7 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 
 	changeSortDirection() {
 		const sortDirection =
-			this.sortDirection === SORT_ASCENDING ? SORT_DESCENDING : SORT_ASCENDING;
+			this.sortDirection === Sort.Ascending ? Sort.Descending : Sort.Ascending;
 		this.libraryService.updateSortDetails(this.sortMode, sortDirection);
 	}
 

@@ -3,7 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { SettingsServiceState } from '../shared/interfaces/service.interface';
 import { cloneDeep } from 'lodash';
-import { DARK_THEME, LIGHT_THEME, SETTINGS_KEY } from '../shared/constants';
+import { DARK_THEME, LIGHT_THEME } from '../shared/constants';
+import { StorageKey } from '../shared/enums/storage-key.enum';
 
 @Injectable({
 	providedIn: 'root',
@@ -30,7 +31,7 @@ export class SettingsService {
 	}
 
 	async initializeService() {
-		const loadedSettingsState = await this.storage.get(SETTINGS_KEY);
+		const loadedSettingsState = await this.storage.get(StorageKey.Settings);
 		const compatibleState = this.ensureCompatibility(loadedSettingsState);
 
 		this.settingsState = {
@@ -81,7 +82,7 @@ export class SettingsService {
 	}
 
 	async updateState() {
-		await this.storage.set(SETTINGS_KEY, this.settingsState);
+		await this.storage.set(StorageKey.Settings, this.settingsState);
 		this.settingChanges.next(this.settingsState);
 	}
 }

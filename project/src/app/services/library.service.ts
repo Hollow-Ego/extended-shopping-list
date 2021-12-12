@@ -4,10 +4,11 @@ import { ItemLibrary } from '../shared/classes/item-library.class';
 import { LibraryItem } from '../shared/interfaces/library-item.interface';
 import * as Constants from '../shared/constants';
 import { ImageService } from './image.service';
-import { createOrCopyID } from '../shared/utils';
+
 import { LibraryServiceState } from '../shared/interfaces/service.interface';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
+import { StorageKey } from '../shared/enums/storage-key.enum';
 
 @Injectable({
 	providedIn: 'root',
@@ -35,7 +36,7 @@ export class LibraryService {
 	}
 
 	async initializeService() {
-		const loadedLibraryState = await this.storage.get(Constants.LIBRARY_KEY);
+		const loadedLibraryState = await this.storage.get(StorageKey.Library);
 		const compatibleState = this.ensureCompatibility(loadedLibraryState);
 
 		const updatedLibrary: ItemLibrary = cloneDeep(

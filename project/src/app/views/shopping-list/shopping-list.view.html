@@ -17,7 +17,7 @@
   </div>
 </ion-content>
 
-<ion-content *ngIf="shoppingLists?.length>0">
+<ion-content *ngIf="shoppingLists.length>0">
   <ion-slides #slides (ionSlideDidChange)="onSlideChange($event)">
     <ion-slide *ngFor="let list of shoppingLists; trackBy: trackById">
       <pxsl1-shopping-list-page class="full-width" [listId]="list.getListID()">

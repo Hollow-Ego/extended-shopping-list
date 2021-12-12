@@ -7,8 +7,9 @@ import { SingleCurrencyData } from '../../interfaces/currency-data.interface';
 import { LibraryItem } from '../../interfaces/library-item.interface';
 import * as data from '../../../i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
-import { MODAL_ADD_MODE } from '../../constants';
+
 import { LibraryService } from '../../../services/library.service';
+import { ModalMode } from '../../enums/modal-mode.enum';
 @Component({
 	selector: 'pxsl1-add-edit-modal',
 	templateUrl: './add-edit-modal.component.html',
@@ -24,7 +25,7 @@ export class AddEditModalComponent implements OnInit {
 	) {}
 
 	@Input() item: PopulatedItem | LibraryItem = null;
-	@Input() mode: string = MODAL_ADD_MODE;
+	@Input() mode: number = ModalMode.Add;
 	@Input() isNewLibraryItem: boolean = true;
 
 	public availableUnits: string[];
@@ -113,7 +114,7 @@ export class AddEditModalComponent implements OnInit {
 	}
 
 	isNewItem() {
-		return this.mode === MODAL_ADD_MODE;
+		return this.mode === ModalMode.Add;
 	}
 
 	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData) {

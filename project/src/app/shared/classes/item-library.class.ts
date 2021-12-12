@@ -1,11 +1,11 @@
-import { SORT_BY_NAME, SORT_ASCENDING } from '../constants';
+import { Sort } from '../enums/sorting.enum';
 import { LibraryItem } from '../interfaces/library-item.interface';
 
 export class ItemLibrary {
 	constructor(
 		private items: Map<string, LibraryItem> = new Map(),
-		private sortMode: string = SORT_BY_NAME,
-		private sortDirection: string = SORT_ASCENDING
+		private sortMode: number = Sort.ByName,
+		private sortDirection: number = Sort.Ascending
 	) {}
 
 	get(id: string) {

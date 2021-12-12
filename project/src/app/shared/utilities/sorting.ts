@@ -1,21 +1,21 @@
-import { ShoppingList } from './classes/shopping-list.class';
-import { SORT_ASCENDING } from './constants';
-import { PopulatedItem } from './interfaces/populated-item.interface';
+import { ShoppingList } from '../classes/shopping-list.class';
+import { Sort } from '../enums/sorting.enum';
+import { PopulatedItem } from '../interfaces/populated-item.interface';
 
 export function sortItemByName(
-	sortDirection: string = SORT_ASCENDING,
+	sortDirection: number = Sort.Ascending,
 	a: PopulatedItem,
 	b: PopulatedItem
 ) {
 	const nameA = a.name.toUpperCase();
 	const nameB = b.name.toUpperCase();
-	const ascending = sortDirection === SORT_ASCENDING;
+	const ascending = sortDirection === Sort.Ascending;
 	const priority = String(nameA).localeCompare(nameB);
 	return ascending ? priority : priority * -1;
 }
 
 export function sortItemByTag(
-	sortDirection: string = SORT_ASCENDING,
+	sortDirection: number = Sort.Ascending,
 	a: PopulatedItem,
 	b: PopulatedItem
 ) {
@@ -28,7 +28,7 @@ export function sortItemByTag(
 	const tagNameA = a.tags.length > 0 ? a.tags[0].toUpperCase() : 'ZZZZ';
 	const tagNameB = b.tags.length > 0 ? b.tags[0].toUpperCase() : 'ZZZZ';
 
-	const ascending = sortDirection === SORT_ASCENDING;
+	const ascending = sortDirection === Sort.Ascending;
 
 	if (tagNameA === tagNameB) {
 		return sortItemByName(sortDirection, a, b);

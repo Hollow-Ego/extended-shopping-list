@@ -79,8 +79,7 @@
 						"production": {
 							"browserTarget": "app:build:production"
 						},
-						"ci": {
-						}
+						"ci": {}
 					}
 				},
 				"extract-i18n": {

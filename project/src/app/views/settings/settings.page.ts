@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SettingsService } from '../../services/settings.service';
-import { DARK_THEME, LIGHT_THEME } from '../../shared/constants';
+
 import { SingleCurrencyData } from '../../shared/interfaces/currency-data.interface';
 import * as data from '../../i18n/currency-map.json';
+import { Theme } from '../../shared/enums/theme.enum';
 
 @Component({
 	selector: 'pxsl1-settings',
@@ -13,7 +14,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 	constructor(private settingsService: SettingsService) {}
 
 	private settingsStateSub: Subscription;
-	public isDarkMode = document.body.getAttribute('color-theme') === DARK_THEME;
+	public isDarkMode = document.body.getAttribute('color-theme') === Theme.Dark;
 	public language: string;
 	public allCurrencyData: SingleCurrencyData[];
 
@@ -24,7 +25,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 		this.settingsStateSub = this.settingsService.settingChanges.subscribe(
 			settings => {
 				this.language = settings.language;
-				this.isDarkMode = settings.theme === DARK_THEME;
+				this.isDarkMode = settings.theme === Theme.Dark;
 				this.defaultCurrency = settings.defaultCurrency;
 			}
 		);
@@ -36,7 +37,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 	}
 
 	getNewTheme() {
-		return this.isDarkMode ? LIGHT_THEME : DARK_THEME;
+		return this.isDarkMode ? Theme.Light : Theme.Dark;
 	}
 
 	onUpdateLanguage(language) {

@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { ShoppingList } from '../../shared/classes/shopping-list.class';
 
 import { ShoppingListService } from '../../services/shopping-list.service';
+import { Mode } from '../../shared/enums/mode.enum';
 
 @Component({
 	selector: 'pxsl1-shopping-list',
@@ -17,13 +18,13 @@ import { ShoppingListService } from '../../services/shopping-list.service';
 	styleUrls: ['./shopping-list.view.scss'],
 })
 export class ShoppingListView implements OnInit, OnDestroy, AfterViewInit {
-	@ViewChild('slides') slides: IonSlides;
+	@ViewChild('slides') slides: IonSlides | undefined;
 
 	public shoppingLists: ShoppingList[] = [];
 	public activeListIdx: number = 0;
 
-	public currentMode: string;
-	private shoppingListSub: Subscription;
+	public currentMode: string = Mode.Edit;
+	private shoppingListSub: Subscription | undefined;
 
 	constructor(private SLService: ShoppingListService) {}
 
@@ -32,32 +33,32 @@ export class ShoppingListView implements OnInit, OnDestroy, AfterViewInit {
 			listState => {
 				this.shoppingLists = Array.from(listState.shoppingLists.values());
 				this.activeListIdx = this.shoppingLists.indexOf(
-					listState.shoppingLists.get(listState.activeList)
+					listState.shoppingLists.get(listState.activeList)!
 				);
 			}
 		);
 	}
 
 	ngAfterViewInit() {
-		if (this.activeListIdx >= 0) this.slides.slideTo(this.activeListIdx);
+		if (this.activeListIdx >= 0) this.slides?.slideTo(this.activeListIdx);
 	}
 
-	trackById(index: number, list) {
-		return list ? list.id : undefined;
+	trackById(index: number, list: ShoppingList) {
+		return list ? list.getListID() : undefined;
 	}
 
 	async onAddNewList() {
 		const name = await this.SLService.addShoppingList();
 	}
 
-	onSlideChange($event) {
-		this.slides.getActiveIndex().then(idx => {
+	onSlideChange($event: any) {
+		this.slides?.getActiveIndex().then(idx => {
 			const newListId = this.shoppingLists[idx].getListID();
 			this.SLService.setActiveList(newListId);
 		});
 	}
 
 	ngOnDestroy() {
-		this.shoppingListSub.unsubscribe();
+		if (this.shoppingListSub) this.shoppingListSub.unsubscribe();
 	}
 }

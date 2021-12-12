@@ -5,16 +5,14 @@ import { AddEditModalComponent } from '../../../shared/components/add-edit-modal
 import { LibraryService } from '../../../services/library.service';
 import { ShoppingListService } from '../../../services/shopping-list.service';
 import { ToastService } from '../../../services/toast.service';
-import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
-import {
-	ACTION_EDIT,
-	ACTION_DELETE,
-	MODAL_EDIT_MODE,
-} from '../../../shared/constants';
+import { Haptics, NotificationType } from '@capacitor/haptics';
+
 import { TranslationService } from '../../../services/translation.service';
 import { AddEditModalOutput } from '../../../shared/interfaces/add-edit-modal-data.interface';
 import { LibraryItem } from '../../../shared/interfaces/library-item.interface';
 import { PopulatedItem } from '../../../shared/interfaces/populated-item.interface';
+import { ModalMode } from '../../../shared/enums/modal-mode.enum';
+import { ModalAction } from '../../../shared/enums/modal-action.enum';
 
 @Component({
 	selector: 'pxsl1-library-list-item',
@@ -50,17 +48,17 @@ export class LibraryListItemComponent implements OnInit {
 			component: ActionPopoverComponent,
 			event: $event,
 			translucent: true,
-			componentProps: { options: [ACTION_EDIT, ACTION_DELETE] },
+			componentProps: { options: [ModalAction.Edit, ModalAction.Delete] },
 		});
 
 		await popover.present();
 		const { data: action } = await popover.onDidDismiss();
 
 		switch (action) {
-			case ACTION_DELETE:
+			case ModalAction.Delete:
 				this.onDeleteItem(this.item.itemId);
 				return;
-			case ACTION_EDIT:
+			case ModalAction.Edit:
 				this.onEditItem(this.item);
 				return;
 			default:
@@ -73,7 +71,7 @@ export class LibraryListItemComponent implements OnInit {
 			component: AddEditModalComponent,
 			componentProps: {
 				item,
-				mode: MODAL_EDIT_MODE,
+				mode: ModalMode.Add,
 			},
 		});
 		await modal.present();
