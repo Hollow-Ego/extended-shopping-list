@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { Image } from '../../shared/models/image.model';
-import { ImageService } from '../../services/image.service';
+import { Image } from '../../interfaces/image.interface';
+import { ImageService } from '../../../services/image.service';
 import { Photo } from '@capacitor/camera';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 @Component({

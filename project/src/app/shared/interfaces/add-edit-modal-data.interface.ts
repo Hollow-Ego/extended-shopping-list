@@ -1,7 +1,7 @@
-import { SingleCurrencyData } from './currency-data.model';
-import { Image } from './image.model';
-import { LibraryItem } from './library-item.model';
-import { PopulatedItem } from './populated-item.model';
+import { SingleCurrencyData } from './currency-data.interface';
+import { Image } from './image.interface';
+import { LibraryItem } from './library-item.interface';
+import { PopulatedItem } from './populated-item.interface';
 
 export interface AddEditModalOutput {
 	itemId: string;

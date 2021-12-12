@@ -9,7 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Toast } from '@capacitor/toast';
 import { Platform } from '@ionic/angular';
-import { TranslationService } from '../shared/i18n/translation.service';
+import { TranslationService } from './translation.service';
 
 @Injectable({
 	providedIn: 'root',

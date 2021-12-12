@@ -10,7 +10,7 @@ import { ShoppingListPageComponent } from './shopping-list.page/shopping-list.pa
 import { PopulatedItemComponent } from './shopping-list.page/populated-item/populated-item.component';
 
 import { SharedModule } from '../../shared/shared.module';
-import { ImageModalComponent } from '../../components/modals/image-modal/image-modal.component';
+import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
 
 @NgModule({
 	imports: [FormsModule, ShoppingListPageRoutingModule, SharedModule],

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { LanguageDetails } from '../../shared/i18n/language-details.model';
-import { TranslationService } from '../../shared/i18n/translation.service';
+import { LanguageDetails } from '../../interfaces/language-details.interface';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
 	selector: 'pxsl1-language-picker',

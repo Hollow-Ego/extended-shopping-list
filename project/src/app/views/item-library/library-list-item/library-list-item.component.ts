@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
-import { ActionPopoverComponent } from '../../../components/action-popover/action-popover.component';
-import { AddEditModalComponent } from '../../../components/modals/add-edit-modal/add-edit-modal.component';
+import { ActionPopoverComponent } from '../../../shared/components/action-popover/action-popover.component';
+import { AddEditModalComponent } from '../../../shared/components/add-edit-modal/add-edit-modal.component';
 import { LibraryService } from '../../../services/library.service';
 import { ShoppingListService } from '../../../services/shopping-list.service';
 import { ToastService } from '../../../services/toast.service';
@@ -11,10 +11,10 @@ import {
 	ACTION_DELETE,
 	MODAL_EDIT_MODE,
 } from '../../../shared/constants';
-import { TranslationService } from '../../../shared/i18n/translation.service';
-import { AddEditModalOutput } from '../../../shared/models/add-edit-modal-data.model';
-import { LibraryItem } from '../../../shared/models/library-item.model';
-import { PopulatedItem } from '../../../shared/models/populated-item.model';
+import { TranslationService } from '../../../services/translation.service';
+import { AddEditModalOutput } from '../../../shared/interfaces/add-edit-modal-data.interface';
+import { LibraryItem } from '../../../shared/interfaces/library-item.interface';
+import { PopulatedItem } from '../../../shared/interfaces/populated-item.interface';
 
 @Component({
 	selector: 'pxsl1-library-list-item',

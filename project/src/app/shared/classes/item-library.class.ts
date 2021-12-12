@@ -1,5 +1,5 @@
 import { SORT_BY_NAME, SORT_ASCENDING } from '../constants';
-import { LibraryItem } from '../models/library-item.model';
+import { LibraryItem } from '../interfaces/library-item.interface';
 
 export class ItemLibrary {
 	constructor(

@@ -1,13 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { PopulatedItem } from '../../../shared/models/populated-item.model';
+import { PopulatedItem } from '../../interfaces/populated-item.interface';
 import { AlertController, ModalController } from '@ionic/angular';
-import { SingleCurrencyData } from '../../../shared/models/currency-data.model';
-import { LibraryItem } from '../../../shared/models/library-item.model';
-import * as data from '../../../shared/i18n/currency-map.json';
+import { SingleCurrencyData } from '../../interfaces/currency-data.interface';
+import { LibraryItem } from '../../interfaces/library-item.interface';
+import * as data from '../../../i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
-import { MODAL_ADD_MODE } from '../../../shared/constants';
+import { MODAL_ADD_MODE } from '../../constants';
 import { LibraryService } from '../../../services/library.service';
 @Component({
 	selector: 'pxsl1-add-edit-modal',

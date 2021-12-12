@@ -1,4 +1,4 @@
-import { LibraryItem } from '../models/library-item.model';
+import { LibraryItem } from '../interfaces/library-item.interface';
 
 export class ItemGroup {
 	constructor(

@@ -5,12 +5,12 @@ import { cloneDeep } from 'lodash';
 import { ShoppingList } from '../shared/classes/shopping-list.class';
 import * as Constants from '../shared/constants';
 
-import { PopulatedItem } from '../shared/models/populated-item.model';
+import { PopulatedItem } from '../shared/interfaces/populated-item.interface';
 import { AlertController } from '@ionic/angular';
-import { TranslationService } from '../shared/i18n/translation.service';
+import { TranslationService } from './translation.service';
 import { createOrCopyID } from '../shared/utils';
 import { BehaviorSubject } from 'rxjs';
-import { ShoppingListServiceState } from '../shared/models/service.models';
+import { ShoppingListServiceState } from '../shared/interfaces/service.interface';
 
 @Injectable({
 	providedIn: 'root',

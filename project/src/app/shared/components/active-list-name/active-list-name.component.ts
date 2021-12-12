@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ShoppingListService } from '../../services/shopping-list.service';
-import { TranslationService } from '../../shared/i18n/translation.service';
+import { ShoppingListService } from '../../../services/shopping-list.service';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
 	selector: 'pxsl1-active-list-name',

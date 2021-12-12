@@ -1,5 +1,5 @@
-import { SingleCurrencyData } from './currency-data.model';
-import { Image } from './image.model';
+import { SingleCurrencyData } from './currency-data.interface';
+import { Image } from './image.interface';
 
 export interface PopulatedItem {
 	itemId: string;

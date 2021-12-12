@@ -4,7 +4,7 @@ import {
 	SORT_ASCENDING,
 	SORT_BY_NAME,
 } from '../constants';
-import { PopulatedItem } from '../models/populated-item.model';
+import { PopulatedItem } from '../interfaces/populated-item.interface';
 
 export class ShoppingList {
 	constructor(

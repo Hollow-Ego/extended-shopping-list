@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { ItemLibrary } from '../shared/classes/item-library.class';
-import { LibraryItem } from '../shared/models/library-item.model';
+import { LibraryItem } from '../shared/interfaces/library-item.interface';
 import * as Constants from '../shared/constants';
 import { ImageService } from './image.service';
 import { createOrCopyID } from '../shared/utils';
-import { LibraryServiceState } from '../shared/models/service.models';
+import { LibraryServiceState } from '../shared/interfaces/service.interface';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 

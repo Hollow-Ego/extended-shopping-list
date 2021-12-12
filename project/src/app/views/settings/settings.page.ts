@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SettingsService } from '../../services/settings.service';
 import { DARK_THEME, LIGHT_THEME } from '../../shared/constants';
-import { SingleCurrencyData } from '../../shared/models/currency-data.model';
-import * as data from '../../shared/i18n/currency-map.json';
+import { SingleCurrencyData } from '../../shared/interfaces/currency-data.interface';
+import * as data from '../../i18n/currency-map.json';
 
 @Component({
 	selector: 'pxsl1-settings',

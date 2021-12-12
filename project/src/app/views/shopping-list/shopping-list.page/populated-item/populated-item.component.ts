@@ -9,10 +9,10 @@ import {
 } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 
-import { ImageModalComponent } from '../../../../components/modals/image-modal/image-modal.component';
-import { ActionPopoverComponent } from '../../../../components/action-popover/action-popover.component';
+import { ImageModalComponent } from '../../../../shared/components/image-modal/image-modal.component';
+import { ActionPopoverComponent } from '../../../../shared/components/action-popover/action-popover.component';
 import { ACTION_DELETE, ACTION_EDIT } from '../../../../shared/constants';
-import { PopulatedItem } from '../../../../shared/models/populated-item.model';
+import { PopulatedItem } from '../../../../shared/interfaces/populated-item.interface';
 
 @Component({
 	selector: 'pxsl1-populated-item',

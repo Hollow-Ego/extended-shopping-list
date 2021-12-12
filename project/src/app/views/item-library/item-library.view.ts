@@ -3,16 +3,16 @@ import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { ItemGroup } from '../../shared/classes/item-group.class';
 import { ItemLibrary } from '../../shared/classes/item-library.class';
-import { AddEditModalComponent } from '../../components/modals/add-edit-modal/add-edit-modal.component';
-import { LibraryItem } from '../../shared/models/library-item.model';
-import { AddEditModalOutput } from '../../shared/models/add-edit-modal-data.model';
+import { AddEditModalComponent } from '../../shared/components/add-edit-modal/add-edit-modal.component';
+import { LibraryItem } from '../../shared/interfaces/library-item.interface';
+import { AddEditModalOutput } from '../../shared/interfaces/add-edit-modal-data.interface';
 import {
 	SORT_ASCENDING,
 	SORT_BY_NAME,
 	SORT_BY_TAG,
 	SORT_DESCENDING,
 } from '../../shared/constants';
-import { PopulatedItem } from '../../shared/models/populated-item.model';
+import { PopulatedItem } from '../../shared/interfaces/populated-item.interface';
 import { sortItemByName, sortItemByTag } from '../../shared/sorting';
 import { LibraryService } from '../../services/library.service';
 

@@ -1,6 +1,6 @@
 import { ShoppingList } from './classes/shopping-list.class';
 import { SORT_ASCENDING } from './constants';
-import { PopulatedItem } from './models/populated-item.model';
+import { PopulatedItem } from './interfaces/populated-item.interface';
 
 export function sortItemByName(
 	sortDirection: string = SORT_ASCENDING,

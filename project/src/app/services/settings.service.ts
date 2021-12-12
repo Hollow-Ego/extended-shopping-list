@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
-import { SettingsServiceState } from '../shared/models/service.models';
+import { SettingsServiceState } from '../shared/interfaces/service.interface';
 import { cloneDeep } from 'lodash';
 import { DARK_THEME, LIGHT_THEME, SETTINGS_KEY } from '../shared/constants';
 

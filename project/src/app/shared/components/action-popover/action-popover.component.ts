@@ -1,10 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
-import {
-	ACTION_DELETE,
-	ACTION_EDIT,
-	ACTION_RENAME,
-} from '../../shared/constants';
+import { ACTION_DELETE, ACTION_EDIT, ACTION_RENAME } from '../../constants';
 
 @Component({
 	selector: 'pxsl1-action-popover',

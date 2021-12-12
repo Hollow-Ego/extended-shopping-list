@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
-import { AddEditModalComponent } from '../../../components/modals/add-edit-modal/add-edit-modal.component';
-import { AddEditModalOutput } from '../../../shared/models/add-edit-modal-data.model';
-import { PopulatedItem } from '../../../shared/models/populated-item.model';
+import { AddEditModalComponent } from '../../../shared/components/add-edit-modal/add-edit-modal.component';
+import { AddEditModalOutput } from '../../../shared/interfaces/add-edit-modal-data.interface';
+import { PopulatedItem } from '../../../shared/interfaces/populated-item.interface';
 import {
 	ACTION_DELETE,
 	ACTION_RENAME,
@@ -15,7 +15,7 @@ import {
 	SORT_DESCENDING,
 } from '../../../shared/constants';
 import { Subscription } from 'rxjs';
-import { ActionPopoverComponent } from '../../../components/action-popover/action-popover.component';
+import { ActionPopoverComponent } from '../../../shared/components/action-popover/action-popover.component';
 import { ShoppingListService } from '../../../services/shopping-list.service';
 import { sortItemByName, sortItemByTag } from '../../../shared/sorting';
 import { ShoppingList } from '../../../shared/classes/shopping-list.class';
