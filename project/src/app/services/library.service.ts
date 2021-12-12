@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { ItemLibrary } from '../shared/classes/item-library.class';
 import { LibraryItem } from '../shared/interfaces/library-item.interface';
-import * as Constants from '../shared/constants';
 import { ImageService } from './image.service';
 
-import { LibraryServiceState } from '../shared/interfaces/service.interface';
+import { LibraryState } from '../shared/interfaces/service.interface';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { StorageKey } from '../shared/enums/storage-key.enum';
+import { createOrCopyID } from '../shared/utilities/utils';
 
 @Injectable({
 	providedIn: 'root',
@@ -20,16 +20,16 @@ export class LibraryService {
 		tagLibrary: [],
 		unitLibrary: [],
 	};
-	private defaultState: LibraryServiceState = {
+	private defaultState: LibraryState = {
 		itemLibrary: new ItemLibrary(new Map<string, LibraryItem>()),
 		tagLibrary: [],
 		unitLibrary: [],
 		stateVersion: this.currentStateVersion,
 	};
-	private libraryState: LibraryServiceState = cloneDeep(this.defaultState);
+	private libraryState: LibraryState = cloneDeep(this.defaultState);
 
-	libraryChanges: BehaviorSubject<LibraryServiceState> =
-		new BehaviorSubject<LibraryServiceState>(this.libraryState);
+	libraryChanges: BehaviorSubject<LibraryState> =
+		new BehaviorSubject<LibraryState>(this.libraryState);
 
 	constructor(private storage: Storage, private imageService: ImageService) {
 		this.initializeService();
@@ -45,14 +45,14 @@ export class LibraryService {
 
 		const compatibleLibrary = compatibleState.itemLibrary;
 
-		updatedLibrary.setItems(compatibleLibrary.items);
-		updatedLibrary.setSortDetails(
-			compatibleLibrary.sortMode,
-			compatibleLibrary.sortDirection
-		);
+		updatedLibrary.items = compatibleLibrary.items;
+		updatedLibrary.sortDetails = {
+			sortMode: compatibleLibrary.sortMode,
+			sortDirection: compatibleLibrary.sortDirection,
+		};
 
-		const loadedTags = updatedLibrary.getAllTags();
-		const loadedUnits = updatedLibrary.getAllUnits();
+		const loadedTags = updatedLibrary.tags;
+		const loadedUnits = updatedLibrary.units;
 		this.libraryState = {
 			...this.libraryState,
 			itemLibrary: updatedLibrary,
@@ -86,12 +86,12 @@ export class LibraryService {
 		return compatibleState;
 	}
 
-	addLibraryItem(item: LibraryItem, itemId: string = null) {
+	addLibraryItem(item: LibraryItem, itemId: string | null = null) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const newId: string = createOrCopyID(itemId);
 		const newItem: LibraryItem = { ...item, itemId: newId };
 
-		updatedLibrary.add(newId, newItem);
+		updatedLibrary.addItem(newId, newItem);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
 		this.updateState();
@@ -100,16 +100,16 @@ export class LibraryService {
 	updateLibraryItem(updatedItem: LibraryItem) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 
-		updatedLibrary.update(updatedItem.itemId, updatedItem);
+		updatedLibrary.updateItem(updatedItem.itemId, updatedItem);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
 		this.updateState();
 	}
 
-	updateSortDetails(sortMode: string, sortDirection: string) {
+	updateSortDetails(sortMode: number, sortDirection: number) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 
-		updatedLibrary.setSortDetails(sortMode, sortDirection);
+		updatedLibrary.sortDetails = { sortMode, sortDirection };
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
 		this.updateState();
@@ -117,21 +117,21 @@ export class LibraryService {
 
 	removeLibraryItem(itemId: string) {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
-		const deprecatedItem = updatedLibrary.get(itemId);
-
+		const deprecatedItem = updatedLibrary.getItem(itemId);
+		if (!deprecatedItem) return;
 		const associatedImg = deprecatedItem.imgData;
 
 		if (associatedImg) {
 			this.imageService.deleteImage(associatedImg.fileName);
 		}
-		updatedLibrary.remove(itemId);
+		updatedLibrary.removeItem(itemId);
 
 		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
 		this.updateState();
 	}
 
 	async updateState() {
-		await this.storage.set(Constants.LIBRARY_KEY, this.libraryState);
+		await this.storage.set(StorageKey.Library, this.libraryState);
 		this.libraryChanges.next(this.libraryState);
 	}
 }

@@ -9,10 +9,11 @@ import { AlertController } from '@ionic/angular';
 import { TranslationService } from './translation.service';
 
 import { BehaviorSubject } from 'rxjs';
-import { ShoppingListServiceState } from '../shared/interfaces/service.interface';
+import { ShoppingListState } from '../shared/interfaces/service.interface';
 import { StorageKey } from '../shared/enums/storage-key.enum';
 import { createOrCopyID } from '../shared/utilities/utils';
 import { DEFAULT_SHOPPING_LIST_NAME } from '../shared/defaults/list-name.default';
+import { UpdateListData } from '../shared/interfaces/update-list-data.interface';
 
 @Injectable({
 	providedIn: 'root',
@@ -24,15 +25,15 @@ export class ShoppingListService {
 		'Unnamed',
 		'def'
 	);
-	private defaultState: ShoppingListServiceState = {
+	private defaultState: ShoppingListState = {
 		shoppingLists: new Map<string, ShoppingList>(),
 		activeList: '',
 		stateVersion: this.currentStateVersion,
 	};
-	private listState: ShoppingListServiceState = cloneDeep(this.defaultState);
+	private listState: ShoppingListState = cloneDeep(this.defaultState);
 
-	shoppingListChanges: BehaviorSubject<ShoppingListServiceState> =
-		new BehaviorSubject<ShoppingListServiceState>(this.listState);
+	shoppingListChanges: BehaviorSubject<ShoppingListState> =
+		new BehaviorSubject<ShoppingListState>(this.listState);
 	defaultCompatibleState: any = { shoppingLists: new Map(), activeList: '' };
 
 	constructor(
@@ -50,7 +51,7 @@ export class ShoppingListService {
 
 		let updatedActiveList = '';
 		if (compatibleState.shoppingLists.size > 0) {
-			compatibleState.shoppingLists.forEach(rawList => {
+			compatibleState.shoppingLists.forEach((rawList: any) => {
 				const list = new ShoppingList(
 					rawList.shoppingItems,
 					rawList.name,
@@ -59,7 +60,7 @@ export class ShoppingListService {
 					rawList.sortMode,
 					rawList.sortDirection
 				);
-				updatedListMap.set(list.getListID(), list);
+				updatedListMap.set(list.id, list);
 			});
 			if (updatedListMap.has(compatibleState.activeList)) {
 				updatedActiveList = compatibleState.activeList;
@@ -97,14 +98,18 @@ export class ShoppingListService {
 		return compatibleState;
 	}
 
-	addListItem(item: PopulatedItem, amount: number, listId: string = null) {
+	addListItem(
+		item: PopulatedItem,
+		amount: number,
+		listId: string | null = null
+	) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		const itemId: string = createOrCopyID(item.itemId);
 		const newItem = { ...item, amount, itemId };
 		if (!listId) {
 			listId = this.listState.activeList;
 		}
-		let activeList: ShoppingList = updatedListMap.get(listId);
+		let activeList: ShoppingList | undefined = updatedListMap.get(listId);
 
 		if (!activeList) {
 			activeList = new ShoppingList(
@@ -113,31 +118,31 @@ export class ShoppingListService {
 				uuidv4()
 			);
 
-			updatedListMap.set(activeList.getListID(), activeList);
+			updatedListMap.set(activeList.id, activeList);
 		}
 
 		const activeListCopy: ShoppingList = cloneDeep(activeList);
 
-		activeListCopy.add(newItem);
-		updatedListMap.set(activeListCopy.getListID(), activeListCopy);
+		activeListCopy.addItem(newItem);
+		updatedListMap.set(activeListCopy.id, activeListCopy);
 		this.listState = {
 			...this.listState,
 			shoppingLists: updatedListMap,
-			activeList: activeListCopy.getListID(),
+			activeList: activeListCopy.id,
 		};
 		this.updateState();
 	}
 
-	updateListItem(item: PopulatedItem, listId: string = null) {
+	updateListItem(item: PopulatedItem, listId: string | null = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
 			listId = this.listState.activeList;
 		}
-		const activeList: ShoppingList = updatedListMap.get(listId);
-		const activeListCopy: ShoppingList = cloneDeep(activeList);
-
-		activeListCopy.update(item);
-		updatedListMap.set(activeListCopy.getListID(), activeListCopy);
+		const activeList: ShoppingList | undefined = updatedListMap.get(listId);
+		const activeListCopy: ShoppingList | undefined = cloneDeep(activeList);
+		if (!activeListCopy) return;
+		activeListCopy.updateItem(item);
+		updatedListMap.set(activeListCopy.id, activeListCopy);
 
 		this.listState = {
 			...this.listState,
@@ -146,15 +151,16 @@ export class ShoppingListService {
 		this.updateState();
 	}
 
-	removeListItem(itemId: string, listId: string = null) {
+	removeListItem(itemId: string, listId: string | null = null) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
 			listId = this.listState.activeList;
 		}
-		const activeList: ShoppingList = updatedListMap.get(listId);
-		const activeListCopy: ShoppingList = cloneDeep(activeList);
-		activeListCopy.remove(itemId);
-		updatedListMap.set(activeListCopy.getListID(), activeListCopy);
+		const activeList: ShoppingList | undefined = updatedListMap.get(listId);
+		const activeListCopy: ShoppingList | undefined = cloneDeep(activeList);
+		if (!activeListCopy) return;
+		activeListCopy.removeItem(itemId);
+		updatedListMap.set(activeListCopy.id, activeListCopy);
 
 		this.listState = {
 			...this.listState,
@@ -187,12 +193,8 @@ export class ShoppingListService {
 	}
 
 	updateShoppingList(
-		updatedData: {
-			listName?: string;
-			sortDirection?: string;
-			sortMode?: string;
-		},
-		listId: string = null
+		updatedData: UpdateListData,
+		listId: string | null = null
 	) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
@@ -200,17 +202,18 @@ export class ShoppingListService {
 		}
 
 		const originalList = updatedListMap.get(listId);
-		const updatedShoppingList: ShoppingList = cloneDeep(originalList);
+		const updatedShoppingList: ShoppingList | undefined =
+			cloneDeep(originalList);
 		const { sortMode: oSortMode, sortDirection: oSortDirection } =
-			originalList.getSortDetails();
+			originalList!.getSortDetails();
 		let {
-			listName = originalList.getName(),
+			listName = originalList!.name,
 			sortMode = oSortMode,
 			sortDirection = oSortDirection,
 		} = updatedData;
-		updatedShoppingList.updateName(listName);
-		updatedShoppingList.setSortDetails(sortMode, sortDirection);
-		updatedListMap.set(originalList.getListID(), updatedShoppingList);
+		updatedShoppingList!.updateName(listName);
+		updatedShoppingList!.setSortDetails(+sortMode, +sortDirection);
+		updatedListMap.set(originalList!.id, updatedShoppingList!);
 
 		this.listState = {
 			...this.listState,
@@ -219,7 +222,7 @@ export class ShoppingListService {
 		this.updateState();
 	}
 
-	removeShoppingList(listId: string = null) {
+	removeShoppingList(listId: string) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 
 		updatedListMap.delete(listId);
@@ -232,13 +235,14 @@ export class ShoppingListService {
 		this.updateState();
 	}
 
-	toggleListMode(listId: string = null) {
+	toggleListMode(listId: string) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 		if (!listId) {
 			listId = this.listState.activeList;
 		}
-		const updatedShoppingList: ShoppingList = updatedListMap.get(listId);
-		updatedShoppingList.toggleMode();
+		const updatedShoppingList: ShoppingList | undefined =
+			updatedListMap.get(listId);
+		updatedShoppingList!.toggleMode();
 
 		this.listState = {
 			...this.listState,
@@ -247,7 +251,7 @@ export class ShoppingListService {
 		this.updateState();
 	}
 
-	setActiveList(newActiveListId) {
+	setActiveList(newActiveListId: any) {
 		this.listState = {
 			...this.listState,
 			activeList: newActiveListId,
@@ -296,7 +300,7 @@ export class ShoppingListService {
 		return alert;
 	}
 
-	async renameList(prevName: string = '', listId: string = null) {
+	async renameList(prevName: string = '', listId: string | null = null) {
 		const { data, role } = await this.showNamingModal();
 		if (role === 'cancel' || !data) return null;
 

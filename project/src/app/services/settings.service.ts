@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
-import { SettingsServiceState } from '../shared/interfaces/service.interface';
+import { SettingsState } from '../shared/interfaces/service.interface';
 import { cloneDeep } from 'lodash';
-import { DARK_THEME, LIGHT_THEME } from '../shared/constants';
+
 import { StorageKey } from '../shared/enums/storage-key.enum';
+import { Theme } from '../shared/enums/theme.enum';
 
 @Injectable({
 	providedIn: 'root',
@@ -12,19 +13,19 @@ import { StorageKey } from '../shared/enums/storage-key.enum';
 export class SettingsService {
 	private currentStateVersion = '1.1';
 	private defaultCurrency = 'EUR';
-	private defaultState: SettingsServiceState = {
+	private defaultState: SettingsState = {
 		language: 'en',
 		theme: window.matchMedia('(prefers-color-scheme: dark)').matches
-			? DARK_THEME
-			: LIGHT_THEME,
+			? Theme.Dark
+			: Theme.Light,
 		defaultCurrency: this.defaultCurrency,
 		stateVersion: this.currentStateVersion,
 	};
 
-	private settingsState: SettingsServiceState = cloneDeep(this.defaultState);
+	private settingsState: SettingsState = cloneDeep(this.defaultState);
 
-	settingChanges: BehaviorSubject<SettingsServiceState> =
-		new BehaviorSubject<SettingsServiceState>(this.settingsState);
+	settingChanges: BehaviorSubject<SettingsState> =
+		new BehaviorSubject<SettingsState>(this.settingsState);
 
 	constructor(private storage: Storage) {
 		this.initializeService();

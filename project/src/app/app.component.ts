@@ -40,7 +40,7 @@ export class AppComponent {
 				this.translate.changeLanguage(settings.language);
 			});
 
-			document.addEventListener('ionBackButton', (ev: BackButtonEvent) => {
+			document.addEventListener('ionBackButton', (ev: any) => {
 				ev.detail.register(-1, () => {
 					const path = window.location.pathname;
 

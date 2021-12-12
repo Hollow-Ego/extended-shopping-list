@@ -1,66 +1,71 @@
 import { Mode } from '../enums/mode.enum';
 import { Sort } from '../enums/sorting.enum';
 import { PopulatedItem } from '../interfaces/populated-item.interface';
+import { SortDetails } from '../interfaces/sort-details.interface';
 
 export class ShoppingList {
-	constructor(
-		private shoppingItems: Map<string, PopulatedItem>,
-		private name: string,
-		private id: string,
-		private mode: string = Mode.Edit,
-		private sortMode: number = Sort.ByName,
-		private sortDirection: number = Sort.Ascending
-	) {}
+	public shoppingItems: Map<string, PopulatedItem>;
+	public name: string;
+	public id: string;
+	public mode: string;
+	public sortMode: number;
+	public sortDirection: number;
 
-	get(id: string) {
-		return this.shoppingItems.get(id);
+	constructor(
+		shoppingItems: Map<string, PopulatedItem>,
+		name: string,
+		id: string,
+		mode: string = Mode.Edit,
+		sortMode: number = Sort.ByName,
+		sortDirection: number = Sort.Ascending
+	) {
+		this.shoppingItems = shoppingItems;
+		this.name = name;
+		this.id = id;
+		this.mode = mode;
+		this.sortMode = sortMode;
+		this.sortDirection = sortDirection;
 	}
 
-	add(item: PopulatedItem) {
+	getItem(id: string): PopulatedItem | null {
+		const map = this.shoppingItems.get(id);
+		if (!map) return null;
+		return map;
+	}
+
+	addItem(item: PopulatedItem): void {
 		this.shoppingItems.set(item.itemId, item);
 	}
 
-	remove(id: string) {
+	removeItem(id: string): void {
 		this.shoppingItems.delete(id);
 	}
 
-	update(item: PopulatedItem) {
+	updateItem(item: PopulatedItem): void {
 		this.shoppingItems.set(item.itemId, item);
 	}
 
-	getListID() {
-		return this.id;
-	}
-
-	updateName(newName: string) {
+	updateName(newName: string): void {
 		this.name = newName;
 	}
 
-	getName() {
-		return this.name;
-	}
-
-	getMode() {
-		return this.mode;
-	}
-
-	isShoppingMode() {
+	isShoppingMode(): boolean {
 		return this.mode === Mode.Shopping;
 	}
 
-	toggleMode() {
+	toggleMode(): void {
 		this.mode = this.isShoppingMode() ? Mode.Edit : Mode.Shopping;
 	}
 
-	getAllItems() {
+	getAllItems(): Map<string, PopulatedItem> {
 		return this.shoppingItems;
 	}
 
-	getSortDetails() {
+	getSortDetails(): SortDetails {
 		return { sortMode: this.sortMode, sortDirection: this.sortDirection };
 	}
 
-	setSortDetails(newMode: number, newDirection: number) {
+	setSortDetails(newMode: number, newDirection: number): void {
 		this.sortMode = newMode;
 		this.sortDirection = newDirection;
 	}

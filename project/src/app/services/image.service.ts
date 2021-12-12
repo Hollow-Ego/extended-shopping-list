@@ -10,6 +10,7 @@ import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Toast } from '@capacitor/toast';
 import { Platform } from '@ionic/angular';
 import { TranslationService } from './translation.service';
+import { Image } from './../shared/interfaces/image.interface';
 
 @Injectable({
 	providedIn: 'root',
@@ -49,15 +50,16 @@ export class ImageService {
 		return capturedImage;
 	}
 
-	async savePicture(rawPhoto: Photo) {
+	async savePicture(rawPhoto: Photo): Promise<Image | null> {
 		if (!rawPhoto) {
-			return;
+			return null;
 		}
 
 		// Write the file to the data directory
 		const fileName = new Date().getTime() + '.jpeg';
 
 		const base64Data = await this.readAsBase64(rawPhoto);
+		if (!base64Data) return null;
 
 		const savedFile = await Filesystem.writeFile({
 			data: base64Data,
@@ -133,13 +135,13 @@ export class ImageService {
 		if (this.platform.is('hybrid')) {
 			// Read the file into base64 format
 			const file = await Filesystem.readFile({
-				path: Photo.path,
+				path: Photo.path || '',
 			});
 
 			return file.data;
 		} else {
 			// Fetch the photo, read as a blob, then convert to base64 format
-			const response = await fetch(Photo.webPath);
+			const response = await fetch(Photo.webPath || '');
 			const blob = await response.blob();
 			const base64String = (await this.convertBlobToBase64(blob)) as string;
 			return base64String;

@@ -4,21 +4,19 @@ import { Component, Input, OnInit } from '@angular/core';
 	selector: 'pxsl1-image',
 	templateUrl: './image-modal.component.html',
 })
-export class ImageModalComponent implements OnInit {
-	@Input() imageUrl: string;
-	@Input() title: string;
+export class ImageModalComponent {
+	@Input() imageUrl: string = '';
+	@Input() title: string = '';
 
 	public failedLoading = false;
 
 	constructor() {}
 
-	ngOnInit() {}
+	onDidLoad() {
+		this.failedLoading = false;
+	}
 
 	onLoadError() {
 		this.failedLoading = true;
-	}
-
-	onDidLoad() {
-		this.failedLoading = false;
 	}
 }

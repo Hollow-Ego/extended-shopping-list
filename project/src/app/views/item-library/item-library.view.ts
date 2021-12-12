@@ -11,6 +11,8 @@ import { PopulatedItem } from '../../shared/interfaces/populated-item.interface'
 import { sortItemByName, sortItemByTag } from '../../shared/utilities/sorting';
 import { LibraryService } from '../../services/library.service';
 import { Sort } from '../../shared/enums/sorting.enum';
+import { Arrow } from '../../shared/enums/arrow.enum';
+import { LibraryState } from '../../shared/interfaces/service.interface';
 
 @Component({
 	selector: 'pxsl1-item-library',
@@ -18,22 +20,19 @@ import { Sort } from '../../shared/enums/sorting.enum';
 	styleUrls: ['./item-library.view.scss'],
 })
 export class ItemLibraryComponent implements OnInit, OnDestroy {
-	public itemLibrary: ItemLibrary;
-	public itemGroups: Map<string, ItemGroup>;
+	public arrowName: string = Arrow.Down;
+	public includeTags: boolean = true;
+	public itemGroups: Map<string, ItemGroup> | undefined;
+	public itemLibrary: ItemLibrary = new ItemLibrary();
+	public items: PopulatedItem[] | undefined;
 
 	public searchTerm: string = '';
-	public includeTags: boolean = true;
-
-	public items: PopulatedItem[];
-	public sortMode: number;
-	public sortDirection: number;
 	public sort = Sort;
+	public sortDirection: number = Sort.Ascending;
+	public sortedTagItems: PopulatedItem[][] = [];
+	public sortingCategories: string[] = [];
 
-	public arrowName: string = 'arrow-down';
-	public sortingCategories = [];
-	public sortedTagItems = [];
-
-	private libraryStateSub: Subscription;
+	private libraryStateSub: Subscription | undefined;
 
 	constructor(
 		private modalCtrl: ModalController,
@@ -42,27 +41,21 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 
 	ngOnInit() {
 		this.libraryStateSub = this.libraryService.libraryChanges.subscribe(
-			libraryState => {
+			(libraryState: LibraryState) => {
 				this.itemLibrary = libraryState.itemLibrary;
 
-				let { sortMode, sortDirection } = this.itemLibrary.getSortDetails();
-				if (!sortMode) {
-					sortMode = Sort.ByName;
-				}
-				if (!sortDirection) {
-					sortDirection = Sort.Ascending;
-				}
-				this.sortMode = sortMode;
+				let { sortMode, sortDirection } = this.itemLibrary.sortDetails;
+
 				this.sortDirection = sortDirection;
 				this.sortingCategories = [];
 				this.sortedTagItems = [];
-				const stateItemArray = Array.from(this.itemLibrary.values());
+				const stateItemArray = this.itemLibrary.itemsArray;
 				const sortFunction =
-					this.sortMode === Sort.ByName ? sortItemByName : sortItemByTag;
+					sortMode === Sort.ByName ? sortItemByName : sortItemByTag;
 				this.items = stateItemArray.sort(
 					sortFunction.bind(this, this.sortDirection)
 				);
-				if (this.sortMode === Sort.ByName) {
+				if (sortMode === Sort.ByName) {
 					this.items.forEach(item => {
 						let tag = item.tags[0];
 						if (typeof tag === 'undefined') {
@@ -82,26 +75,26 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	onSearchChange($event) {
-		this.searchTerm = $event.target.value;
+	changeSortDirection(): void {
+		const sortMode = this.itemLibrary.sortMode;
+		const sortDirection =
+			this.itemLibrary.sortDirection === Sort.Ascending
+				? Sort.Descending
+				: Sort.Ascending;
+		this.libraryService.updateSortDetails(sortMode, sortDirection);
 	}
 
-	shouldBeVisible(item: LibraryItem) {
-		const searchValue = this.searchTerm.toLowerCase();
-		const { name, tags } = item;
-		const nameContainsTerm = name.toLowerCase().indexOf(searchValue) > -1;
-		const tagString = tags.toString();
-		const tagsContainsTerm = tagString.toLowerCase().indexOf(searchValue) > -1;
-
-		return nameContainsTerm || (tagsContainsTerm && this.includeTags);
+	changeSortMode(event: any): void {
+		const sortMode = event.detail.value;
+		this.libraryService.updateSortDetails(sortMode, this.sortDirection);
 	}
 
-	async onNewLibraryItem() {
+	async onNewLibraryItem(): Promise<void> {
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
-				availableTags: this.itemLibrary.getAllTags(),
-				availableUnits: this.itemLibrary.getAllUnits(),
+				availableTags: this.itemLibrary.tags,
+				availableUnits: this.itemLibrary.units,
 			},
 		});
 		await modal.present();
@@ -118,18 +111,21 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 		this.libraryService.addLibraryItem(itemData);
 	}
 
-	changeSortDirection() {
-		const sortDirection =
-			this.sortDirection === Sort.Ascending ? Sort.Descending : Sort.Ascending;
-		this.libraryService.updateSortDetails(this.sortMode, sortDirection);
+	onSearchChange(event: any): void {
+		this.searchTerm = event.target.value;
 	}
 
-	changeSortMode($event) {
-		const sortMode = $event.detail.value;
-		this.libraryService.updateSortDetails(sortMode, this.sortDirection);
+	shouldBeVisible(item: LibraryItem): boolean {
+		const searchValue = this.searchTerm.toLowerCase();
+		const { name, tags } = item;
+		const nameContainsTerm = name.toLowerCase().indexOf(searchValue) > -1;
+		const tagString = tags.toString();
+		const tagsContainsTerm = tagString.toLowerCase().indexOf(searchValue) > -1;
+
+		return nameContainsTerm || (tagsContainsTerm && this.includeTags);
 	}
 
 	ngOnDestroy() {
-		this.libraryStateSub.unsubscribe();
+		if (this.libraryStateSub) this.libraryStateSub.unsubscribe();
 	}
 }

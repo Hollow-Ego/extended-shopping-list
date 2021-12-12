@@ -5,6 +5,7 @@ import { SettingsService } from '../../services/settings.service';
 import { SingleCurrencyData } from '../../shared/interfaces/currency-data.interface';
 import * as data from '../../i18n/currency-map.json';
 import { Theme } from '../../shared/enums/theme.enum';
+import { SettingsState } from '../../shared/interfaces/service.interface';
 
 @Component({
 	selector: 'pxsl1-settings',
@@ -12,18 +13,18 @@ import { Theme } from '../../shared/enums/theme.enum';
 })
 export class SettingsPage implements OnInit, OnDestroy {
 	constructor(private settingsService: SettingsService) {}
-
-	private settingsStateSub: Subscription;
+	public allCurrencyData: SingleCurrencyData[] = Object.values(
+		(data as any)['default'].currencies
+	);
+	public defaultCurrency: string = '';
 	public isDarkMode = document.body.getAttribute('color-theme') === Theme.Dark;
-	public language: string;
-	public allCurrencyData: SingleCurrencyData[];
+	public language: string = 'en';
 
-	defaultCurrency: string;
+	private settingsStateSub: Subscription | undefined;
 
 	ngOnInit() {
-		this.allCurrencyData = Object.values(data['default'].currencies);
 		this.settingsStateSub = this.settingsService.settingChanges.subscribe(
-			settings => {
+			(settings: SettingsState) => {
 				this.language = settings.language;
 				this.isDarkMode = settings.theme === Theme.Dark;
 				this.defaultCurrency = settings.defaultCurrency;
@@ -31,31 +32,30 @@ export class SettingsPage implements OnInit, OnDestroy {
 		);
 	}
 
-	onToggleTheme() {
+	onToggleTheme(): void {
 		const newTheme = this.getNewTheme();
 		this.settingsService.setTheme(newTheme);
 	}
 
-	getNewTheme() {
+	getNewTheme(): string {
 		return this.isDarkMode ? Theme.Light : Theme.Dark;
 	}
 
-	onUpdateLanguage(language) {
+	onUpdateLanguage(language: string): void {
 		this.settingsService.setLanguage(language);
 	}
 
-	onUpdateCurrency(event) {
+	onUpdateCurrency(event: any): void {
 		const currency = event.detail.value;
 		console.log(currency);
 
 		this.settingsService.setDefaultCurrency(currency);
 	}
 
-	ngOnDestroy() {
-		this.settingsStateSub.unsubscribe();
-	}
-
-	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData) {
+	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData): boolean {
 		return cur1 && cur2 ? cur1.code === cur2.code : cur1 === cur2;
+	}
+	ngOnDestroy() {
+		if (this.settingsStateSub) this.settingsStateSub.unsubscribe();
 	}
 }

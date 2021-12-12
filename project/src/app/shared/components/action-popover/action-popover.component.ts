@@ -7,7 +7,7 @@ import { ModalAction } from '../../enums/modal-action.enum';
 	templateUrl: './action-popover.component.html',
 })
 export class ActionPopoverComponent implements OnInit {
-	@Input() options = [];
+	@Input() options: number[] = [];
 	constructor(public popoverController: PopoverController) {}
 	public edit = true;
 	public rename = true;

@@ -1,23 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterEvent } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+	ActivatedRoute,
+	Router,
+	RouterEvent,
+	UrlSegment,
+} from '@angular/router';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { App } from '@capacitor/app';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'pxsl1-menu',
 	templateUrl: './menu.page.html',
 	styleUrls: ['./menu.page.scss'],
 })
-export class MenuPage implements OnInit {
+export class MenuPage implements OnInit, OnDestroy {
+	public appVersion: string = '';
 	public currentPath: string = '';
-	appVersion: string = '';
-	constructor(private router: Router, private SLService: ShoppingListService) {}
+
+	private routeSubscription: Subscription | undefined;
+	constructor(
+		private route: ActivatedRoute,
+		private SLService: ShoppingListService
+	) {}
 
 	ngOnInit() {
-		this.router.events.subscribe((event: RouterEvent) => {
-			if (event && event.url) {
-				this.currentPath = event.url;
-			}
+		this.route.url.subscribe((urlSegment: UrlSegment[]) => {
+			this.currentPath = urlSegment.join('/');
+			console.log(urlSegment);
 		});
 		App.getInfo()
 			.then(appInfo => {
@@ -28,7 +38,11 @@ export class MenuPage implements OnInit {
 			});
 	}
 
-	async onAddShoppingList() {
+	async onAddShoppingList(): Promise<void> {
 		this.SLService.addShoppingList();
+	}
+
+	ngOnDestroy() {
+		if (this.routeSubscription) this.routeSubscription.unsubscribe();
 	}
 }

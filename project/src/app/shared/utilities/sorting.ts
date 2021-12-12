@@ -40,7 +40,7 @@ export function sortItemByTag(
 }
 
 export function sortListByName(a: ShoppingList, b: ShoppingList) {
-	var nameA = a.getName().toUpperCase();
-	var nameB = b.getName().toUpperCase();
+	var nameA = a.name.toUpperCase();
+	var nameB = b.name.toUpperCase();
 	return String(nameA).localeCompare(nameB);
 }

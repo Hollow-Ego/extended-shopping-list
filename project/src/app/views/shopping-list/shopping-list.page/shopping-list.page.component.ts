@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnChanges } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
 import { AddEditModalComponent } from '../../../shared/components/add-edit-modal/add-edit-modal.component';
 import { AddEditModalOutput } from '../../../shared/interfaces/add-edit-modal-data.interface';
@@ -7,35 +7,42 @@ import { PopulatedItem } from '../../../shared/interfaces/populated-item.interfa
 import { Subscription } from 'rxjs';
 import { ActionPopoverComponent } from '../../../shared/components/action-popover/action-popover.component';
 import { ShoppingListService } from '../../../services/shopping-list.service';
-import {
-	sortItemByName,
-	sortItemByTag,
-} from '../../../shared/utilities/sorting';
+
 import { ShoppingList } from '../../../shared/classes/shopping-list.class';
 import { Mode } from '../../../shared/enums/mode.enum';
 import { Sort } from '../../../shared/enums/sorting.enum';
 import { ModalMode } from '../../../shared/enums/modal-mode.enum';
 import { ModalAction } from '../../../shared/enums/modal-action.enum';
+import { Arrow } from '../../../shared/enums/arrow.enum';
+import { ShoppingListState } from '../../../shared/interfaces/service.interface';
+import {
+	sortItemByName,
+	sortItemByTag,
+} from '../../../shared/utilities/sorting';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
 	templateUrl: './shopping-list.page.component.html',
 	styleUrls: ['./shopping-list.page.component.scss'],
 })
-export class ShoppingListPageComponent implements OnInit, OnDestroy {
+export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 	@Input() listId: string | undefined;
-	public list: ShoppingList | undefined;
+
+	public arrowName: string = Arrow.Down;
+
 	public items: PopulatedItem[] | undefined;
-	public listName: string | undefined;
-	public sortMode: string | undefined;
-	public sortDirection: string | undefined;
-	public viewMode: string | undefined;
-
+	public list: ShoppingList = new ShoppingList(
+		new Map(),
+		'Uninitialized List',
+		''
+	);
 	public mode = Mode;
-	public sort = Sort;
 
-	public arrowName: string = 'arrow-down';
-	public sortingCategories: string[] = [];
+	public sort = Sort;
+	public sortDirection: number = Sort.Ascending;
 	public sortedTagItems: PopulatedItem[][] = [];
+	public sortingCategories: string[] = [];
+	public sortMode: number = Sort.ByName;
+
 	private listSub: Subscription | undefined;
 
 	constructor(
@@ -44,52 +51,66 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		private SLService: ShoppingListService
 	) {}
 
-	ngOnInit() {
-		this.listSub = this.SLService.shoppingListChanges.subscribe(listState => {
-			this.list = listState.shoppingLists.get(this.listId!);
-			let { sortMode, sortDirection } = this.list!.getSortDetails();
-			if (!sortMode) {
-				sortMode = Sort.ByName;
-			}
-			if (!sortDirection) {
-				sortDirection = Sort.Ascending;
-			}
-			this.sortMode = sortMode;
-			this.sortDirection = sortDirection;
-			this.sortingCategories = [];
-			this.sortedTagItems = [];
-			const stateItemArray = Array.from(this.list!.getAllItems().values());
-			const sortFunction =
-				this.sortMode === Sort.ByName ? sortItemByName : sortItemByTag;
-			this.items = stateItemArray.sort(
-				sortFunction.bind(this, this.sortDirection)
-			);
-			if (this.sortMode === Sort.ByTag) {
-				this.items.forEach(item => {
-					let tags = item.tags;
-					let tag;
-					if (typeof tags === 'undefined') {
-						tag = 'aboutItems.undefinedTagName';
-					} else {
-						tag = tags[0];
-					}
+	ngOnChanges() {
+		if (this.listSub) this.listSub.unsubscribe();
+		this.listSub = this.SLService.shoppingListChanges.subscribe(
+			(listState: ShoppingListState) => {
+				const loadedList = listState.shoppingLists.get(this.listId!);
+				if (!loadedList) return;
+				this.list = loadedList;
 
-					if (!this.sortingCategories.includes(tag)) {
-						const newIndex = this.sortingCategories.push(tag);
-						this.sortedTagItems[newIndex - 1] = [];
-					}
-					const categoryIndex = this.sortingCategories.indexOf(tag);
-					this.sortedTagItems[categoryIndex].push(item);
-				});
+				let { sortMode, sortDirection } = this.list.getSortDetails();
+
+				this.sortMode = sortMode;
+				this.sortDirection = sortDirection;
+				this.sortingCategories = [];
+				this.sortedTagItems = [];
+
+				const stateItemArray = Array.from(this.list!.getAllItems().values());
+
+				const sortFunction =
+					this.sortMode === Sort.ByName ? sortItemByName : sortItemByTag;
+
+				this.items = stateItemArray.sort(
+					sortFunction.bind(this, this.sortDirection)
+				);
+
+				if (this.sortMode === Sort.ByTag) {
+					this.items.forEach(item => {
+						let tags = item.tags;
+						let tag;
+						if (typeof tags === 'undefined') {
+							tag = 'aboutItems.undefinedTagName';
+						} else {
+							tag = tags[0];
+						}
+
+						if (!this.sortingCategories.includes(tag)) {
+							const newIndex = this.sortingCategories.push(tag);
+							this.sortedTagItems[newIndex - 1] = [];
+						}
+						const categoryIndex = this.sortingCategories.indexOf(tag);
+						this.sortedTagItems[categoryIndex].push(item);
+					});
+				}
+				this.arrowName =
+					this.sortDirection === Sort.Ascending ? Arrow.Up : Arrow.Down;
 			}
-			this.arrowName =
-				this.sortDirection === Sort.Ascending ? 'arrow-up' : 'arrow-down';
-			this.listName = this.list!.getName();
-			this.viewMode = this.list!.getMode();
-		});
+		);
 	}
 
-	async onAddItem() {
+	changeSortDirection(): void {
+		const sortDirection =
+			this.sortDirection === Sort.Ascending ? Sort.Descending : Sort.Ascending;
+		this.SLService.updateShoppingList({ sortDirection });
+	}
+
+	changeSortMode($event: any): void {
+		const sortMode = $event.detail.value;
+		this.SLService.updateShoppingList({ sortMode });
+	}
+
+	async onAddItem(): Promise<void> {
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
@@ -115,7 +136,11 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		this.SLService.addListItem(itemData, amount);
 	}
 
-	async onEditItem(item: PopulatedItem) {
+	onDeleteItem(item: PopulatedItem): void {
+		this.SLService.removeListItem(item.itemId);
+	}
+
+	async onEditItem(item: PopulatedItem): Promise<void> {
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
@@ -141,15 +166,7 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		this.SLService.updateListItem(itemData);
 	}
 
-	onDeleteItem(item: PopulatedItem) {
-		this.SLService.removeListItem(item.itemId);
-	}
-
-	onModeChange() {
-		this.SLService.toggleListMode();
-	}
-
-	async onListActions($event: any) {
+	async onListActions($event: any): Promise<void> {
 		const popover = await this.popoverCtrl.create({
 			component: ActionPopoverComponent,
 			event: $event,
@@ -172,28 +189,24 @@ export class ShoppingListPageComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	async renameList() {
-		this.SLService.renameList(this.listName);
+	onModeChange(): void {
+		if (!this.list) return;
+		this.SLService.toggleListMode(this.list.id);
 	}
 
-	changeSortMode($event: any) {
-		const sortMode = $event.detail.value;
-		this.SLService.updateShoppingList({ sortMode });
-	}
-
-	changeSortDirection() {
-		const sortDirection =
-			this.sortDirection === Sort.Ascending ? Sort.Descending : Sort.Ascending;
-		this.SLService.updateShoppingList({ sortDirection });
-	}
-
-	async removeList() {
+	async removeList(): Promise<void> {
+		if (!this.list) return;
 		const confirmed = await this.SLService.confirmRemoval();
 		if (!confirmed) return;
-		this.SLService.removeShoppingList();
+		this.SLService.removeShoppingList(this.list.id);
 	}
 
-	trackByID(index: number, item: PopulatedItem) {
+	async renameList(): Promise<void> {
+		if (!this.list) return;
+		this.SLService.renameList(this.list.name);
+	}
+
+	trackByID(index: number, item: PopulatedItem): string | undefined {
 		return item ? item.itemId : undefined;
 	}
 

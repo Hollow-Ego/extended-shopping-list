@@ -1,51 +1,54 @@
 import { Sort } from '../enums/sorting.enum';
 import { LibraryItem } from '../interfaces/library-item.interface';
+import { SortDetails } from '../interfaces/sort-details.interface';
 
 export class ItemLibrary {
-	constructor(
-		private items: Map<string, LibraryItem> = new Map(),
-		private sortMode: number = Sort.ByName,
-		private sortDirection: number = Sort.Ascending
-	) {}
+	public items: Map<string, LibraryItem>;
+	public sortMode: number;
+	public sortDirection: number;
 
-	get(id: string) {
-		return this.items.get(id);
+	constructor(
+		items: Map<string, LibraryItem> = new Map(),
+		sortMode: number = Sort.ByName,
+		sortDirection: number = Sort.Ascending
+	) {
+		this.items = items;
+		this.sortMode = sortMode;
+		this.sortDirection = sortDirection;
 	}
 
-	add(id: string, item: LibraryItem) {
+	getItem(id: string): LibraryItem | null {
+		const item = this.items.get(id);
+		if (!item) return null;
+		return item;
+	}
+
+	addItem(id: string, item: LibraryItem): void {
 		this.items.set(id, item);
 	}
 
-	remove(id: string) {
+	removeItem(id: string): void {
 		this.items.delete(id);
 	}
 
-	update(id: string, item: LibraryItem) {
+	updateItem(id: string, item: LibraryItem): void {
 		this.items.set(id, item);
 	}
 
-	setItems(items: Map<string, LibraryItem>) {
-		this.items = items;
-	}
-
-	has(key: string) {
+	has(key: string): boolean {
 		return this.items.has(key);
 	}
 
-	size() {
+	get size(): number {
 		return this.items.size;
 	}
 
-	values() {
-		return this.items.values();
+	get itemsArray(): LibraryItem[] {
+		return Array.from(this.items.values());
 	}
 
-	getAllItems() {
-		return this.items;
-	}
-
-	getAllTags() {
-		const tags = [];
+	get tags(): string[] {
+		const tags: string[] = [];
 		this.items.forEach(item => {
 			if (item.tags.length > 0) {
 				tags.push(...item.tags);
@@ -54,8 +57,8 @@ export class ItemLibrary {
 		return [...new Set(tags)];
 	}
 
-	getAllUnits() {
-		const units = [];
+	get units(): string[] {
+		const units: string[] = [];
 		this.items.forEach(item => {
 			const unit = item.unit;
 			if (unit && typeof unit !== 'undefined') {
@@ -65,12 +68,13 @@ export class ItemLibrary {
 		return [...new Set(units)];
 	}
 
-	getSortDetails() {
+	get sortDetails(): SortDetails {
 		return { sortMode: this.sortMode, sortDirection: this.sortDirection };
 	}
 
-	setSortDetails(newMode: string, newDirection: string) {
-		this.sortMode = newMode;
-		this.sortDirection = newDirection;
+	set sortDetails(newValue: SortDetails) {
+		const { sortMode, sortDirection } = newValue;
+		this.sortMode = sortMode;
+		this.sortDirection = sortDirection;
 	}
 }

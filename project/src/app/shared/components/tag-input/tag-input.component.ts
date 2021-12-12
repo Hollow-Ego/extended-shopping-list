@@ -14,18 +14,40 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 	],
 })
 export class TagInputComponent implements ControlValueAccessor {
-	public onChange = tags => {};
-	public onTouched = () => {};
-	public touched = false;
-	public disabled = false;
-
 	@Input() availableTags: string[] = [];
 
+	public disabled = false;
+	public isOpenDropdown = false;
 	public newTag = '';
 	public tags: string[] = [];
-	public isOpenDropdown = false;
+	public touched = false;
 
-	onClickDropdown() {
+	public onChange = (tags: string[]) => {};
+	public onTouched = () => {};
+
+	addTag(tag: string): void {
+		this.markAsTouched();
+		this.tags.push(tag);
+		this.newTag = '';
+		this.isOpenDropdown = false;
+		this.onChange(this.tags);
+	}
+
+	canBeSelected(tag: string): boolean {
+		const isAlreadySelected = this.tags.includes(tag);
+		const filter = this.newTag.toLowerCase();
+		const isFiltered = tag.toLowerCase().indexOf(filter) > -1;
+		return !isAlreadySelected && isFiltered;
+	}
+
+	onChipSelect(tag: string): void {
+		if (this.disabled) {
+			return;
+		}
+		this.addTag(tag);
+	}
+
+	onClickDropdown(): void {
 		if (this.disabled) {
 			return;
 		}
@@ -33,21 +55,7 @@ export class TagInputComponent implements ControlValueAccessor {
 		this.isOpenDropdown = !this.isOpenDropdown;
 	}
 
-	canBeSelected(tag: string) {
-		const isAlreadySelected = this.tags.includes(tag);
-		const filter = this.newTag.toLowerCase();
-		const isFiltered = tag.toLowerCase().indexOf(filter) > -1;
-		return !isAlreadySelected && isFiltered;
-	}
-
-	onChipSelect(tag: string) {
-		if (this.disabled) {
-			return;
-		}
-		this.addTag(tag);
-	}
-
-	onConfirm() {
+	onConfirm(): void {
 		if (this.disabled) {
 			return;
 		}
@@ -63,7 +71,7 @@ export class TagInputComponent implements ControlValueAccessor {
 		this.addTag(this.newTag);
 	}
 
-	onRemoveTag(index: number) {
+	onRemoveTag(index: number): void {
 		if (this.disabled) {
 			return;
 		}
@@ -72,31 +80,27 @@ export class TagInputComponent implements ControlValueAccessor {
 		this.onChange(this.tags);
 	}
 
-	addTag(tag: string) {
-		this.markAsTouched();
-		this.tags.push(tag);
-		this.newTag = '';
-		this.isOpenDropdown = false;
-		this.onChange(this.tags);
-	}
-
-	writeValue(tags: string[]): void {
-		this.tags = tags;
-	}
-	registerOnChange(onChange: any): void {
-		this.onChange = onChange;
-	}
-	registerOnTouched(onTouched: any): void {
-		this.onTouched = onTouched;
-	}
-	markAsTouched() {
+	markAsTouched(): void {
 		if (!this.touched) {
 			this.onTouched();
 			this.touched = true;
 		}
 	}
-	setDisabledState(disabled: boolean) {
+
+	registerOnChange(onChange: any): void {
+		this.onChange = onChange;
+	}
+
+	registerOnTouched(onTouched: any): void {
+		this.onTouched = onTouched;
+	}
+
+	setDisabledState(disabled: boolean): void {
 		this.disabled = disabled;
 		this.isOpenDropdown = false;
+	}
+
+	writeValue(tags: string[]): void {
+		this.tags = tags;
 	}
 }

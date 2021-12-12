@@ -1,7 +1,7 @@
-<ion-item>
+<ion-item *ngIf="item">
 
   <ion-label>{{item.name}}</ion-label>
-  <ion-icon *ngIf="hasImage()" name="image"></ion-icon>
+  <ion-icon *ngIf="item.imgData?.webviewPath" name="image"></ion-icon>
   <ion-icon *ngIf="item.tags.length > 0" name="bookmarks"></ion-icon>
   <ion-icon *ngIf="item.amount" name="scale"></ion-icon>
   <ion-icon *ngIf="item.unit" name="triangle"></ion-icon>

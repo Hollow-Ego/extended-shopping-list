@@ -7,9 +7,10 @@ import { TranslationService } from '../../../services/translation.service';
 	templateUrl: './language-picker.component.html',
 })
 export class LanguagePickerComponent implements OnInit {
-	@Input() language: string;
-	public availableLanguages: LanguageDetails[];
+	@Input() language: string = 'en';
 	@Output() languageChange = new EventEmitter<string>();
+
+	public availableLanguages: LanguageDetails[] = [];
 
 	constructor(private translate: TranslationService) {}
 

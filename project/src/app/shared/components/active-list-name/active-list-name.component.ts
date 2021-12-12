@@ -12,22 +12,23 @@ export class ActiveListNameComponent implements OnInit, OnDestroy {
 		private SLService: ShoppingListService,
 		private translate: TranslationService
 	) {}
-	slServiceSubscription: Subscription;
-	activeListName: string;
+	slServiceSubscription: Subscription | undefined;
+	activeListName: string = '';
 	ngOnInit() {
 		this.slServiceSubscription = this.SLService.shoppingListChanges.subscribe(
 			listState => {
 				if (!this.slServiceSubscription) {
 					return;
 				}
-				this.activeListName = listState.shoppingLists
-					.get(listState.activeList)
-					.getName();
+				if (!listState) return;
+				this.activeListName = listState.shoppingLists.get(
+					listState.activeList
+				)!.name;
 			}
 		);
 	}
 
 	ngOnDestroy() {
-		this.slServiceSubscription.unsubscribe();
+		if (this.slServiceSubscription) this.slServiceSubscription.unsubscribe();
 	}
 }

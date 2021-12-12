@@ -11,6 +11,7 @@ import { ShoppingList } from '../../shared/classes/shopping-list.class';
 
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { Mode } from '../../shared/enums/mode.enum';
+import { ShoppingListState } from '../../shared/interfaces/service.interface';
 
 @Component({
 	selector: 'pxsl1-shopping-list',
@@ -20,17 +21,16 @@ import { Mode } from '../../shared/enums/mode.enum';
 export class ShoppingListView implements OnInit, OnDestroy, AfterViewInit {
 	@ViewChild('slides') slides: IonSlides | undefined;
 
-	public shoppingLists: ShoppingList[] = [];
 	public activeListIdx: number = 0;
-
 	public currentMode: string = Mode.Edit;
+	public shoppingLists: ShoppingList[] = [];
 	private shoppingListSub: Subscription | undefined;
 
 	constructor(private SLService: ShoppingListService) {}
 
 	ngOnInit() {
 		this.shoppingListSub = this.SLService.shoppingListChanges.subscribe(
-			listState => {
+			(listState: ShoppingListState) => {
 				this.shoppingLists = Array.from(listState.shoppingLists.values());
 				this.activeListIdx = this.shoppingLists.indexOf(
 					listState.shoppingLists.get(listState.activeList)!
@@ -43,19 +43,19 @@ export class ShoppingListView implements OnInit, OnDestroy, AfterViewInit {
 		if (this.activeListIdx >= 0) this.slides?.slideTo(this.activeListIdx);
 	}
 
-	trackById(index: number, list: ShoppingList) {
-		return list ? list.getListID() : undefined;
+	async onAddNewList(): Promise<void> {
+		await this.SLService.addShoppingList();
 	}
 
-	async onAddNewList() {
-		const name = await this.SLService.addShoppingList();
-	}
-
-	onSlideChange($event: any) {
+	onSlideChange($event: any): void {
 		this.slides?.getActiveIndex().then(idx => {
-			const newListId = this.shoppingLists[idx].getListID();
+			const newListId = this.shoppingLists[idx].id;
 			this.SLService.setActiveList(newListId);
 		});
+	}
+
+	trackById(index: number, list: ShoppingList): string | undefined {
+		return list ? list.id : undefined;
 	}
 
 	ngOnDestroy() {

@@ -1,11 +1,9 @@
 import {
 	Component,
-	ElementRef,
 	EventEmitter,
 	Input,
-	OnInit,
+	OnChanges,
 	Output,
-	ViewChild,
 } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 
@@ -20,22 +18,26 @@ import { ModalAction } from '../../../../shared/enums/modal-action.enum';
 	templateUrl: './populated-item.component.html',
 	styleUrls: ['./populated-item.component.scss'],
 })
-export class PopulatedItemComponent implements OnInit {
-	@Input() item: PopulatedItem | undefined;
+export class PopulatedItemComponent implements OnChanges {
 	@Input() isEditMode = true;
+	@Input() item: PopulatedItem = { itemId: '', name: '', tags: [] };
+
 	@Output() editItem = new EventEmitter<PopulatedItem>();
 	@Output() deleteItem = new EventEmitter<PopulatedItem>();
 
-	private lastOnStart = 0;
-	private DOUBLE_CLICK_THRESHOLD = 500;
+	public amountString: string = '';
 
 	public hasImage = false;
-	public amountString: string = '';
+
+	private doubleClickThreshold = 1000;
+	private lastOnStart = 0;
 
 	constructor(private popoverCtrl: PopoverController) {}
 
-	ngOnInit() {
-		this.hasImage = this.item?.imgData?.fileName?.trim().length > 0;
+	ngOnChanges(): void {
+		if (!this.item) return;
+		const filename = this.item.imgData?.webviewPath;
+		this.hasImage = !!filename && filename.trim().length > 0;
 		this.amountString = this.buildAmountString();
 	}
 
@@ -47,10 +49,10 @@ export class PopulatedItemComponent implements OnInit {
 		);
 	}
 
-	onStartDoubleClick() {
+	onStartDoubleClick(): void {
 		if (this.isEditMode) return;
 		const now = Date.now();
-		if (Math.abs(now - this.lastOnStart) <= this.DOUBLE_CLICK_THRESHOLD) {
+		if (Math.abs(now - this.lastOnStart) <= this.doubleClickThreshold) {
 			this.deleteItem.emit(this.item);
 			this.lastOnStart = 0;
 		} else {
@@ -58,7 +60,7 @@ export class PopulatedItemComponent implements OnInit {
 		}
 	}
 
-	async onItemClick(title: string, imageUrl: string) {
+	async onItemClick(title: string, imageUrl: string): Promise<void> {
 		const popover = await this.popoverCtrl.create({
 			component: ImageModalComponent,
 			cssClass: 'image-modal',
@@ -72,7 +74,7 @@ export class PopulatedItemComponent implements OnInit {
 		await popover.present();
 	}
 
-	async onItemActions($event) {
+	async onItemActions($event: any): Promise<void> {
 		const popover = await this.popoverCtrl.create({
 			component: ActionPopoverComponent,
 			event: $event,
@@ -95,7 +97,7 @@ export class PopulatedItemComponent implements OnInit {
 		}
 	}
 
-	onError() {
+	onError(): void {
 		console.log('This is an error');
 	}
 }

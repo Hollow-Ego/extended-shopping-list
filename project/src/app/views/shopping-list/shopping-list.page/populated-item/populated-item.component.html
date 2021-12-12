@@ -9,21 +9,17 @@
       </ion-text>
 
       <ion-text class="shopping-list-item-label" *ngIf="item.price">
-        {{item.price}} {{item.currency.symbol_native}}
+        {{item.price}} {{item.currency?.symbol_native}}
       </ion-text>
-
     </ion-label>
 
-
-
     <ion-thumbnail slot="end" *ngIf="hasImage">
-      <ion-img *ngIf="item.imgData.webviewPath" [src]="item.imgData.webviewPath"
-        default="assets/broken-img-placeholder.png" (click)="onItemClick(item.name, item.imgData.webviewPath)">
+      <ion-img [src]="item.imgData!.webviewPath" default="assets/broken-img-placeholder.png"
+        (click)="onItemClick(item.name, item.imgData!.webviewPath)">
       </ion-img>
     </ion-thumbnail>
 
     <ion-icon *ngIf="isEditMode" slot="end" name="ellipsis-vertical" style="float: right;"
       (click)="onItemActions($event)"></ion-icon>
-
   </ion-item>
 </ion-reorder>

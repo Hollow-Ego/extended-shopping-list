@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { PopulatedItem } from '../../interfaces/populated-item.interface';
 import { AlertController, ModalController } from '@ionic/angular';
 import { SingleCurrencyData } from '../../interfaces/currency-data.interface';
 import { LibraryItem } from '../../interfaces/library-item.interface';
+
 import * as data from '../../../i18n/currency-map.json';
 import { ImageService } from '../../../services/image.service';
 
@@ -15,25 +16,20 @@ import { ModalMode } from '../../enums/modal-mode.enum';
 	templateUrl: './add-edit-modal.component.html',
 	styleUrls: ['./add-edit-modal.component.scss'],
 })
-export class AddEditModalComponent implements OnInit {
-	constructor(
-		public formBuilder: FormBuilder,
-		public modalController: ModalController,
-		public alertController: AlertController,
-		private imageService: ImageService,
-		private libraryService: LibraryService
-	) {}
-
-	@Input() item: PopulatedItem | LibraryItem = null;
-	@Input() mode: number = ModalMode.Add;
+export class AddEditModalComponent implements OnChanges {
 	@Input() isNewLibraryItem: boolean = true;
+	@Input() item: PopulatedItem | LibraryItem | null = null;
+	@Input() mode: number = ModalMode.Add;
 
-	public availableUnits: string[];
-	public availableTags: string[];
-	public itemForm: FormGroup;
+	public allCurrencyData: SingleCurrencyData[] = Object.values(
+		(data as any)['default'].currencies
+	);
+	public availableTags: string[] = [];
+	public availableUnits: string[] = [];
+	public itemForm: FormGroup | undefined;
+	public modalMode = ModalMode;
 	public updateLibrary = false;
 
-	public allCurrencyData: SingleCurrencyData[];
 	// TODO To be refactored into a setting
 	private defaultCurrency: SingleCurrencyData = {
 		symbol: '\u20AC',
@@ -43,17 +39,24 @@ export class AddEditModalComponent implements OnInit {
 		rounding: 0.0,
 	};
 
-	ngOnInit() {
-		this.allCurrencyData = Object.values(data['default'].currencies);
+	constructor(
+		public formBuilder: FormBuilder,
+		public modalController: ModalController,
+		public alertController: AlertController,
+		private imageService: ImageService,
+		private libraryService: LibraryService
+	) {}
+
+	ngOnChanges() {
 		if (!this.item) {
 			this.item = {
-				itemId: null,
-				name: null,
+				itemId: '',
+				name: '',
 				imgData: { filepath: '', fileName: '', webviewPath: '' },
-				amount: null,
+				amount: 1,
 				tags: [],
-				unit: null,
-				price: null,
+				unit: '',
+				price: 0,
 				currency: this.defaultCurrency,
 			};
 		}
@@ -75,22 +78,32 @@ export class AddEditModalComponent implements OnInit {
 		});
 	}
 
-	async onUnitChanged(unitSelect) {
-		const selectedUnit = unitSelect.value;
-		if (selectedUnit === 'new') {
-			const newUnit = await this.inputNewUnit();
-			if (!newUnit || newUnit.length <= 0) {
-				this.itemForm.controls['unit'].reset();
-				return;
-			}
-			if (!this.availableUnits.includes(newUnit)) {
-				this.availableUnits.push(newUnit);
-			}
-			this.itemForm.controls['unit'].setValue(newUnit);
-		}
+	cancelInput(): void {
+		this.dismissModal(true);
 	}
 
-	async inputNewUnit() {
+	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData): boolean {
+		return cur1 && cur2 ? cur1.code === cur2.code : cur1 === cur2;
+	}
+
+	dismissModal(canceled = false): void {
+		const itemData = this.itemForm!.value;
+		if (!this.itemForm!.dirty) {
+			canceled = true;
+		}
+		if (canceled || (!this.isNewItem() && !this.updateLibrary)) {
+			this.imageService.clearDeletionStack();
+		}
+		this.imageService.deleteImagesFromStack();
+
+		this.modalController.dismiss({
+			canceled,
+			itemData,
+			updateLibrary: this.updateLibrary,
+		});
+	}
+
+	async inputNewUnit(): Promise<string> {
 		const inputAlert = await this.alertController.create({
 			inputs: [
 				{
@@ -109,36 +122,26 @@ export class AddEditModalComponent implements OnInit {
 		return newUnit;
 	}
 
-	onSubmit() {
-		this.dismissModal();
-	}
-
-	isNewItem() {
+	isNewItem(): boolean {
 		return this.mode === ModalMode.Add;
 	}
 
-	compareWith(cur1: SingleCurrencyData, cur2: SingleCurrencyData) {
-		return cur1 && cur2 ? cur1.code === cur2.code : cur1 === cur2;
+	onSubmit(): void {
+		this.dismissModal();
 	}
 
-	dismissModal(canceled = false) {
-		const itemData = this.itemForm.value;
-		if (!this.itemForm.dirty) {
-			canceled = true;
+	async onUnitChanged(unitSelect: any): Promise<void> {
+		const selectedUnit = unitSelect.value;
+		if (selectedUnit === 'new') {
+			const newUnit = await this.inputNewUnit();
+			if (!newUnit || newUnit.length <= 0) {
+				this.itemForm!.controls['unit'].reset();
+				return;
+			}
+			if (!this.availableUnits.includes(newUnit)) {
+				this.availableUnits.push(newUnit);
+			}
+			this.itemForm!.controls['unit'].setValue(newUnit);
 		}
-		if (canceled || (!this.isNewItem() && !this.updateLibrary)) {
-			this.imageService.clearDeletionStack();
-		}
-		this.imageService.deleteImagesFromStack();
-
-		this.modalController.dismiss({
-			canceled,
-			itemData,
-			updateLibrary: this.updateLibrary,
-		});
-	}
-
-	cancelInput() {
-		this.dismissModal(true);
 	}
 }

@@ -17,33 +17,65 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 	],
 })
 export class ImagePickerComponent implements OnInit, ControlValueAccessor {
-	public onChange = pickedImage => {};
-	public onTouched = () => {};
-	public touched = false;
+	@ViewChild('filePicker') filePickerRef:
+		| ElementRef<HTMLInputElement>
+		| undefined;
+
+	public failedLoading: boolean = false;
 	public disabled = false;
-
-	public pickedImg: Image;
-
 	public imgPlaceholderPath = 'assets/img-placeholder.png';
-	private emptyImg = {
+	public touched = false;
+	public pickedImg: Image | null = null;
+
+	public onChange = (pickedImage: Image | null) => {};
+	public onTouched = () => {};
+
+	private emptyImg: Image = {
 		filepath: '',
 		webviewPath: '',
 		fileName: '',
 	};
 
-	@ViewChild('filePicker') filePickerRef: ElementRef<HTMLInputElement>;
-	public failedLoading: boolean;
-
 	constructor(private imageService: ImageService) {}
 
 	ngOnInit() {}
 
-	async onPickImage() {
+	getImgSource(): string {
+		if (!this.pickedImg || !this.pickedImg.webviewPath) {
+			return this.imgPlaceholderPath;
+		}
+		return this.pickedImg.webviewPath;
+	}
+
+	markAsTouched() {
+		if (!this.touched) {
+			this.onTouched();
+			this.touched = true;
+		}
+	}
+
+	onClearImage(): void {
+		this.failedLoading = false;
+		if (!this.pickedImg) return;
+		this.imageService.markForDeletion(this.pickedImg.fileName);
+		this.pickedImg = this.emptyImg;
+		this.onChange(this.pickedImg);
+	}
+
+	onDidLoad() {
+		this.failedLoading = false;
+	}
+
+	onLoadError() {
+		this.failedLoading = true;
+	}
+
+	async onPickImage(): Promise<void> {
 		if (!Capacitor.isPluginAvailable('Camera')) {
-			this.filePickerRef.nativeElement.click();
+			this.filePickerRef!.nativeElement.click();
 			return;
 		}
-		const capturedImage: Photo = await this.imageService
+		const capturedImage: Photo | null = await this.imageService
 			.takeImage()
 			.catch(error => {
 				return null;
@@ -55,44 +87,19 @@ export class ImagePickerComponent implements OnInit, ControlValueAccessor {
 		}
 	}
 
-	onClearImage() {
-		this.failedLoading = false;
-		this.imageService.markForDeletion(this.pickedImg.fileName);
-		this.pickedImg = this.emptyImg;
-		this.onChange(this.pickedImg);
+	registerOnChange(onChange: any): void {
+		this.onChange = onChange;
 	}
 
-	getImgSource() {
-		if (!this.pickedImg.webviewPath || !this.pickedImg) {
-			return this.imgPlaceholderPath;
-		}
-		return this.pickedImg.webviewPath;
+	registerOnTouched(onTouched: any): void {
+		this.onTouched = onTouched;
 	}
 
-	onLoadError() {
-		this.failedLoading = true;
-	}
-
-	onDidLoad() {
-		this.failedLoading = false;
+	setDisabledState(disabled: boolean) {
+		this.disabled = disabled;
 	}
 
 	writeValue(pickedImg: Image): void {
 		this.pickedImg = pickedImg;
-	}
-	registerOnChange(onChange: any): void {
-		this.onChange = onChange;
-	}
-	registerOnTouched(onTouched: any): void {
-		this.onTouched = onTouched;
-	}
-	markAsTouched() {
-		if (!this.touched) {
-			this.onTouched();
-			this.touched = true;
-		}
-	}
-	setDisabledState(disabled: boolean) {
-		this.disabled = disabled;
 	}
 }

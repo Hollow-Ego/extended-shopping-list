@@ -13,14 +13,16 @@ import { LibraryItem } from '../../../shared/interfaces/library-item.interface';
 import { PopulatedItem } from '../../../shared/interfaces/populated-item.interface';
 import { ModalMode } from '../../../shared/enums/modal-mode.enum';
 import { ModalAction } from '../../../shared/enums/modal-action.enum';
+import { take } from 'rxjs/operators';
 
 @Component({
 	selector: 'pxsl1-library-list-item',
 	templateUrl: './library-list-item.component.html',
 })
 export class LibraryListItemComponent implements OnInit {
-	@Input() item: LibraryItem;
-	private addItemToastMessage: string;
+	@Input() item: LibraryItem | undefined;
+
+	private addItemToastMessage: string = '';
 
 	constructor(
 		private popoverCtrl: PopoverController,
@@ -34,39 +36,35 @@ export class LibraryListItemComponent implements OnInit {
 	ngOnInit() {
 		this.translate
 			.getTranslation('messages.addItemToast')
+			.pipe(take(1))
 			.subscribe((translation: string) => {
 				this.addItemToastMessage = translation;
 			});
 	}
 
-	hasImage() {
-		return this.item.imgData.webviewPath !== '';
+	async onAddToList(item: LibraryItem): Promise<void> {
+		let { amount } = item;
+
+		if (!amount || amount < 0) amount = 1;
+
+		const newShoppingItem: PopulatedItem = {
+			amount,
+			itemId: '',
+			name: item.name,
+			tags: [],
+		};
+		this.SLService.addListItem(newShoppingItem, amount);
+		Haptics.notification({ type: NotificationType.Success });
+		this.toastService.showSimpleToast(
+			`${item.name} ${this.addItemToastMessage} `
+		);
 	}
 
-	async onItemActions($event) {
-		const popover = await this.popoverCtrl.create({
-			component: ActionPopoverComponent,
-			event: $event,
-			translucent: true,
-			componentProps: { options: [ModalAction.Edit, ModalAction.Delete] },
-		});
-
-		await popover.present();
-		const { data: action } = await popover.onDidDismiss();
-
-		switch (action) {
-			case ModalAction.Delete:
-				this.onDeleteItem(this.item.itemId);
-				return;
-			case ModalAction.Edit:
-				this.onEditItem(this.item);
-				return;
-			default:
-				return;
-		}
+	onDeleteItem(itemId: string): void {
+		this.libraryService.removeLibraryItem(itemId);
 	}
 
-	async onEditItem(item: LibraryItem) {
+	async onEditItem(item: LibraryItem): Promise<void> {
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
@@ -89,22 +87,27 @@ export class LibraryListItemComponent implements OnInit {
 		this.libraryService.updateLibraryItem(itemData);
 	}
 
-	onDeleteItem(itemId: string) {
-		this.libraryService.removeLibraryItem(itemId);
-	}
+	async onItemActions($event: any): Promise<void> {
+		if (!this.item) return;
+		const popover = await this.popoverCtrl.create({
+			component: ActionPopoverComponent,
+			event: $event,
+			translucent: true,
+			componentProps: { options: [ModalAction.Edit, ModalAction.Delete] },
+		});
 
-	async onAddToList(item: LibraryItem) {
-		const { amount } = item;
-		const newShoppingItem: PopulatedItem = {
-			amount,
-			itemId: null,
-			name: item.name,
-			tags: [],
-		};
-		this.SLService.addListItem(newShoppingItem, amount);
-		Haptics.notification({ type: NotificationType.Success });
-		this.toastService.showSimpleToast(
-			`${item.name} ${this.addItemToastMessage} `
-		);
+		await popover.present();
+		const { data: action } = await popover.onDidDismiss();
+
+		switch (action) {
+			case ModalAction.Delete:
+				this.onDeleteItem(this.item.itemId);
+				return;
+			case ModalAction.Edit:
+				this.onEditItem(this.item);
+				return;
+			default:
+				return;
+		}
 	}
 }

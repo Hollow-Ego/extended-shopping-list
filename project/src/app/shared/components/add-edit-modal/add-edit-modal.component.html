@@ -5,7 +5,7 @@
         <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ (isNewItem()
+    <ion-title>{{ (mode === modalMode.Add
       ? 'titles.addItemTitle'
       : 'titles.editItemTitle') | translate }}</ion-title>
   </ion-toolbar>
@@ -13,81 +13,79 @@
 
 <ion-content>
   <ion-item *ngIf="!isNewLibraryItem" class="ion-margin">
-    <ion-label>{{(isNewItem()
+    <ion-label>{{(mode === modalMode.Add
       ? 'uiStrings.addToLibraryCheckboxText'
       : 'uiStrings.updateLibraryCheckboxText') | translate}}</ion-label>
     <ion-checkbox [(ngModel)]="updateLibrary" slot="start"></ion-checkbox>
   </ion-item>
+  <ng-container *ngIf="itemForm">
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="ion-margin">
+      <ion-item>
+        <ion-label position="floating">{{ 'aboutItems.name' | translate }}<ion-text color="danger"> *</ion-text>
+        </ion-label>
+        <ion-input formControlName="name" type="text"></ion-input>
+      </ion-item>
+      <ion-row>
+        <ion-col size="6" class="ion-no-padding">
+          <ion-item>
+            <ion-label position="floating">{{ 'aboutItems.amount' | translate }}
+            </ion-label>
+            <ion-input formControlName="amount" type="number"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6" class="ion-no-padding">
+          <ion-item>
+            <ion-label position="floating">{{ 'aboutItems.unit' | translate }}
+            </ion-label>
+            <ion-select #unitSelect formControlName="unit" type="text" (ionChange)="onUnitChanged(unitSelect)">
+              <ion-select-option value="new">
+                {{'aboutItems.newUnitText' | translate}}
+              </ion-select-option>
+              <ion-select-option *ngFor="let unit of availableUnits">
+                {{unit}}
+              </ion-select-option>
+            </ion-select>
 
-  <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="ion-margin">
-    <ion-item>
-      <ion-label position="floating">{{ 'aboutItems.name' | translate }}<ion-text color="danger"> *</ion-text>
-      </ion-label>
-      <ion-input formControlName="name" type="text"></ion-input>
-    </ion-item>
-    <ion-row>
-      <ion-col size="6" class="ion-no-padding">
-        <ion-item>
-          <ion-label position="floating">{{ 'aboutItems.amount' | translate }}
-          </ion-label>
-          <ion-input formControlName="amount" type="number"></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col size="6" class="ion-no-padding">
-        <ion-item>
-          <ion-label position="floating">{{ 'aboutItems.unit' | translate }}
-          </ion-label>
-          <ion-select #unitSelect formControlName="unit" type="text" (ionChange)="onUnitChanged(unitSelect)">
-            <ion-select-option value="new">
-              {{'aboutItems.newUnitText' | translate}}
-            </ion-select-option>
-            <ion-select-option *ngFor="let unit of availableUnits">
-              {{unit}}
-            </ion-select-option>
-          </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6" class="ion-no-padding">
+          <ion-item>
+            <ion-label position="floating">{{ 'aboutItems.price' | translate }}
+            </ion-label>
+            <ion-input formControlName="price" type="number"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6" class="ion-no-padding">
+          <ion-item>
+            <ion-label position="floating">{{ 'aboutItems.currency' | translate }}
+            </ion-label>
+            <ion-select formControlName="currency" [compareWith]="compareWith">
+              <ion-select-option *ngFor="let currency of allCurrencyData" [value]="currency">
+                {{currency.symbol_native}} ({{currency.code}})
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="6" class="ion-no-padding">
-        <ion-item>
-          <ion-label position="floating">{{ 'aboutItems.price' | translate }}
-          </ion-label>
-          <ion-input formControlName="price" type="number"></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col size="6" class="ion-no-padding">
-        <ion-item>
-          <ion-label position="floating">{{ 'aboutItems.currency' | translate }}
-          </ion-label>
-          <ion-select formControlName="currency" [compareWith]="compareWith">
-            <ion-select-option *ngFor="let currency of allCurrencyData" [value]="currency">
-              {{currency.symbol_native}} ({{currency.code}})
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-
-    <ion-item>
-      <pxsl1-tag-input formControlName="tags" [availableTags]="availableTags"></pxsl1-tag-input>
-    </ion-item>
-
-
-    <ion-item>
-      <pxsl1-image-picker formControlName="imgData">
-      </pxsl1-image-picker>
-    </ion-item>
+      <ion-item>
+        <pxsl1-tag-input formControlName="tags" [availableTags]="availableTags"></pxsl1-tag-input>
+      </ion-item>
 
 
-    <ion-button expand="block" color="primary" type="submit" [disabled]="itemForm.invalid">
-      {{( isNewItem()
-      ? 'common.addText'
-      : 'common.saveText') | translate }}
-    </ion-button>
-  </form>
+      <ion-item>
+        <pxsl1-image-picker formControlName="imgData">
+        </pxsl1-image-picker>
+      </ion-item>
 
 
-
+      <ion-button expand="block" color="primary" type="submit" [disabled]="itemForm.invalid">
+        {{( mode === modalMode.Add
+        ? 'common.addText'
+        : 'common.saveText') | translate }}
+      </ion-button>
+    </form>
+  </ng-container>
 </ion-content>

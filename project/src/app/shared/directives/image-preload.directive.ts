@@ -9,8 +9,8 @@ import { Directive, HostBinding, Input } from '@angular/core';
 export class ImagePreloadDirective {
 	@HostBinding('src')
 	@Input()
-	src: string;
-	@Input() default: string;
+	src: string = '';
+	@Input() default: string = 'assets/img-placeholder.png';
 
 	updateUrl() {
 		this.src = this.default;
