@@ -7,7 +7,7 @@
   <ion-row class="ion-align-items-center ion-margin-top">
     <ion-col size="12"></ion-col>
     <ion-chip *ngFor="let tag of tags; index as i" color="primary">
-      <ion-label>{{tag}}</ion-label>
+      <ion-label>{{tag.name}}</ion-label>
       <ion-icon (click)="onRemoveTag(i)" name="close-circle"></ion-icon>
     </ion-chip>
     <ion-button (click)="onClickDropdown()" fill="clear">
@@ -24,9 +24,9 @@
 
 
   <div class="dropdown-items">
-    <ion-chip *ngFor="let tag of availableTags | async; index as i" color="primary" (click)="onChipSelect(tag)"
+    <ion-chip *ngFor="let tag of availableTags$ | async" color="primary" (click)="onChipSelect(tag)"
       [hidden]="!canBeSelected(tag)">
-      <ion-label>{{tag}}</ion-label>
+      <ion-label>{{tag.name}}</ion-label>
     </ion-chip>
   </div>
 

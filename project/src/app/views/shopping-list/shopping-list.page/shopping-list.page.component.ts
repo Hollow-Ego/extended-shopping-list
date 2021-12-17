@@ -80,11 +80,12 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 					this.items.forEach(item => {
 						let tags = item.tags;
 						let tag: NameIdObject = tags[0];
-						// if (typeof tags === 'undefined') {
-						// 	tag = 'aboutItems.undefinedTagName';
-						// } else {
-						// 	tag = tags[0];
-						// }
+						if (!tag) {
+							tag = {
+								name: 'aboutItems.undefinedTagName',
+								id: 'dummy',
+							};
+						}
 
 						if (!this.sortingCategories.includes(tag.name)) {
 							const newIndex = this.sortingCategories.push(tag.name);

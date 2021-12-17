@@ -60,7 +60,13 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 				if (sortMode === Sort.ByName) {
 					this.items.forEach(item => {
 						let tag: NameIdObject = item.tags[0];
-						if (!tag) return;
+						if (!tag) {
+							tag = {
+								name: 'aboutItems.undefinedTagName',
+								id: 'dummy',
+							};
+						}
+
 						if (!this.sortingCategories.includes(tag.name)) {
 							const newIndex = this.sortingCategories.push(tag.name);
 							this.sortedTagItems[newIndex - 1] = [];

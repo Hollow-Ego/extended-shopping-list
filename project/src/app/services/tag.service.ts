@@ -20,10 +20,11 @@ export class TagService {
 	}
 
 	async initialize() {
-		const loadedTags = await this.storage.get(StorageKey.Library);
+		const loadedTags = await this.storage.get(StorageKey.Tags);
 		if (!loadedTags || loadedTags.length === 0) {
 			return;
 		}
+
 		this._tags = cloneDeep(loadedTags);
 		this.updatedTags();
 	}
@@ -75,6 +76,7 @@ export class TagService {
 	}
 
 	private updatedTags() {
+		this.storage.set(StorageKey.Tags, this._tags);
 		this.tags.next(this._tags);
 	}
 }

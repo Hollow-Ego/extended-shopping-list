@@ -17,7 +17,7 @@ import { NameIdObject } from '../../interfaces/name-id-object.interface';
 	],
 })
 export class TagInputComponent implements ControlValueAccessor, OnInit {
-	public availableTags: BehaviorSubject<NameIdObject[]> | undefined;
+	public availableTags$: BehaviorSubject<NameIdObject[]> | undefined;
 	public disabled = false;
 	public isOpenDropdown = false;
 	public newTagName = '';
@@ -30,7 +30,7 @@ export class TagInputComponent implements ControlValueAccessor, OnInit {
 	constructor(private tagService: TagService) {}
 
 	ngOnInit(): void {
-		this.availableTags = this.tagService.tags;
+		this.availableTags$ = this.tagService.tags;
 	}
 
 	addNewTag(name: string): void {
@@ -58,7 +58,9 @@ export class TagInputComponent implements ControlValueAccessor, OnInit {
 	}
 
 	canBeSelected(tag: NameIdObject): boolean {
-		const isAlreadySelected = this.tags.includes(tag);
+		const isAlreadySelected = this.tags.find(
+			x => x.id === tag.id || x.name === tag.name
+		);
 		const filter = this.newTagName.toLowerCase();
 		const isFiltered = tag.name.toLowerCase().indexOf(filter) > -1;
 		return !isAlreadySelected && isFiltered;
