@@ -1,5 +1,8 @@
-import { Component, Input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
+import { TagService } from '../../../services/tag.service';
+import { NameIdObject } from '../../interfaces/name-id-object.interface';
 
 @Component({
 	selector: 'pxsl1-tag-input',
@@ -13,34 +16,55 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 		},
 	],
 })
-export class TagInputComponent implements ControlValueAccessor {
-	@Input() availableTags: string[] = [];
-
+export class TagInputComponent implements ControlValueAccessor, OnInit {
+	public availableTags: BehaviorSubject<NameIdObject[]> | undefined;
 	public disabled = false;
 	public isOpenDropdown = false;
-	public newTag = '';
-	public tags: string[] = [];
+	public newTagName = '';
+	public tags: NameIdObject[] = [];
 	public touched = false;
 
-	public onChange = (tags: string[]) => {};
+	public onChange = (tags: NameIdObject[]) => {};
 	public onTouched = () => {};
 
-	addTag(tag: string): void {
+	constructor(private tagService: TagService) {}
+
+	ngOnInit(): void {
+		this.availableTags = this.tagService.tags;
+	}
+
+	addNewTag(name: string): void {
 		this.markAsTouched();
-		this.tags.push(tag);
-		this.newTag = '';
+		this.newTagName = '';
 		this.isOpenDropdown = false;
+		const newTag = this.tagService.addTag(name);
+
+		if (!newTag) {
+			const tag = this.tagService.findTagByName(name);
+			if (!tag) return;
+			this.addTag(tag);
+			return;
+		}
+		this.tags.push(newTag);
 		this.onChange(this.tags);
 	}
 
-	canBeSelected(tag: string): boolean {
+	addTag(tag: NameIdObject): void {
+		this.markAsTouched();
+		this.newTagName = '';
+		this.isOpenDropdown = false;
+		this.tags.push(tag);
+		this.onChange(this.tags);
+	}
+
+	canBeSelected(tag: NameIdObject): boolean {
 		const isAlreadySelected = this.tags.includes(tag);
-		const filter = this.newTag.toLowerCase();
-		const isFiltered = tag.toLowerCase().indexOf(filter) > -1;
+		const filter = this.newTagName.toLowerCase();
+		const isFiltered = tag.name.toLowerCase().indexOf(filter) > -1;
 		return !isAlreadySelected && isFiltered;
 	}
 
-	onChipSelect(tag: string): void {
+	onChipSelect(tag: NameIdObject): void {
 		if (this.disabled) {
 			return;
 		}
@@ -59,16 +83,8 @@ export class TagInputComponent implements ControlValueAccessor {
 		if (this.disabled) {
 			return;
 		}
-		if (this.newTag.length <= 0) return;
-		const alreadyExists = this.tags.find(tag => {
-			return tag.toLowerCase() === this.newTag.toLowerCase();
-		});
-		if (alreadyExists) {
-			this.newTag = '';
-			this.isOpenDropdown = false;
-			return;
-		}
-		this.addTag(this.newTag);
+		if (this.newTagName.length <= 0) return;
+		this.addNewTag(this.newTagName);
 	}
 
 	onRemoveTag(index: number): void {
@@ -100,7 +116,7 @@ export class TagInputComponent implements ControlValueAccessor {
 		this.isOpenDropdown = false;
 	}
 
-	writeValue(tags: string[]): void {
+	writeValue(tags: NameIdObject[]): void {
 		this.tags = tags;
 	}
 }

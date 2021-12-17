@@ -1,6 +1,6 @@
 <ion-item>
   <ion-label>{{'uiStrings.settings.language' | translate}}</ion-label>
-  <ion-select okText="{{'common.confirmText' | translate}}" cancelText="{{'common.cancelText' | translate}}"
+  <ion-select [okText]="'common.confirmText' | translate" [cancelText]="'common.cancelText' | translate"
     (ionChange)="onLanguageChange()" [(ngModel)]="language" interface="popover">
     <ion-select-option *ngFor="let lang of availableLanguages" [value]="lang.short">{{lang.name}}
     </ion-select-option>

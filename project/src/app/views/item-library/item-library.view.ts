@@ -13,6 +13,7 @@ import { LibraryService } from '../../services/library.service';
 import { Sort } from '../../shared/enums/sorting.enum';
 import { Arrow } from '../../shared/enums/arrow.enum';
 import { LibraryState } from '../../shared/interfaces/service.interface';
+import { NameIdObject } from '../../shared/interfaces/name-id-object.interface';
 
 @Component({
 	selector: 'pxsl1-item-library',
@@ -55,22 +56,21 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 				this.items = stateItemArray.sort(
 					sortFunction.bind(this, this.sortDirection)
 				);
+
 				if (sortMode === Sort.ByName) {
 					this.items.forEach(item => {
-						let tag = item.tags[0];
-						if (typeof tag === 'undefined') {
-							tag = 'aboutItems.undefinedTagName';
-						}
-						if (!this.sortingCategories.includes(tag)) {
-							const newIndex = this.sortingCategories.push(tag);
+						let tag: NameIdObject = item.tags[0];
+						if (!tag) return;
+						if (!this.sortingCategories.includes(tag.name)) {
+							const newIndex = this.sortingCategories.push(tag.name);
 							this.sortedTagItems[newIndex - 1] = [];
 						}
-						const categoryIndex = this.sortingCategories.indexOf(tag);
+						const categoryIndex = this.sortingCategories.indexOf(tag.name);
 						this.sortedTagItems[categoryIndex].push(item);
 					});
 				}
 				this.arrowName =
-					this.sortDirection === Sort.Ascending ? 'arrow-up' : 'arrow-down';
+					this.sortDirection === Sort.Ascending ? Arrow.Up : Arrow.Down;
 			}
 		);
 	}

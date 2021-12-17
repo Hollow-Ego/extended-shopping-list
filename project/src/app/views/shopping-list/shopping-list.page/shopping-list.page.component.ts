@@ -19,6 +19,7 @@ import {
 	sortItemByName,
 	sortItemByTag,
 } from '../../../shared/utilities/sorting';
+import { NameIdObject } from '../../../shared/interfaces/name-id-object.interface';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
 	templateUrl: './shopping-list.page.component.html',
@@ -78,18 +79,18 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 				if (this.sortMode === Sort.ByTag) {
 					this.items.forEach(item => {
 						let tags = item.tags;
-						let tag;
-						if (typeof tags === 'undefined') {
-							tag = 'aboutItems.undefinedTagName';
-						} else {
-							tag = tags[0];
-						}
+						let tag: NameIdObject = tags[0];
+						// if (typeof tags === 'undefined') {
+						// 	tag = 'aboutItems.undefinedTagName';
+						// } else {
+						// 	tag = tags[0];
+						// }
 
-						if (!this.sortingCategories.includes(tag)) {
-							const newIndex = this.sortingCategories.push(tag);
+						if (!this.sortingCategories.includes(tag.name)) {
+							const newIndex = this.sortingCategories.push(tag.name);
 							this.sortedTagItems[newIndex - 1] = [];
 						}
-						const categoryIndex = this.sortingCategories.indexOf(tag);
+						const categoryIndex = this.sortingCategories.indexOf(tag.name);
 						this.sortedTagItems[categoryIndex].push(item);
 					});
 				}

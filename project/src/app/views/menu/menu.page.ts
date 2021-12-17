@@ -1,10 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-	ActivatedRoute,
-	Router,
-	RouterEvent,
-	UrlSegment,
-} from '@angular/router';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { App } from '@capacitor/app';
 import { Subscription } from 'rxjs';
@@ -27,7 +22,6 @@ export class MenuPage implements OnInit, OnDestroy {
 	ngOnInit() {
 		this.route.url.subscribe((urlSegment: UrlSegment[]) => {
 			this.currentPath = urlSegment.join('/');
-			console.log(urlSegment);
 		});
 		App.getInfo()
 			.then(appInfo => {

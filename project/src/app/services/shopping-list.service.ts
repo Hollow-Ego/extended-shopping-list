@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@ionic/storage';
 import { cloneDeep } from 'lodash';
-import { ShoppingList } from '../shared/classes/shopping-list.class';
 
 import { PopulatedItem } from '../shared/interfaces/populated-item.interface';
 import { AlertController } from '@ionic/angular';
@@ -14,12 +13,15 @@ import { StorageKey } from '../shared/enums/storage-key.enum';
 import { createOrCopyID } from '../shared/utilities/utils';
 import { DEFAULT_SHOPPING_LIST_NAME } from '../shared/defaults/list-name.default';
 import { UpdateListData } from '../shared/interfaces/update-list-data.interface';
+import { TagService } from './tag.service';
+import { NameIdObject } from '../shared/interfaces/name-id-object.interface';
+import { ShoppingList } from './../shared/classes/shopping-list.class';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class ShoppingListService {
-	private currentStateVersion = '1.0';
+	private currentStateVersion = '2.0';
 
 	private defaultState: ShoppingListState = {
 		shoppingLists: new Map<string, ShoppingList>(),
@@ -35,14 +37,19 @@ export class ShoppingListService {
 	constructor(
 		private storage: Storage,
 		private alertController: AlertController,
-		private translate: TranslationService
+		private translate: TranslationService,
+		private tagService: TagService
 	) {
 		this.initializeService();
 	}
 
 	async initializeService() {
 		const loadedListState = await this.storage.get(StorageKey.ShoppingList);
-		const compatibleState = this.ensureCompatibility(loadedListState);
+		const oldState = await this.storage.get(StorageKey.ShoppingListOld);
+		const compatibleState = await this.ensureCompatibility(
+			loadedListState,
+			oldState
+		);
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
 
 		let updatedActiveList = '';
@@ -72,17 +79,54 @@ export class ShoppingListService {
 		this.shoppingListChanges.next(this.listState);
 	}
 
-	ensureCompatibility(loadedListState: any) {
-		if (!loadedListState) {
-			return cloneDeep(this.defaultCompatibleState);
+	private async ensureCompatibility(
+		loadedListState: any,
+		oldState: any
+	): Promise<ShoppingListState> {
+		if (loadedListState) {
+			return loadedListState;
 		}
-		switch (loadedListState.stateVersion) {
+
+		if (!oldState) {
+			return cloneDeep(this.defaultState);
+		}
+
+		let compatibleState: any;
+		switch (oldState.stateVersion) {
 			case undefined:
 			case null:
-				const compatibleState = this.convertUndefinedState(loadedListState);
+				compatibleState = this.convertUndefinedState(oldState);
+				return await this.ensureCompatibility(null, compatibleState);
+			case '1.0':
+				compatibleState = cloneDeep(this.defaultState);
+				for (let shoppingList of oldState.shoppingLists.values()) {
+					const compatibleList = cloneDeep(shoppingList);
+					compatibleList.shoppingItems = new Map();
+					for (let item of shoppingList.shoppingItems.values()) {
+						const compatibleTags: NameIdObject[] = [];
+						const compatibleItem = cloneDeep(item);
+						item.tags.forEach((tag: any) => {
+							let foundTag = this.tagService.findTagByName(tag);
+							if (!foundTag) {
+								foundTag = this.tagService.addTag(tag);
+							}
+							compatibleTags.push(foundTag!);
+						});
+						compatibleItem.tags = compatibleTags;
+						compatibleList.shoppingItems.set(
+							compatibleItem.itemId,
+							compatibleItem
+						);
+					}
+					compatibleState.shoppingLists.set(compatibleList.id, compatibleList);
+				}
+				console.log(compatibleState);
+
+				this.storage.set(StorageKey.ShoppingList, compatibleState);
 				return compatibleState;
 			default:
-				return loadedListState;
+				this.storage.set(StorageKey.ShoppingList, oldState);
+				return oldState;
 		}
 	}
 

@@ -1,5 +1,6 @@
 import { ItemLibrary } from '../classes/item-library.class';
 import { ShoppingList } from '../classes/shopping-list.class';
+import { NameIdObject } from './name-id-object.interface';
 
 export interface ShoppingListState {
 	shoppingLists: Map<string, ShoppingList>;
@@ -9,8 +10,6 @@ export interface ShoppingListState {
 
 export interface LibraryState {
 	itemLibrary: ItemLibrary;
-	tagLibrary: string[];
-	unitLibrary: string[];
 	stateVersion: string;
 }
 

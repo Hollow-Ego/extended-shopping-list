@@ -9,21 +9,18 @@ import { BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 import { StorageKey } from '../shared/enums/storage-key.enum';
 import { createOrCopyID } from '../shared/utilities/utils';
+import { TagService } from './tag.service';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class LibraryService {
-	private currentStateVersion = '1.0';
+	private currentStateVersion = '2.0';
 	private defaultCompatibleState = {
 		itemLibrary: { items: new Map(), sortMode: null, sortDirection: null },
-		tagLibrary: [],
-		unitLibrary: [],
 	};
 	private defaultState: LibraryState = {
 		itemLibrary: new ItemLibrary(new Map<string, LibraryItem>()),
-		tagLibrary: [],
-		unitLibrary: [],
 		stateVersion: this.currentStateVersion,
 	};
 	private libraryState: LibraryState = cloneDeep(this.defaultState);
@@ -31,14 +28,21 @@ export class LibraryService {
 	libraryChanges: BehaviorSubject<LibraryState> =
 		new BehaviorSubject<LibraryState>(this.libraryState);
 
-	constructor(private storage: Storage, private imageService: ImageService) {
+	constructor(
+		private storage: Storage,
+		private imageService: ImageService,
+		private tagService: TagService
+	) {
 		this.initializeService();
 	}
 
 	async initializeService() {
 		const loadedLibraryState = await this.storage.get(StorageKey.Library);
-		const compatibleState = this.ensureCompatibility(loadedLibraryState);
-
+		const oldState = await this.storage.get(StorageKey.LibraryOld);
+		const compatibleState = await this.ensureCompatibility(
+			loadedLibraryState,
+			oldState
+		);
 		const updatedLibrary: ItemLibrary = cloneDeep(
 			this.libraryState.itemLibrary
 		);
@@ -50,72 +54,44 @@ export class LibraryService {
 			sortMode: compatibleLibrary.sortMode,
 			sortDirection: compatibleLibrary.sortDirection,
 		};
-
-		const loadedTags = updatedLibrary.tags;
-		const loadedUnits = updatedLibrary.units;
 		this.libraryState = {
-			...this.libraryState,
+			...cloneDeep(this.libraryState),
 			itemLibrary: updatedLibrary,
-			tagLibrary: loadedTags,
-			unitLibrary: loadedUnits,
 			stateVersion: this.currentStateVersion,
 		};
 
 		this.libraryChanges.next(this.libraryState);
 	}
 
-	ensureCompatibility(loadedLibraryState: any) {
-		if (!loadedLibraryState) {
-			return cloneDeep(this.defaultCompatibleState);
-		}
-		switch (loadedLibraryState.stateVersion) {
-			case undefined:
-			case null:
-				const compatibleState = this.convertUndefinedState(loadedLibraryState);
-				return compatibleState;
-			default:
-				return loadedLibraryState;
-		}
-	}
-
-	convertUndefinedState(oldState: any) {
-		const compatibleState = cloneDeep(this.defaultCompatibleState);
-		if (typeof oldState === 'object') {
-			compatibleState.itemLibrary = oldState;
-		}
-		return compatibleState;
-	}
-
-	addLibraryItem(item: LibraryItem, itemId: string | null = null) {
+	addLibraryItem(item: LibraryItem, itemId: string | null = null): void {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const newId: string = createOrCopyID(itemId);
 		const newItem: LibraryItem = { ...item, itemId: newId };
 
 		updatedLibrary.addItem(newId, newItem);
-
-		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
+		this.libraryState = cloneDeep(this.libraryState);
+		this.libraryState.itemLibrary = updatedLibrary;
 		this.updateState();
 	}
 
-	updateLibraryItem(updatedItem: LibraryItem) {
+	updateLibraryItem(updatedItem: LibraryItem): void {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 
 		updatedLibrary.updateItem(updatedItem.itemId, updatedItem);
-
-		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
+		this.libraryState = cloneDeep(this.libraryState);
+		this.libraryState.itemLibrary = updatedLibrary;
 		this.updateState();
 	}
 
-	updateSortDetails(sortMode: number, sortDirection: number) {
+	updateSortDetails(sortMode: number, sortDirection: number): void {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
-
 		updatedLibrary.sortDetails = { sortMode, sortDirection };
-
-		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
+		this.libraryState = cloneDeep(this.libraryState);
+		this.libraryState.itemLibrary = updatedLibrary;
 		this.updateState();
 	}
 
-	removeLibraryItem(itemId: string) {
+	removeLibraryItem(itemId: string): void {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const deprecatedItem = updatedLibrary.getItem(itemId);
 		if (!deprecatedItem) return;
@@ -125,12 +101,61 @@ export class LibraryService {
 			this.imageService.deleteImage(associatedImg.fileName);
 		}
 		updatedLibrary.removeItem(itemId);
+		this.libraryState = cloneDeep(this.libraryState);
+		this.libraryState.itemLibrary = updatedLibrary;
 
-		this.libraryState = { ...this.libraryState, itemLibrary: updatedLibrary };
 		this.updateState();
 	}
 
-	async updateState() {
+	private convertUndefinedState(oldState: any) {
+		const compatibleState = cloneDeep(this.defaultCompatibleState);
+		if (typeof oldState === 'object') {
+			compatibleState.itemLibrary = oldState;
+		}
+		return compatibleState;
+	}
+
+	private async ensureCompatibility(
+		newState: any,
+		oldState: any
+	): Promise<LibraryState> {
+		if (newState) {
+			return newState;
+		}
+
+		if (!oldState) {
+			return cloneDeep(this.defaultState);
+		}
+
+		let compatibleState: any;
+		switch (oldState.stateVersion) {
+			case undefined:
+			case null:
+				compatibleState = this.convertUndefinedState(oldState);
+				this.storage.set(StorageKey.Library, compatibleState);
+				return await this.ensureCompatibility(null, compatibleState);
+			case '1.0':
+				compatibleState = cloneDeep(this.defaultState);
+				oldState.itemLibrary.items.forEach((item: any) => {
+					console.log(item);
+					const compatibleItem = cloneDeep(item);
+					compatibleItem.tags = [];
+					const oldTags = [...compatibleItem.tags];
+					for (let tag of oldTags) {
+						const compatibleTag = this.tagService.addTag(tag);
+						compatibleItem.tags.push(compatibleTag);
+					}
+					compatibleState.itemLibrary.addItem(item.itemId, compatibleItem);
+				});
+				this.storage.set(StorageKey.Library, compatibleState);
+				return compatibleState;
+			default:
+				this.storage.set(StorageKey.Library, oldState);
+				return oldState;
+		}
+	}
+
+	private async updateState(): Promise<void> {
 		await this.storage.set(StorageKey.Library, this.libraryState);
 		this.libraryChanges.next(this.libraryState);
 	}

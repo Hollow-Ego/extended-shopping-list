@@ -1,6 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { Component, Input, OnInit } from '@angular/core';
 import { PopulatedItem } from '../../interfaces/populated-item.interface';
 import { AlertController, ModalController } from '@ionic/angular';
 import { SingleCurrencyData } from '../../interfaces/currency-data.interface';
@@ -8,9 +6,11 @@ import { LibraryItem } from '../../interfaces/library-item.interface';
 
 import { ImageService } from '../../../services/image.service';
 
-import { LibraryService } from '../../../services/library.service';
 import { ModalMode } from '../../enums/modal-mode.enum';
 import { currencies } from './../../../i18n/currency-map';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { NameIdObject } from '../../interfaces/name-id-object.interface';
+
 @Component({
 	selector: 'pxsl1-add-edit-modal',
 	templateUrl: './add-edit-modal.component.html',
@@ -22,8 +22,7 @@ export class AddEditModalComponent implements OnInit {
 	@Input() mode: number = ModalMode.Add;
 
 	public allCurrencyData: SingleCurrencyData[] = currencies;
-	public availableTags: string[] = [];
-	public availableUnits: string[] = [];
+	public availableUnits: NameIdObject[] = [];
 	public itemForm: FormGroup | undefined;
 	public modalMode = ModalMode;
 	public updateLibrary = false;
@@ -41,8 +40,7 @@ export class AddEditModalComponent implements OnInit {
 		public formBuilder: FormBuilder,
 		public modalController: ModalController,
 		public alertController: AlertController,
-		private imageService: ImageService,
-		private libraryService: LibraryService
+		private imageService: ImageService
 	) {}
 
 	ngOnInit() {
@@ -68,11 +66,6 @@ export class AddEditModalComponent implements OnInit {
 			unit: this.item.unit,
 			price: this.item.price,
 			currency: this.item.currency,
-		});
-
-		this.libraryService.libraryChanges.subscribe(libraryState => {
-			this.availableTags = libraryState.tagLibrary;
-			this.availableUnits = libraryState.unitLibrary;
 		});
 	}
 
@@ -136,9 +129,9 @@ export class AddEditModalComponent implements OnInit {
 				this.itemForm!.controls['unit'].reset();
 				return;
 			}
-			if (!this.availableUnits.includes(newUnit)) {
-				this.availableUnits.push(newUnit);
-			}
+			// if (!this.availableUnits.includes(newUnit)) {
+			// 	this.availableUnits.push(newUnit);
+			// }
 			this.itemForm!.controls['unit'].setValue(newUnit);
 		}
 	}

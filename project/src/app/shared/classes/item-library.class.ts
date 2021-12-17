@@ -1,5 +1,6 @@
 import { Sort } from '../enums/sorting.enum';
 import { LibraryItem } from '../interfaces/library-item.interface';
+import { NameIdObject } from '../interfaces/name-id-object.interface';
 import { SortDetails } from '../interfaces/sort-details.interface';
 
 export class ItemLibrary {
@@ -47,8 +48,8 @@ export class ItemLibrary {
 		return Array.from(this.items.values());
 	}
 
-	get tags(): string[] {
-		const tags: string[] = [];
+	get tags(): NameIdObject[] {
+		const tags: NameIdObject[] = [];
 		this.items.forEach(item => {
 			if (item.tags.length > 0) {
 				tags.push(...item.tags);

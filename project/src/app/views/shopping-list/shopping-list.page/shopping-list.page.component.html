@@ -3,11 +3,11 @@
     <ion-card-title class="ion-align-items-center">{{list.name | translate}} <ion-icon name="ellipsis-vertical"
         style="float: right;" (click)="onListActions($event)"></ion-icon>
     </ion-card-title>
-    <ion-segment (ionChange)="onModeChange()" value="{{list?.mode}}">
-      <ion-segment-button value="{{mode.Edit}}">
+    <ion-segment (ionChange)="onModeChange()" [value]="list?.mode">
+      <ion-segment-button [value]="mode.Edit">
         <ion-label>{{ 'titles.editModeTitle' | translate }}</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="{{mode.Shopping}}">
+      <ion-segment-button [value]="mode.Shopping">
         <ion-label>{{ 'titles.shoppingModeTitle' | translate }}</ion-label>
       </ion-segment-button>
     </ion-segment>
@@ -18,13 +18,13 @@
       <ion-icon slot="icon-only" name="add" color="primary"></ion-icon>
     </ion-button>
     <ion-item class="position-left ion-no-padding">
-      <ion-select value="{{sortMode}}" interface="popover" (ionChange)="changeSortMode($event)">
+      <ion-select [value]="sortMode" interface="popover" (ionChange)="changeSortMode($event)">
         <ion-select-option [value]="sort.ByName">{{'shoppingList.sortByName' | translate}}</ion-select-option>
         <ion-select-option [value]="sort.ByTag">{{'shoppingList.sortByTag' | translate}}</ion-select-option>
       </ion-select>
     </ion-item>
     <ion-item class="position-left ion-no-padding">
-      <ion-icon name="{{arrowName}}" (click)="changeSortDirection()"></ion-icon>
+      <ion-icon [name]="arrowName" (click)="changeSortDirection()"></ion-icon>
     </ion-item>
   </ion-card-content>
 </ion-card>

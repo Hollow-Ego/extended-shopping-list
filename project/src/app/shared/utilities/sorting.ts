@@ -25,8 +25,8 @@ export function sortItemByTag(
 	if (!b.tags) {
 		b.tags = [];
 	}
-	const tagNameA = a.tags.length > 0 ? a.tags[0].toUpperCase() : 'ZZZZ';
-	const tagNameB = b.tags.length > 0 ? b.tags[0].toUpperCase() : 'ZZZZ';
+	const tagNameA = a.tags.length > 0 ? a.tags[0].name.toUpperCase() : 'ZZZZ';
+	const tagNameB = b.tags.length > 0 ? b.tags[0].name.toUpperCase() : 'ZZZZ';
 
 	const ascending = sortDirection === Sort.Ascending;
 

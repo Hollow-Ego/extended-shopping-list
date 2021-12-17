@@ -18,13 +18,13 @@
 
 <ion-card class="tag-dropdown-content ion-no-margin" [hidden]="!isOpenDropdown">
   <hr>
-  <ion-searchbar [(ngModel)]="newTag" (keydown.enter)="onConfirm()" clearInput="true" inputmode="text"
+  <ion-searchbar [(ngModel)]="newTagName" (keydown.enter)="onConfirm()" clearInput="true" inputmode="text"
     [placeholder]="'uiStrings.addTagPlaceholder'| translate">
   </ion-searchbar>
 
 
   <div class="dropdown-items">
-    <ion-chip *ngFor="let tag of availableTags; index as i" color="primary" (click)="onChipSelect(tag)"
+    <ion-chip *ngFor="let tag of availableTags | async; index as i" color="primary" (click)="onChipSelect(tag)"
       [hidden]="!canBeSelected(tag)">
       <ion-label>{{tag}}</ion-label>
     </ion-chip>
