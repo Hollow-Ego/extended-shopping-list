@@ -9,7 +9,7 @@ export class ToastService {
 
 	async showSimpleToast(
 		message: string,
-		position: 'bottom' | 'middle' | 'top' = 'bottom',
+		position: 'bottom' | 'middle' | 'top' = 'top',
 		duration: number = 2000
 	) {
 		const toast = await this.toastController.create({
