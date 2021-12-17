@@ -49,10 +49,10 @@ export class AddEditModalComponent implements OnInit {
 				itemId: '',
 				name: '',
 				imgData: { filepath: '', fileName: '', webviewPath: '' },
-				amount: 1,
+				amount: null,
 				tags: [],
-				unit: '',
-				price: 0,
+				unit: null,
+				price: null,
 				currency: this.defaultCurrency,
 			};
 		}

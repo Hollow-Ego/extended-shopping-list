@@ -6,9 +6,9 @@ export interface PopulatedItem {
 	itemId: string;
 	name: string;
 	tags: NameIdObject[];
-	imgData?: Image;
-	unit?: string;
-	amount?: number;
-	price?: number;
-	currency?: SingleCurrencyData;
+	imgData?: Image | null;
+	unit?: string | null;
+	amount?: number | null;
+	price?: number | null;
+	currency?: SingleCurrencyData | null;
 }

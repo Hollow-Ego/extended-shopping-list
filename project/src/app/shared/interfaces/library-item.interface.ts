@@ -6,9 +6,9 @@ export interface LibraryItem {
 	itemId: string;
 	name: string;
 	tags: NameIdObject[];
-	imgData?: Image;
-	amount?: number;
-	unit?: string;
-	price?: number;
-	currency?: SingleCurrencyData;
+	imgData?: Image | null;
+	unit?: string | null;
+	amount?: number | null;
+	price?: number | null;
+	currency?: SingleCurrencyData | null;
 }
