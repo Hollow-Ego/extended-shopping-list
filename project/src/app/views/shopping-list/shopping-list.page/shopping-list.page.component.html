@@ -29,21 +29,23 @@
   </ion-card-content>
 </ion-card>
 
-<ion-card class="list-card" *ngIf="sortMode === sort.ByName">
-  <ion-reorder-group>
-    <pxsl1-populated-item *ngFor="let item of items;" [item]="item" [isEditMode]="list.mode === mode.Edit"
-      (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
-    </pxsl1-populated-item>
-  </ion-reorder-group>
-</ion-card>
+<ng-container [ngSwitch]="sortMode">
+  <ion-card class="list-card" *ngSwitchCase="sort.ByName">
+    <ion-reorder-group>
+      <pxsl1-populated-item *ngFor="let item of items;" [item]="item" [isEditMode]="list.mode === mode.Edit"
+        (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
+      </pxsl1-populated-item>
+    </ion-reorder-group>
+  </ion-card>
 
-<ion-card class="list-card" *ngIf="sortMode === sort.ByTag">
-  <ion-reorder-group *ngFor="let category of sortingCategories; index as i">
-    <ion-item-divider>
-      <ion-label>{{category | translate}}</ion-label>
-    </ion-item-divider>
-    <pxsl1-populated-item *ngFor="let item of sortedTagItems[i];" [item]="item" [isEditMode]="list.mode === mode.Edit"
-      (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
-    </pxsl1-populated-item>
-  </ion-reorder-group>
-</ion-card>
+  <ion-card class="list-card" *ngSwitchCase="sort.ByTag">
+    <ion-reorder-group *ngFor="let category of sortingCategories; index as i">
+      <ion-item-divider>
+        <ion-label>{{category | translate}}</ion-label>
+      </ion-item-divider>
+      <pxsl1-populated-item *ngFor="let item of sortedTagItems[i];" [item]="item" [isEditMode]="list.mode === mode.Edit"
+        (editItem)="onEditItem($event)" (deleteItem)="onDeleteItem($event)">
+      </pxsl1-populated-item>
+    </ion-reorder-group>
+  </ion-card>
+</ng-container>

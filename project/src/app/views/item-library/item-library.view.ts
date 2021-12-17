@@ -57,7 +57,7 @@ export class ItemLibraryComponent implements OnInit, OnDestroy {
 					sortFunction.bind(this, this.sortDirection)
 				);
 
-				if (sortMode === Sort.ByName) {
+				if (sortMode === Sort.ByTag) {
 					this.items.forEach(item => {
 						let tag: NameIdObject = item.tags[0];
 						if (!tag) {
