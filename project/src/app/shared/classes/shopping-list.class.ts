@@ -37,7 +37,6 @@ export class ShoppingList {
 		const existingItem = this.getItemByLibraryId(item.libraryId || null);
 
 		if (existingItem) {
-			console.log(existingItem);
 			const newAmount = (item.amount || 0) + (existingItem.amount || 0);
 			this.updateItem({ ...existingItem, amount: newAmount });
 			return;

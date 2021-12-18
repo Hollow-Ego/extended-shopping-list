@@ -26,6 +26,7 @@ export class AddEditModalComponent implements OnInit {
 	public itemForm: FormGroup | undefined;
 	public modalMode = ModalMode;
 	public updateLibrary = false;
+	private libraryId: string | null = null;
 
 	// TODO To be refactored into a setting
 	private defaultCurrency: SingleCurrencyData = {
@@ -56,16 +57,20 @@ export class AddEditModalComponent implements OnInit {
 				currency: this.defaultCurrency,
 			};
 		}
+		if (!this.isNewLibraryItem) {
+			this.libraryId = (this.item as PopulatedItem).libraryId || null;
+		}
 
 		this.itemForm = this.formBuilder.group({
 			id: this.item.id,
+			libraryId: this.libraryId,
 			name: [this.item.name, [Validators.required, Validators.minLength(3)]],
 			amount: this.item.amount,
 			imgData: this.item.imgData,
 			tags: [[...this.item.tags]],
 			unit: this.item.unit,
 			price: this.item.price,
-			currency: this.item.currency,
+			currency: this.item.currency || this.defaultCurrency,
 		});
 	}
 
@@ -78,7 +83,14 @@ export class AddEditModalComponent implements OnInit {
 	}
 
 	dismissModal(canceled = false): void {
+		if (!this.itemForm) {
+			this.modalController.dismiss({
+				canceled: true,
+			});
+		}
 		const itemData = this.itemForm!.value;
+		if (this.updateLibrary) this.itemForm!.markAsDirty();
+
 		if (!this.itemForm!.dirty) {
 			canceled = true;
 		}

@@ -20,6 +20,7 @@ import {
 	sortItemByTag,
 } from '../../../shared/utilities/sorting';
 import { NameIdObject } from '../../../shared/interfaces/name-id-object.interface';
+import { LibraryService } from '../../../services/library.service';
 @Component({
 	selector: 'pxsl1-shopping-list-page',
 	templateUrl: './shopping-list.page.component.html',
@@ -49,7 +50,8 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 	constructor(
 		private modalCtrl: ModalController,
 		public popoverCtrl: PopoverController,
-		private SLService: ShoppingListService
+		private SLService: ShoppingListService,
+		private libraryService: LibraryService
 	) {}
 
 	ngOnChanges() {
@@ -124,9 +126,11 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 		const {
 			canceled,
 			itemData,
+			updateLibrary,
 		}: {
 			canceled: boolean;
 			itemData: AddEditModalOutput;
+			updateLibrary: boolean;
 		} = (await modal.onWillDismiss()).data;
 
 		if (canceled) {
@@ -136,6 +140,10 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 		const { amount } = itemData;
 		itemData.libraryId = null;
 
+		if (updateLibrary) {
+			const libId = this.libraryService.addLibraryItem(itemData);
+			itemData.libraryId = libId;
+		}
 		this.SLService.addListItem(itemData, amount);
 	}
 
@@ -144,6 +152,8 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 	}
 
 	async onEditItem(item: PopulatedItem): Promise<void> {
+		console.log(item);
+
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {
@@ -157,6 +167,7 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 		const {
 			canceled,
 			itemData,
+			updateLibrary,
 		}: {
 			canceled: boolean;
 			itemData: AddEditModalOutput;
@@ -165,6 +176,12 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 
 		if (canceled) {
 			return;
+		}
+
+		if (updateLibrary) {
+			const libId =
+				this.libraryService.updateLibraryItemFromShoppingList(itemData);
+			itemData.libraryId = libId;
 		}
 		this.SLService.updateListItem(itemData);
 	}

@@ -10,6 +10,7 @@ import { Storage } from '@ionic/storage';
 import { StorageKey } from '../shared/enums/storage-key.enum';
 import { createOrCopyID } from '../shared/utilities/utils';
 import { TagService } from './tag.service';
+import { PopulatedItem } from '../shared/interfaces/populated-item.interface';
 
 @Injectable({
 	providedIn: 'root',
@@ -63,7 +64,7 @@ export class LibraryService {
 		this.libraryChanges.next(this.libraryState);
 	}
 
-	addLibraryItem(item: LibraryItem, itemId: string | null = null): void {
+	addLibraryItem(item: LibraryItem, itemId: string | null = null): string {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const newId: string = createOrCopyID(itemId);
 		const newItem: LibraryItem = { ...item, id: newId };
@@ -72,6 +73,7 @@ export class LibraryService {
 		this.libraryState = cloneDeep(this.libraryState);
 		this.libraryState.itemLibrary = updatedLibrary;
 		this.updateState();
+		return newId;
 	}
 
 	updateLibraryItem(updatedItem: LibraryItem): void {
@@ -81,6 +83,31 @@ export class LibraryService {
 		this.libraryState = cloneDeep(this.libraryState);
 		this.libraryState.itemLibrary = updatedLibrary;
 		this.updateState();
+	}
+
+	updateLibraryItemFromShoppingList(updatedItem: PopulatedItem): string {
+		const libId = updatedItem.libraryId || '';
+		const hasItem = this.libraryState.itemLibrary.has(libId);
+		const libItem: LibraryItem = {
+			id: libId,
+			name: updatedItem.name,
+			tags: updatedItem.tags,
+			amount: updatedItem.amount,
+			currency: updatedItem.currency,
+			imgData: updatedItem.imgData,
+			price: updatedItem.price,
+			unit: updatedItem.unit,
+		};
+		if (!hasItem) {
+			return this.addLibraryItem(libItem);
+		}
+
+		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
+		updatedLibrary.updateItem(libId, libItem);
+		this.libraryState = cloneDeep(this.libraryState);
+		this.libraryState.itemLibrary = updatedLibrary;
+		this.updateState();
+		return updatedItem.libraryId!;
 	}
 
 	updateSortDetails(sortMode: number, sortDirection: number): void {
