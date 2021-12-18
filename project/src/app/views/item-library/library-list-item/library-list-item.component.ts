@@ -45,7 +45,7 @@ export class LibraryListItemComponent implements OnInit {
 	async onAddToList(item: LibraryItem): Promise<void> {
 		let { amount } = item;
 
-		if (!amount || amount < 0) amount = 1;
+		if (!amount || amount < 0) amount = 0;
 
 		const newShoppingItem: PopulatedItem = {
 			amount,
@@ -54,6 +54,7 @@ export class LibraryListItemComponent implements OnInit {
 			name: item.name,
 			tags: [],
 		};
+
 		this.SLService.addListItem(newShoppingItem, amount);
 		Haptics.notification({ type: NotificationType.Success });
 		this.toastService.showSimpleToast(
