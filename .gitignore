@@ -31,4 +31,4 @@ npm-debug.log*
 /project/www
 /builds
 
-
+project/.angular/cache
