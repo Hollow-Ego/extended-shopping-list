@@ -120,7 +120,6 @@ export class ShoppingListService {
 					}
 					compatibleState.shoppingLists.set(compatibleList.id, compatibleList);
 				}
-				console.log(compatibleState);
 
 				this.storage.set(StorageKey.ShoppingList, compatibleState);
 				return compatibleState;

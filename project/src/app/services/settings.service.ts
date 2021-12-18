@@ -6,6 +6,8 @@ import { cloneDeep } from 'lodash';
 
 import { StorageKey } from '../shared/enums/storage-key.enum';
 import { Theme } from '../shared/enums/theme.enum';
+import { CurrencyService } from './currency.service';
+import { SingleCurrencyData } from '../shared/interfaces/currency-data.interface';
 
 @Injectable({
 	providedIn: 'root',
@@ -27,7 +29,10 @@ export class SettingsService {
 	settingChanges: BehaviorSubject<SettingsState> =
 		new BehaviorSubject<SettingsState>(this.settingsState);
 
-	constructor(private storage: Storage) {
+	constructor(
+		private storage: Storage,
+		private currencyService: CurrencyService
+	) {
 		this.initializeService();
 	}
 
@@ -35,11 +40,7 @@ export class SettingsService {
 		const loadedSettingsState = await this.storage.get(StorageKey.Settings);
 		const compatibleState = this.ensureCompatibility(loadedSettingsState);
 
-		this.settingsState = {
-			...this.settingsState,
-			...compatibleState,
-			stateVersion: this.currentStateVersion,
-		};
+		this.settingsState = compatibleState;
 		this.settingChanges.next(this.settingsState);
 	}
 
@@ -67,8 +68,22 @@ export class SettingsService {
 		return { ...compatibleState, ...oldState };
 	}
 
-	setTheme(theme: string) {
-		this.settingsState = { ...this.settingsState, theme };
+	getDefaultCurrency(): SingleCurrencyData {
+		let key = this.settingsState.defaultCurrency;
+		if (!key) key = this.defaultCurrency;
+		return this.currencyService.getCurrency(key);
+	}
+
+	getDefaultLanguage(): string {
+		return this.defaultState.language;
+	}
+
+	getLanguage(): string {
+		return this.settingsState.language;
+	}
+
+	setDefaultCurrency(defaultCurrency: string) {
+		this.settingsState = { ...this.settingsState, defaultCurrency };
 		this.updateState();
 	}
 
@@ -77,8 +92,8 @@ export class SettingsService {
 		this.updateState();
 	}
 
-	setDefaultCurrency(defaultCurrency: string) {
-		this.settingsState = { ...this.settingsState, defaultCurrency };
+	setTheme(theme: string) {
+		this.settingsState = { ...this.settingsState, theme };
 		this.updateState();
 	}
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { take } from 'rxjs/operators';
 import { LanguageDetails } from '../shared/interfaces/language-details.interface';
+import { SettingsService } from './settings.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -11,8 +12,8 @@ export class TranslationService {
 		{ name: 'English', short: 'en' },
 		{ name: 'Deutsch', short: 'de' },
 	];
-	private _defaultLanguage = 'en';
-	private _currentLanguage = this._defaultLanguage;
+
+	private _currentLanguage: string;
 
 	get currentLanguage() {
 		return this._currentLanguage;
@@ -22,10 +23,14 @@ export class TranslationService {
 		return this._availableLanguages;
 	}
 
-	constructor(private translate: TranslateService) {
+	constructor(
+		private translate: TranslateService,
+		private settingsService: SettingsService
+	) {
 		const languageShorts = this.availableLanguages.map(lang => lang.short);
+		this._currentLanguage = this.settingsService.getLanguage();
 		translate.addLangs(languageShorts);
-		translate.setDefaultLang(this._defaultLanguage);
+		translate.setDefaultLang(this.settingsService.getDefaultLanguage());
 
 		const browserLang = translate.getBrowserLang();
 		this.changeLanguage(
@@ -34,7 +39,6 @@ export class TranslationService {
 	}
 
 	changeLanguage(lang: string) {
-		if (this._currentLanguage === lang) return;
 		this._currentLanguage = lang;
 		this.translate.use(lang);
 	}

@@ -152,8 +152,6 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 	}
 
 	async onEditItem(item: PopulatedItem): Promise<void> {
-		console.log(item);
-
 		const modal = await this.modalCtrl.create({
 			component: AddEditModalComponent,
 			componentProps: {

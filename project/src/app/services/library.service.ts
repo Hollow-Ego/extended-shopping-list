@@ -164,7 +164,6 @@ export class LibraryService {
 			case '1.0':
 				compatibleState = cloneDeep(this.defaultState);
 				oldState.itemLibrary.items.forEach((item: any) => {
-					console.log(item);
 					const compatibleItem = cloneDeep(item);
 					compatibleItem.tags = [];
 					const oldTags = [...compatibleItem.tags];

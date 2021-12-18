@@ -7,9 +7,11 @@ import { LibraryItem } from '../../interfaces/library-item.interface';
 import { ImageService } from '../../../services/image.service';
 
 import { ModalMode } from '../../enums/modal-mode.enum';
-import { currencies } from './../../../i18n/currency-map';
+
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NameIdObject } from '../../interfaces/name-id-object.interface';
+import { SettingsService } from '../../../services/settings.service';
+import { CurrencyService } from '../../../services/currency.service';
 
 @Component({
 	selector: 'pxsl1-add-edit-modal',
@@ -21,30 +23,29 @@ export class AddEditModalComponent implements OnInit {
 	@Input() item: PopulatedItem | LibraryItem | null = null;
 	@Input() mode: number = ModalMode.Add;
 
-	public allCurrencyData: SingleCurrencyData[] = currencies;
+	public allCurrencyData: SingleCurrencyData[] = [];
 	public availableUnits: NameIdObject[] = [];
 	public itemForm: FormGroup | undefined;
 	public modalMode = ModalMode;
 	public updateLibrary = false;
+
+	private defaultCurrency: SingleCurrencyData | null = null;
 	private libraryId: string | null = null;
 
-	// TODO To be refactored into a setting
-	private defaultCurrency: SingleCurrencyData = {
-		symbol: '\u20AC',
-		code: 'EUR',
-		symbol_native: '\u20AC',
-		decimal_digits: 2,
-		rounding: 0.0,
-	};
-
 	constructor(
-		public formBuilder: FormBuilder,
-		public modalController: ModalController,
-		public alertController: AlertController,
-		private imageService: ImageService
+		private formBuilder: FormBuilder,
+		private modalController: ModalController,
+		private alertController: AlertController,
+		private imageService: ImageService,
+		private settingsService: SettingsService,
+		private currencyService: CurrencyService
 	) {}
 
 	ngOnInit() {
+		this.allCurrencyData = this.currencyService.getAllCurrencies();
+		this.defaultCurrency = this.settingsService.getDefaultCurrency();
+		console.log(this.defaultCurrency);
+
 		if (!this.item) {
 			this.item = {
 				id: '',

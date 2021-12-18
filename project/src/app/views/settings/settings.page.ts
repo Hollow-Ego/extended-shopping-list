@@ -4,15 +4,14 @@ import { SettingsService } from '../../services/settings.service';
 import { SingleCurrencyData } from '../../shared/interfaces/currency-data.interface';
 import { Theme } from '../../shared/enums/theme.enum';
 import { SettingsState } from '../../shared/interfaces/service.interface';
-import { currencies } from './../../i18n/currency-map';
+import { CurrencyService } from '../../services/currency.service';
 
 @Component({
 	selector: 'pxsl1-settings',
 	templateUrl: './settings.page.html',
 })
 export class SettingsPage implements OnInit, OnDestroy {
-	constructor(private settingsService: SettingsService) {}
-	public allCurrencyData: SingleCurrencyData[] = currencies;
+	public allCurrencyData: SingleCurrencyData[] = [];
 
 	public defaultCurrency: string = '';
 	public isDarkMode = document.body.getAttribute('color-theme') === Theme.Dark;
@@ -20,7 +19,13 @@ export class SettingsPage implements OnInit, OnDestroy {
 
 	private settingsStateSub: Subscription | undefined;
 
+	constructor(
+		private settingsService: SettingsService,
+		private currencyService: CurrencyService
+	) {}
+
 	ngOnInit() {
+		this.allCurrencyData = this.currencyService.getAllCurrencies();
 		this.settingsStateSub = this.settingsService.settingChanges.subscribe(
 			(settings: SettingsState) => {
 				this.language = settings.language;
@@ -45,8 +50,6 @@ export class SettingsPage implements OnInit, OnDestroy {
 
 	onUpdateCurrency(event: any): void {
 		const currency = event.detail.value;
-		console.log(currency);
-
 		this.settingsService.setDefaultCurrency(currency);
 	}
 
