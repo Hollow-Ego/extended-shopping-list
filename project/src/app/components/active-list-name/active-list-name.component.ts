@@ -22,7 +22,7 @@ export class ActiveListNameComponent implements OnInit, OnDestroy {
 				}
 				this.activeListName = listState.shoppingLists
 					.get(listState.activeList)
-					.getName();
+					?.getName();
 			}
 		);
 	}
