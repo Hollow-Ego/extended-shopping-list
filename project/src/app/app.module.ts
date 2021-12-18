@@ -24,6 +24,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 		IonicModule.forRoot(),
 		HttpClientModule,
 		IonicStorageModule.forRoot(),
+		AppRoutingModule,
 		TranslateModule.forRoot({
 			loader: {
 				provide: TranslateLoader,

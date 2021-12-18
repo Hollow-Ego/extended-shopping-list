@@ -57,6 +57,9 @@ export class LibraryService {
 	}
 
 	ensureCompatibility(loadedLibraryState: any) {
+		if (!loadedLibraryState) {
+			return cloneDeep(this.defaultState);
+		}
 		switch (loadedLibraryState.stateVersion) {
 			case undefined:
 			case null:
