@@ -66,7 +66,7 @@ export class LibraryService {
 	addLibraryItem(item: LibraryItem, itemId: string | null = null): void {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 		const newId: string = createOrCopyID(itemId);
-		const newItem: LibraryItem = { ...item, itemId: newId };
+		const newItem: LibraryItem = { ...item, id: newId };
 
 		updatedLibrary.addItem(newId, newItem);
 		this.libraryState = cloneDeep(this.libraryState);
@@ -77,7 +77,7 @@ export class LibraryService {
 	updateLibraryItem(updatedItem: LibraryItem): void {
 		const updatedLibrary = cloneDeep(this.libraryState.itemLibrary);
 
-		updatedLibrary.updateItem(updatedItem.itemId, updatedItem);
+		updatedLibrary.updateItem(updatedItem.id, updatedItem);
 		this.libraryState = cloneDeep(this.libraryState);
 		this.libraryState.itemLibrary = updatedLibrary;
 		this.updateState();

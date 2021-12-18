@@ -49,7 +49,8 @@ export class LibraryListItemComponent implements OnInit {
 
 		const newShoppingItem: PopulatedItem = {
 			amount,
-			itemId: '',
+			id: '',
+			libraryId: item.id,
 			name: item.name,
 			tags: [],
 		};
@@ -69,7 +70,7 @@ export class LibraryListItemComponent implements OnInit {
 			component: AddEditModalComponent,
 			componentProps: {
 				item,
-				mode: ModalMode.Add,
+				mode: ModalMode.Edit,
 			},
 		});
 		await modal.present();
@@ -101,7 +102,7 @@ export class LibraryListItemComponent implements OnInit {
 
 		switch (action) {
 			case ModalAction.Delete:
-				this.onDeleteItem(this.item.itemId);
+				this.onDeleteItem(this.item.id);
 				return;
 			case ModalAction.Edit:
 				this.onEditItem(this.item);

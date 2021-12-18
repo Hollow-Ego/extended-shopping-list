@@ -46,7 +46,7 @@ export class AddEditModalComponent implements OnInit {
 	ngOnInit() {
 		if (!this.item) {
 			this.item = {
-				itemId: '',
+				id: '',
 				name: '',
 				imgData: { filepath: '', fileName: '', webviewPath: '' },
 				amount: null,
@@ -58,7 +58,7 @@ export class AddEditModalComponent implements OnInit {
 		}
 
 		this.itemForm = this.formBuilder.group({
-			itemId: this.item.itemId,
+			id: this.item.id,
 			name: [this.item.name, [Validators.required, Validators.minLength(3)]],
 			amount: this.item.amount,
 			imgData: this.item.imgData,

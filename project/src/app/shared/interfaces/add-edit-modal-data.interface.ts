@@ -5,7 +5,8 @@ import { NameIdObject } from './name-id-object.interface';
 import { PopulatedItem } from './populated-item.interface';
 
 export interface AddEditModalOutput {
-	itemId: string;
+	id: string;
+	libraryId?: string | null;
 	name: string;
 	amount: number;
 	imgData: Image;

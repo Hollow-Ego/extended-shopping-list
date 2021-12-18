@@ -3,7 +3,8 @@ import { Image } from './image.interface';
 import { NameIdObject } from './name-id-object.interface';
 
 export interface PopulatedItem {
-	itemId: string;
+	id: string;
+	libraryId?: string | null;
 	name: string;
 	tags: NameIdObject[];
 	imgData?: Image | null;

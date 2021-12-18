@@ -144,7 +144,7 @@ export class ShoppingListService {
 		listId: string | null = null
 	) {
 		const updatedListMap = cloneDeep(this.listState.shoppingLists);
-		const itemId: string = createOrCopyID(item.itemId);
+		const itemId: string = createOrCopyID(item.id);
 		const newItem = { ...item, amount, itemId };
 		if (!listId) {
 			listId = this.listState.activeList;

@@ -20,7 +20,7 @@ import { ModalAction } from '../../../../shared/enums/modal-action.enum';
 })
 export class PopulatedItemComponent implements OnChanges {
 	@Input() isEditMode = true;
-	@Input() item: PopulatedItem = { itemId: '', name: '', tags: [] };
+	@Input() item: PopulatedItem | null = null;
 
 	@Output() editItem = new EventEmitter<PopulatedItem>();
 	@Output() deleteItem = new EventEmitter<PopulatedItem>();
@@ -50,6 +50,7 @@ export class PopulatedItemComponent implements OnChanges {
 	}
 
 	onStartDoubleClick(): void {
+		if (!this.item) return;
 		if (this.isEditMode) return;
 		const now = Date.now();
 		if (Math.abs(now - this.lastOnStart) <= this.doubleClickThreshold) {
@@ -75,6 +76,7 @@ export class PopulatedItemComponent implements OnChanges {
 	}
 
 	async onItemActions($event: any): Promise<void> {
+		if (!this.item) return;
 		const popover = await this.popoverCtrl.create({
 			component: ActionPopoverComponent,
 			event: $event,

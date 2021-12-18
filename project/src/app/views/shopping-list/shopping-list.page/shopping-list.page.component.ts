@@ -134,12 +134,13 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 		}
 
 		const { amount } = itemData;
+		itemData.libraryId = null;
 
 		this.SLService.addListItem(itemData, amount);
 	}
 
 	onDeleteItem(item: PopulatedItem): void {
-		this.SLService.removeListItem(item.itemId);
+		this.SLService.removeListItem(item.id);
 	}
 
 	async onEditItem(item: PopulatedItem): Promise<void> {
@@ -209,7 +210,7 @@ export class ShoppingListPageComponent implements OnChanges, OnDestroy {
 	}
 
 	trackByID(index: number, item: PopulatedItem): string | undefined {
-		return item ? item.itemId : undefined;
+		return item ? item.id : undefined;
 	}
 
 	ngOnDestroy() {

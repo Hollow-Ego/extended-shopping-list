@@ -3,7 +3,7 @@ import { Image } from './image.interface';
 import { NameIdObject } from './name-id-object.interface';
 
 export interface LibraryItem {
-	itemId: string;
+	id: string;
 	name: string;
 	tags: NameIdObject[];
 	imgData?: Image | null;

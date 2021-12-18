@@ -34,7 +34,12 @@ export class ShoppingList {
 	}
 
 	addItem(item: PopulatedItem): void {
-		this.shoppingItems.set(item.itemId, item);
+		const existingItem = this.getItemByLibraryId(item.libraryId || null);
+		if (existingItem) {
+			const newAmount = (item.amount || 0) + (existingItem.amount || 0);
+			this.updateItem({ ...existingItem, amount: newAmount });
+		}
+		this.shoppingItems.set(item.id, item);
 	}
 
 	removeItem(id: string): void {
@@ -42,7 +47,7 @@ export class ShoppingList {
 	}
 
 	updateItem(item: PopulatedItem): void {
-		this.shoppingItems.set(item.itemId, item);
+		this.shoppingItems.set(item.id, item);
 	}
 
 	updateName(newName: string): void {
@@ -68,5 +73,13 @@ export class ShoppingList {
 	setSortDetails(newMode: number, newDirection: number): void {
 		this.sortMode = newMode;
 		this.sortDirection = newDirection;
+	}
+
+	private getItemByLibraryId(libraryId: string | null): PopulatedItem | null {
+		if (!libraryId) return null;
+		for (const item of this.shoppingItems.values()) {
+			if (item.libraryId === libraryId) return item;
+		}
+		return null;
 	}
 }
