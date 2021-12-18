@@ -29,7 +29,7 @@ export class PopulatedItemComponent implements OnChanges {
 
 	public hasImage = false;
 
-	private doubleClickThreshold = 1000;
+	private doubleClickThreshold = 200;
 	private lastOnStart = 0;
 
 	constructor(private popoverCtrl: PopoverController) {}
