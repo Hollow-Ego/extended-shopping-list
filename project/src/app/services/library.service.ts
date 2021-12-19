@@ -29,6 +29,10 @@ export class LibraryService {
 		this.initializeService();
 	}
 
+	getState() {
+		return this.libraryState;
+	}
+
 	async initializeService() {
 		const loadedLibraryState = await this.storage.get(Constants.LIBRARY_KEY);
 		const compatibleState = this.ensureCompatibility(loadedLibraryState);

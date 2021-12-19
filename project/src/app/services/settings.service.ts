@@ -29,6 +29,10 @@ export class SettingsService {
 		this.initializeService();
 	}
 
+	getState() {
+		return this.settingsState;
+	}
+
 	async initializeService() {
 		const loadedSettingsState = await this.storage.get(SETTINGS_KEY);
 		const compatibleState = this.ensureCompatibility(loadedSettingsState);

@@ -73,6 +73,10 @@ export class ShoppingListService {
 		this.shoppingListChanges.next(this.listState);
 	}
 
+	getState() {
+		return this.listState;
+	}
+
 	ensureCompatibility(loadedListState: any) {
 		if (!loadedListState) {
 			return cloneDeep(this.defaultCompatibleState);

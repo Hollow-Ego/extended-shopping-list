@@ -1,0 +1,33 @@
+{
+	"shoppingList": {
+		"shoppingLists": {},
+		"activeList": "b9dd6630-d66a-44ae-ab5b-20971d04db88",
+		"stateVersion": "1.0"
+	},
+	"library": {
+		"itemLibrary": {
+			"items": {},
+			"sortMode": "[PXSL1] SORT_BY_TAG",
+			"sortDirection": "[PXSL1] SORT_ASCENDING"
+		},
+		"tagLibrary": [
+			"Brotwaren",
+			"Snacks",
+			"Kühltheke",
+			"Obst",
+			"Haushalt",
+			"Tiefkühl",
+			"Vorratsschrank",
+			"Getränke",
+			"Drogerie "
+		],
+		"unitLibrary": ["Stk."],
+		"stateVersion": "1.0"
+	},
+	"settings": {
+		"language": "de",
+		"theme": "[PXSL1] DARK",
+		"defaultCurrency": "EUR",
+		"stateVersion": "1.1"
+	}
+}
